@@ -1,0 +1,15 @@
+# ethereum / geth account keys (keystore)
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quorum-node-0-account-key-config
+
+  labels:
+    app: qubernetes
+    name: quorum-node-0-account-key-config
+data:
+  key: |-
+
+
+    {{ toJson (.Values.quorum.genesisKeyStoreAccount | b64dec) }}

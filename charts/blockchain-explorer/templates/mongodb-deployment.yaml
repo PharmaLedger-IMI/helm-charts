@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongodb
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mongodb
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/quorum-examples-net: "true"
+        io.kompose.service: mongodb
+    spec:
+      containers:
+      - command:
+        - mongod
+        - --logpath=/dev/null
+        - --bind_ip
+        - 0.0.0.0
+        image: mongo:latest
+        imagePullPolicy: ""
+        name: mongodb
+        ports:
+        - containerPort: 27017
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

@@ -1,0 +1,10 @@
+name: "new-network"
+version: "0.1.0"
+usage: "helm new-network -i <value file> -o <generated value files>"
+description: |-
+  A helm plugin to allow for easy application of quorum cryoptografic data to charts default values when using helm dependencies.
+command: "node $HELM_PLUGIN_DIR/bin/lib/src/new-network.js"
+hooks:
+  install: "cd $HELM_PLUGIN_DIR/bin/lib/src; npm install --production"
+  update: "cd $HELM_PLUGIN_DIR/bin/lib/src; npm install --production"
+
