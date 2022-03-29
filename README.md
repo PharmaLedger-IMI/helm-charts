@@ -16,7 +16,13 @@ cd helm-charts
 helm plugin install ./plugins/new-network
 ```
 #### Step2: Install Quorum-Start helm chart
-First we must use the <i>new-network <i/> helm plugin to generate the cryptography required by the Quorum Node
+First we must generate and update the github token in _values.yaml_ for of the chart
+```yaml
+  # repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
+  git_repo_with_access_token: "https://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:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git"
+```
+
+After that, we use the _new-network_ helm plugin to generate the cryptography required by the Quorum Node
 ```shell
 helm new-node -i ./charts/quorum-start/values.yaml -o ./charts/quorum-start/gen-values.yaml
 ```
