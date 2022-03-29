@@ -1,0 +1,6 @@
+# Default values for blockchain-explorer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+quorum:
+  node_rpc_address: "http://quorum-node-0-rpc:8545"
