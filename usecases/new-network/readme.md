@@ -16,10 +16,14 @@ cd helm-charts
 helm plugin install ./plugins/new-network
 ```
 
-#### Step2: Cloone your private config repository
+#### Step2: Cloone your private config repository in folder "private_configs"
+From helm-chars folder foler run
 
+npm run copy_default_configs network_name 
 
-#### Step3: Adjust value.yaml
+You should get files copied in ../private_configs,   for example  private_configs/network_name/charts/quorum-start/values.yaml
+
+#### Step3: Adjust private_configs/network_name/charts/quorum-start/values.yaml
 
 #### Step4: Install Quorum-Start helm chart
 First we must generate and update the github token in _values.yaml_ for of the chart
@@ -30,7 +34,7 @@ First we must generate and update the github token in _values.yaml_ for of the c
 
 After that, we use the _new-network_ helm plugin to generate the cryptography required by the Quorum Node
 ```shell
-helm new-node -i ./charts/quorum-start/values.yaml -o ./charts/quorum-start/gen-values.yaml
+helm new-network -i ./charts/quorum-start/values.yaml -o ./charts/quorum-start/gen-values.yaml
 ```
 After the values are updated with the required cryptographic material, install de helm chart
 ```shell
