@@ -2,74 +2,63 @@
 
 ## NewNetwork use case
 
-Deploy a single quorum node with the node and genesis cryptography generated at runtime. After the deployment, the genesis and node connection information is uploaded to a chosen github repository 
+Deploy a single quorum node with the node and genesis cryptography generated at runtime. After the deployment, the genesis and node connection information is uploaded to a chosen github repository. 
 
 ### Quorum node deployment
 
-#### Step 1: Clone the repository
-```sh
-git clone https://github.com/PharmaLedger-IMI/helm-charts.git
-```
-After the repository was cloned, you must install the helm plugin
-```sh
-cd helm-charts
-helm plugin install ./plugins/new-network
-```
+#### Step 1: Clone your private config repository in the folder "private_configs"
 
-#### Step2: Cloone your private config repository in folder "private_configs"
-From helm-chars folder foler run
 
-npm run copy_default_configs network_name 
-
-You should get files copied in ../private_configs,   for example  private_configs/network_name/charts/quorum-start/values.yaml
-
-#### Step3: Adjust private_configs/network_name/charts/quorum-start/values.yaml
-
-#### Step4: Install Quorum-Start helm chart
-First we must generate and update the github token in _values.yaml_ for of the chart
-```yaml
-  # repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
-  git_repo_with_access_token: "https://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:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git"
-```
-
-After that, we use the _new-network_ helm plugin to generate the cryptography required by the Quorum Node
+1. After the repository was cloned, change the directory to the "private_configs" folder
 ```shell
-helm new-network -i ./charts/quorum-start/values.yaml -o ./charts/quorum-start/gen-values.yaml
+cd private_configs
 ```
-After the values are updated with the required cryptographic material, install de helm chart
+2. Create a folder which will represent your installation, like "network_name/charts/quorum-node-0" and change the directory to that folder
 ```shell
-helm install qn-0 ./charts/quorum-start -f ./charts/quorum-start/gen-values.yaml
+cd network_name/charts/quorum-node-0
 ```
 
-After the deployment is finished, install the blockchain explorer in order to check the node
+#### Step 2: Install the helm chart and the plugin
 
-#### Quorum Blockchain explorer deployment
-Execute :
+1. Register the official or the forked helm charts repository
 ```shell
-helm install quorum-explorer ./charts/blockchain-explorer
+helm repo add helm-charts https://raw.githubusercontent.com/PharmaLedger-IMI/helm-charts/master/charts/releases
 ```
-
-Access the blockchain explorer in order check the node, block generation, etc.
-
-
-## Demo eth-adapter
-
-The eth-adapter plugin will download the configured file or files from a chosen source. The source is configured in  ./charts/ethereum-adapter/values.yaml.
-The plugin will produce a json file, that it is used in the chart.
-
-### Step 1 : Install the eth-adapter plugin
+2. Install the helm chart _new-network_
 ```shell
-helm install plugin ./plugins/eth-adapter
+helm pull helm-charts/quorum --untar
+```
+3. Install the _new-network_ plugin
+```shell
+helm plugin install https://github.com/PharmaLedger-IMI/helm-charts/plugins/new-network
 ```
 
-### Step 2: Use the eth-adapter plugin to gather the genesis file and/or other information from different/same locations
+#### Step 3: Adjust private_configs/network_name/charts/quorum-node-0/quorum-start/values.yaml
+
+The file contains parametrization for different sets of values:
+1. specific data for the upload of the public shared information
+2. specific data for the use case network, company name, public blockchain node endpoint and port
+3. storage data used by the blockchain deployment
+4. different annotations or configurations for the deployment
+
+#### Step 4: Install the helm chart
+
+1. Use the _new-network_ plugin to generate the cryptographic material for the Quorum node. 
+   The execution of the plugin will produce:
+   1. _new-network.plugin.json_ file that will contain all the generated information, like account, node crypto data, genesis data. The json file will be used by the helm charts.
+   2. _new-network.plugin.secrets.json_ file that will contain all the private information like private keys/passwords/etc. of the blockchain account and node.
+   
 ```shell
-helm eth-adapter -i ./charts/ethereum-adapter/values.yaml -o ./charts/ethereum-adapter/common.json
+helm new-network -i ./values.yaml -o .
 ```
 
-### Step 3: Install the ethereum-adapter helm chart
-The helm chart will deploy a config map containing the information gathered from remote repositories
+2. Install the helm chart
 ```shell
-helm install eth-0 ./charts/ethereum-adapter/
+helm install qn-0 . -f ./values.yaml
 ```
+
+#### Step 5: Backup your installation and private information
+
+Upload to your private repository all the data located in the folder _private_configs/network_name/charts/quorum-node-0_
+
 
