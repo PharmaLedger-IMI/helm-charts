@@ -1,6 +1,6 @@
 
 
-## updateApiHubInfo use case
+## update ApiHub and buils SSApps use case
 
 Update the installation of ApiHub with new configuration (eg. updated bdns).
 
