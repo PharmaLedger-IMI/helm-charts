@@ -44,7 +44,7 @@ The file contains parametrization for different sets of values:
 3. storage data used by the blockchain deployment
 4. different annotations or configurations for the deployment
 
-The structure of this values.yaml file in documented in 
+The structure of this values.yaml file in documented in https://github.com/PharmaLedger-IMI/helm-charts/blob/master/charts/read.me 
 
 #### Step 4: Install the helm chart
 
