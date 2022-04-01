@@ -39,7 +39,7 @@ helm plugin install https://github.com/PharmaLedger-IMI/helm-charts/plugins/new-
 #### Step 3: Adjust private_configs/network_name/charts/quorum-node-0/quorum-start/values.yaml
 
 The file contains parametrization for different sets of values:
-1. specific data for the upload of the public shared information
+1. specific data for the upload of the public shared information (example github token, user, email, etc)
 2. specific data for the use case network, company name, public blockchain node endpoint and port
 3. storage data used by the blockchain deployment
 4. different annotations or configurations for the deployment
@@ -48,8 +48,12 @@ The file contains parametrization for different sets of values:
 
 1. Use the _new-network_ plugin to generate the cryptographic material for the Quorum node. 
    The execution of the plugin will produce:
-   1. _new-network.plugin.json_ file that will contain all the generated information, like account, node public crypto data, genesis data. The json file will be used by the helm charts.
-   2. _new-network.plugin.secrets.json_ file that will contain all the private information like private keys/passwords/etc. of the blockchain account and node.
+   1. _new-network.plugin.json_ file that will contain all the generated information, like account, node public crypto data, genesis data. The json file will be used by the new-network helm charts. This file will be preserved in the private repository.
+      This file is also used in two ways:
+       1. to generate the configmaps for the deplyment of the Quorum Node (see step 4.2)
+       2. in the postinstall step of the helm chart (in 4.2) to generate shared configurations and upload it in the shared repository (documented in https://github.com/PharmaLedger-IMI/helm-charts/edit/master/usecases/new-network/sharedFolderStructure.md) 
+   
+   3. _new-network.plugin.secrets.json_ file that will contain all the private information like private keys/passwords/etc. of the blockchain account and node. This file will be preserved in the private repository.
    
 ```shell
 helm new-network -i ./values.yaml -o .
