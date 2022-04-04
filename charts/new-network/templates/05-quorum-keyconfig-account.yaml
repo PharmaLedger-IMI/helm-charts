@@ -1,4 +1,5 @@
 # ethereum / geth account keys (keystore)
+{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -12,4 +13,4 @@ data:
   key: |-
 
 
-    {{ toJson (.Values.quorum.genesisKeyStoreAccount | b64dec) }}
+    {{ toJson ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) }}

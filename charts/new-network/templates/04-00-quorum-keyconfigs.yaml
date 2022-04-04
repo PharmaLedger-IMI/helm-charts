@@ -1,0 +1,46 @@
+{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+---
+# nodekey private to the node, used to verify identity.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quorum-node-0-nodekey-config
+
+  labels:
+    app: qubernetes
+    name: quorum-node-0-nodekey-config
+data:
+  nodekey: |
+    {{ $generatedPrivateJson.nodeKey }}
+# Only IBFT / istanbul networks need access to the nodekey address.
+---
+# nodekey address public and used to generate istanbul-validator-config.toml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quorum-node-0-nodekey-address-config
+
+  labels:
+    app: qubernetes
+    name: quorum-node-0-nodekey-address-config
+data:
+  nodekey: |
+    {{ $generatedPublicJson.nodeAdress }}
+
+---
+# enode Id
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quorum-node-0-enode-config
+
+  labels:
+    app: qubernetes
+    name: quorum-node-0-enode-config
+data:
+  enode: |
+    {{ $generatedPublicJson.enode }}
+
+---
+

@@ -1,4 +1,4 @@
-
+{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -105,7 +105,7 @@ spec:
             - name: THIS_NODE_ID
               value: quorum-node-0
             - name: THIS_ENODE
-              value: {{ .Values.quorum.enode }}
+              value: {{ $generatedPublicJson.enode }}
           volumeMounts:
             - name: quorum-persistent-storage
               mountPath: /etc/quorum/qdata

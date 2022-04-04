@@ -1,5 +1,5 @@
 apiVersion: v2
-name: quorum
+name: new-network
 description: A Helm chart for deployment of the starting quorum node on Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.

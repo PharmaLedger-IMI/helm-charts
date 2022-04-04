@@ -1,0 +1,90 @@
+{{- if .Values.git_upload.enabled}}
+{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: quorum-git-post-install
+  labels:
+    app: quorum-git-post-install
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: quorum-git-post-install
+          imagePullPolicy: IfNotPresent
+          image: alpine/git:v2.32.0
+          command: [ "sh" ]
+          args:
+            - "-cx"
+            - "
+            git config --global user.email \"{{ .Values.git_upload.email }}\";
+            git config --global user.name \"{{ .Values.git_upload.user }}\";
+            {{- $storagepath :=  printf "%s/%s/%s" .Values.git_upload.git_repo_storage_path .Values.deployment.network_name .Values.deployment.company }}
+            {{- $genesisfile := printf "%s/%s" $storagepath .Values.git_upload.genesis_file_name }}
+            {{- $validatorAddress := printf "%s/%s" $storagepath .Values.git_upload.validator_file_name }}
+            {{- $enode := printf "%s/%s" $storagepath  .Values.git_upload.enode_file_name }}
+            {{- $enodeip := printf "%s/%s" $storagepath .Values.git_upload.enode_ip_file_name }}
+            {{- $enodeport := printf "%s/%s" $storagepath .Values.git_upload.enode_ip_port_file_name }}
+
+            git clone {{ .Values.git_upload.git_repo_with_access_token }} {{ .Values.git_upload.git_repo_clone_directory }};
+            cd {{ .Values.git_upload.git_repo_clone_directory }}/;
+            mkdir -p {{ $storagepath }};
+            rm -f {{ $genesisfile }};
+            rm -f {{ $validatorAddress }};
+            rm -f {{ $enode }};
+            rm -f {{ $enodeip }};
+            rm -f {{ $enodeport }};
+
+            cat /etc/quorum/genesis/genesis-geth.json > {{ $genesisfile }};
+            git add {{ $genesisfile }};
+            echo {{ $generatedPublicJson.nodeAdress }} > {{ $validatorAddress }};
+            git add {{ $validatorAddress }};
+            echo {{ $generatedPublicJson.enode }} > {{ $enode }};
+            git add {{ $enode }};
+            echo {{ .Values.deployment.enode_ip }} > {{ $enodeip }};
+            git add {{ $enodeip }};
+            echo {{ .Values.deployment.enode_ip_port }} > {{ $enodeport }};
+            git add {{ $enodeport }};
+
+            git commit -m \"{{ .Values.git_upload.git_commit_description }}\";
+            git push origin master;
+            "
+          volumeMounts:
+            - name: genesis-config-persistent-storage
+              mountPath: /etc/quorum/genesis/genesis-geth.json
+              subPath: genesis-geth.json
+            - name: quorum-nodekey
+              mountPath: /etc/quorum/qdata/dd/geth/nodekey
+              subPath: nodekey
+            - name: quorum-enode
+              mountPath: /etc/quorum/qdata/dd/geth/enode
+              subPath: enode
+      restartPolicy: Never
+      volumes:
+        - name: genesis-config-persistent-storage
+          configMap:
+            name: genesis-config
+            items:
+              - key: genesis-geth.json
+                path: genesis-geth.json
+
+        - name: quorum-nodekey
+          configMap:
+            name: quorum-node-0-nodekey-config
+            items:
+              - key: nodekey
+                path: nodekey
+        - name: quorum-enode
+          configMap:
+            name: quorum-node-0-enode-config
+            items:
+              - key: enode
+                path: enode
+
+
+
+{{- end }}
