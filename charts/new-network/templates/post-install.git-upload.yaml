@@ -1,6 +1,5 @@
 {{- if .Values.git_upload.enabled}}
 {{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
-{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
 apiVersion: batch/v1
 kind: Job
 metadata:
