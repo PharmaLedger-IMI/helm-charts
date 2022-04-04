@@ -1,4 +1,4 @@
-##New-network helm chart
+## New-network helm chart
 
 
 ## Parameters
