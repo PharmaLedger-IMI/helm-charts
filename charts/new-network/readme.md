@@ -1,4 +1,4 @@
-##New-network helm chart
+## New-network helm chart
 
 
 ## Parameters
@@ -8,9 +8,9 @@
 | Name                        | Description                                       | Value      |
 | --------------------------- | ------------------------------------------------- | ---------- |
 | `deployment.quorum_node_no` | The number of the deployed Quorum node            | `0`        |
-| `deployment.company`        | The name of the company that makes the deployment | `RMS`      |
-| `deployment.network_name`   | The name of the use case that is being deployed   | `ePI`      |
-| `deployment.enode_ip`       | The Quorum node public ip address                 | `17.5.7.8` |
+| `deployment.company`        | The name of the company that makes the deployment | ``         |
+| `deployment.network_name`   | The name of the use case that is being deployed   | ``         |
+| `deployment.enode_ip`       | The Quorum node public ip address                 | ``         |
 | `deployment.enode_ip_port`  | The Port of the Quorum node public address        | `30303`    |
 
 
