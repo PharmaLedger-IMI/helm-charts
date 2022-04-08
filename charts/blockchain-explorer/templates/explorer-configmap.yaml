@@ -101,5 +101,4 @@ data:
 kind: ConfigMap
 metadata:
   name: explorer-configs
-  resourceVersion: "29850"
-  uid: 923ad674-800e-4c5d-a4b6-d84094edf0ea
+

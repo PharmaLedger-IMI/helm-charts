@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "quorumNode.fullname" . }}
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    {{ include "quorumNode.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end}}
+spec:
+  {{- with .Values.service.spec.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "quorumNode.selectorLabels" . | nindent 4 }}
+  # NodePort | ClusterIP | Loadbalancer
+  type: LoadBalancer
+  ports:
+    - name: quorum-listener
+      protocol: TCP
+      port: 30303
+      targetPort: 30303
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "quorumNode.fullname" . }}-rpc
+  namespace: {{ default .Release.Namespace }}
+  labels:
+     {{ include "quorumNode.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "quorumNode.selectorLabels" . | nindent 4 }}
+  # NodePort | ClusterIP | Loadbalancer
+  type: NodePort
+  ports:
+    # default 8545
+    - name: rpc-listener
+      protocol: TCP
+      port: 8545
+      targetPort: 8545
+
+

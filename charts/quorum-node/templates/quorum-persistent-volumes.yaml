@@ -1,0 +1,30 @@
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "quorumnode.PvcData" . }}
+  namespace: {{ default .Release.Namespace }}
+spec:
+  storageClassName: "gp2-ae"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.data }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "quorumnode.PvcLogs" . }}
+  namespace: {{ default .Release.Namespace }}
+spec:
+  storageClassName: "gp2-ae"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.logs}}
+

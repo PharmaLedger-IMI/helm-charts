@@ -1,0 +1,57 @@
+{{- $nodeKey := "" }}
+{{- $nodeAddress := "" }}
+{{- $enode := "" }}
+  {{- if .Values.use_case.newNetwork.enabled }}
+  {{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+  {{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKey = $generatedPrivateJson.nodeKey }}
+  {{- else }}
+  {{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
+  {{- $generatedPrivateJson := .Files.Get "join-network.plugin.secrets.json" | fromJson }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKey = $generatedPrivateJson.nodeKey }}
+  {{- end }}
+---
+# nodekey private to the node, used to verify identity.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+data:
+  nodekey: |
+    {{ $nodeKey }}
+# Only IBFT / istanbul networks need access to the nodekey address.
+---
+# nodekey address public and used to generate istanbul-validator-config.toml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+data:
+  nodekey: |
+    {{ $nodeAddress }}
+
+---
+# enode Id
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumNode.Identifier" . }}-enode-config
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumNode.Identifier" . }}-enode-config
+data:
+  enode: |
+    {{ $enode }}
+
+---
+

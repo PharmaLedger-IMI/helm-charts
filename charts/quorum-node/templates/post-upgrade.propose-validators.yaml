@@ -1,0 +1,92 @@
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: quorum-propose-post-upgrade
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    app: quorum-propose-post-upgrade
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    "helm.sh/hook-weight": "100"
+spec:
+  template:
+    spec:
+      serviceAccountName: quorum-propose-service-account
+      containers:
+        - name: quorum-propose-post-upgrade
+          imagePullPolicy: IfNotPresent
+          image: bitnami/kubectl:1.23.5
+          command: [ "sh" ]
+          args:
+            - "-cx"
+            - "
+            kubectl scale --replicas=0 deployment/{{ include "quorumNode.Identifier" . }}-deployment;
+            sleep 120;
+            kubectl scale --replicas=1 deployment/{{ include "quorumNode.Identifier" . }}-deployment;
+            sleep 120;
+            kubectl exec -it deploy/{{ include "quorumNode.Identifier" . }}-deployment -- /etc/quorum/qdata/node-management/ibft_propose_all.sh;
+            "
+      restartPolicy: Never
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: quorum-propose-cr
+  namespace: {{ default .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    "helm.sh/hook-weight": "20"
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get","list","watch"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create","get","list","watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get","list","patch","update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    verbs: ["patch"]
+
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: quorum-propose-rb
+  namespace: {{ default .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    "helm.sh/hook-weight": "30"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: quorum-propose-cr
+subjects:
+  - kind: ServiceAccount
+    name: quorum-propose-service-account
+    namespace: default
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: quorum-propose-service-account
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: quorum-propose-service-account
+  annotations:
+    "description": "ServiceAccount for quorum propose all validators and deployments restarts"
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    "helm.sh/hook-weight": "10"
+---
+  {{- end }}

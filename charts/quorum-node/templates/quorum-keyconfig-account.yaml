@@ -1,0 +1,17 @@
+{{- if .Values.use_case.newNetwork.enabled }}
+# ethereum / geth account keys (keystore)
+{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumNode.Identifier" . }}-account-key-config
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumNode.Identifier" . }}-account-key-config
+data:
+  key: |-
+
+
+    {{ toJson ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) }}
+  {{- end }}
