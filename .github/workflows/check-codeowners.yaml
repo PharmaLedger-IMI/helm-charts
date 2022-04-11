@@ -1,3 +1,6 @@
+#
+# Checks if file .github/CODEOWNERS is up to date on a Pull Request.
+#
 name: Check CODEOWNERS
 
 on: pull_request

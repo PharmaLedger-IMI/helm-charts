@@ -1,3 +1,9 @@
+#
+# Runs the "Chart Releaser" on push to main branch (e.g. on a succesful merge from a Pull Request).
+# 1. The "Chart Releaser" creates a GitHub Release for each Chart that has changed
+# 2. and updates the "index.yaml" of the Helm Repository in branch "gh-pages" (GitHub Pages).
+# https://github.com/helm/chart-releaser-action
+#
 name: Release Charts
 
 on:
