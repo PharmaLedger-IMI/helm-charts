@@ -1,6 +1,14 @@
 # General use case overview
 ![](usecase%20deployment%20overview.jpg)
 
+# Timeline PLA - Quorum blockchain deployment
+![](Timeline%20PLA%20-%20Quorum%20Blockchain%20deployment%20.png)
+
+# Timeline Partners - Quorum blockchain and use case deployment
+![](Timeline%20Partners%20-Quorum%20Blockchain%20and%20ePi%20deployment%20.jpg)
+
+
+
 # Use cases
 
 1. [New Network](new-network/readme.md)

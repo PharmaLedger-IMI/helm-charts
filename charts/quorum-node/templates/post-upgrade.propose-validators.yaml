@@ -31,7 +31,7 @@ spec:
             "
       restartPolicy: Never
 ---
-
+# TODO : add remove of validators in plugin, chart as sh ibft_un_propose_all.sh and job
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:

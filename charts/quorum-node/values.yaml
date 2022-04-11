@@ -55,7 +55,7 @@ quorum_source:
 
 
 blockchain:
-  # -- blockhain.blockperiod Quorum node block period
+  # -- Quorum node block period
   blockperiod: "3"
 
 
@@ -68,13 +68,13 @@ use_case:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
     # -- genesis file location
-    genesis_file_location: "https://raw.githubusercontent.com/bmastahac/usecase-shared-data/master/networks/epi/rms-1/genesis.json"
+    genesis_file_location: "https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"
 
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
-    # -- base URL for shared repository
-    shared_data_location: "https://raw.githubusercontent.com/bmastahac/usecase-shared-data/master/networks/epi"
+    # -- base URL for shared repository where the companies are located
+    shared_data_location: "https://raw.githubusercontent.com/<shared-repository>/<path>"
     # -- List of company names who act as peers
     peers: [
           company-name
