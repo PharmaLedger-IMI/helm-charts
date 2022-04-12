@@ -1,5 +1,5 @@
 #
-# Checks if the version has been bumped for every changed Chart on a Pull Request.
+# Checks if the version has been bumped for each changed Chart on a Pull Request.
 # https://github.com/helm/chart-testing
 #
 name: Chart testing

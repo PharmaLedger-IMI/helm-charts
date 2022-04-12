@@ -4,6 +4,7 @@
 name: Check CODEOWNERS
 
 on: pull_request
+
 jobs:
   find-diffs:
     runs-on: ubuntu-20.04

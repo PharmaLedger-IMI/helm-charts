@@ -1,5 +1,10 @@
+#
+# Runs Helm Unittests https://github.com/quintush/helm-unittest on a push and Pull Request.
+#
 name: Helm Unittests
+
 on: [push, pull_request]
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
