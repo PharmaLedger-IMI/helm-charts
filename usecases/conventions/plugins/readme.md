@@ -68,8 +68,8 @@
 1. peers : list of the known peers
     1. enode : partner quorum node enode
     2. nodeAddress : partner quorum node address
-    3. enodeip : partner quorum node ip or dns
-    4. enodeipport : partner quorum node port
+    3. enodeAddress : partner quorum node ip or dns
+    4. enodeAddressPort : partner quorum node port
 
 ```json
 {
@@ -77,8 +77,8 @@
     {
       "enode": "235fdd126d12804f75afafb205bf288db9b7729fc783b9a77acd77d5d31d96c1abeaeee9795400cb6e090dc185b99561d64607b76200003e1444f04b385fe96d",
       "nodeAddress": "0x2B2e7e62055B3F60165D9c27765b18B666eC999b",
-      "enodeip": "quorum-node-1",
-      "enodeipport": "30303"
+      "enodeAddress": "quorum-node-1",
+      "enodeAddressPort": "30303"
     }
   ]
 }

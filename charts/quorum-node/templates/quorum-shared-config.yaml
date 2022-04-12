@@ -27,7 +27,7 @@ data:
     {{- range $peers }}
     {{- $peer := . }}
     {{- printf "," }}
-    {{- printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeip $peer.enodeipport | quote | nindent 18 }}
+    {{- printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote | nindent 18 }}
     {{- end }}
     {{- end }}
     ]

@@ -10,6 +10,7 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 |-----|------|---------|-------------|
 | affinity | string | `nil` | Pod Affinity |
 | blockchain.blockperiod | string | `"3"` | Quorum node block period |
+| deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
 | deployment.company | string | `""` | The name of the company that makes the deployment |
 | deployment.enode_ip | string | `""` | The Quorum node public ip address |
 | deployment.enode_ip_port | string | `"30303"` | The Port of the Quorum node public address |
@@ -18,9 +19,9 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | fullnameOverride | string | `"quorum"` | Override the full name |
 | git_upload.email | string | `""` | The email used by the git in order to upload the data |
 | git_upload.enabled | bool | `true` | Enable the automatic upload to the use case shared repository of the shareable data |
+| git_upload.enode_address_file_name | string | `"enode.address"` | The name of the file that contains the Quorum Node real ip address or dns |
+| git_upload.enode_address_port_file_name | string | `"enode.address.port"` | The name of the file that contains the Quorum Node port |
 | git_upload.enode_file_name | string | `"enode"` | The name of the file that contains the enode |
-| git_upload.enode_ip_file_name | string | `"enode.ip"` | The name of the file that contains the Quorum Node real ip address or dns |
-| git_upload.enode_ip_port_file_name | string | `"enode.ip.port"` | The name of the file that contains the Quorum Node port |
 | git_upload.genesis_file_name | string | `"genesis.json"` | The name of the file that contains the genesis file |
 | git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
 | git_upload.git_repo_clone_directory | string | `"helm-charts"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step |

@@ -14,6 +14,8 @@ deployment:
   enode_ip: ""
   # -- The Port of the Quorum node public address
   enode_ip_port: "30303"
+  # -- NAT address, used for firewall configuration
+  NAT: "1.2.3.4"
 
 
 git_upload:
@@ -37,9 +39,9 @@ git_upload:
   # -- The name of the file that contains the enode
   enode_file_name: "enode"
   # -- The name of the file that contains the Quorum Node real ip address or dns
-  enode_ip_file_name: "enode.ip"
+  enode_address_file_name: "enode.address"
   # -- The name of the file that contains the Quorum Node port
-  enode_ip_port_file_name: "enode.ip.port"
+  enode_address_port_file_name: "enode.address.port"
   # -- The description associated with the commit into the use case shared repository of the shareable data
   git_commit_description: "added genesis and node information"
 

@@ -37,8 +37,8 @@ spec:
 
             {{- $validatorAddress := printf "%s/%s" $storagepath .Values.git_upload.validator_file_name }}
             {{- $enode := printf "%s/%s" $storagepath  .Values.git_upload.enode_file_name }}
-            {{- $enodeip := printf "%s/%s" $storagepath .Values.git_upload.enode_ip_file_name }}
-            {{- $enodeport := printf "%s/%s" $storagepath .Values.git_upload.enode_ip_port_file_name }}
+            {{- $enodeaddress := printf "%s/%s" $storagepath .Values.git_upload.enode_address_file_name }}
+            {{- $enodeport := printf "%s/%s" $storagepath .Values.git_upload.enode_address_port_file_name }}
 
             git clone {{ .Values.git_upload.git_repo_with_access_token }} {{ .Values.git_upload.git_repo_clone_directory }};
             cd {{ .Values.git_upload.git_repo_clone_directory }}/;
@@ -46,7 +46,7 @@ spec:
 
             rm -f {{ $validatorAddress }};
             rm -f {{ $enode }};
-            rm -f {{ $enodeip }};
+            rm -f {{ $enodeaddress }};
             rm -f {{ $enodeport }};
 
             {{- if .Values.use_case.newNetwork.enabled }}
@@ -59,8 +59,8 @@ spec:
             git add {{ $validatorAddress }};
             echo {{ $enodeValue }} > {{ $enode }};
             git add {{ $enode }};
-            echo {{ .Values.deployment.enode_ip }} > {{ $enodeip }};
-            git add {{ $enodeip }};
+            echo {{ .Values.deployment.enode_ip }} > {{ $enodeaddress }};
+            git add {{ $enodeaddress }};
             echo {{ .Values.deployment.enode_ip_port }} > {{ $enodeport }};
             git add {{ $enodeport }};
 
