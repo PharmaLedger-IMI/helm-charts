@@ -12,8 +12,8 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | blockchain.blockperiod | string | `"3"` | Quorum node block period |
 | deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
 | deployment.company | string | `""` | The name of the company that makes the deployment |
-| deployment.enode_ip | string | `""` | The Quorum node public ip address |
-| deployment.enode_ip_port | string | `"30303"` | The Port of the Quorum node public address |
+| deployment.enode_address | string | `""` | The Quorum node public ip address |
+| deployment.enode_address_port | string | `"30303"` | The Port of the Quorum node public address |
 | deployment.network_name | string | `""` | The name of the use case that is being deployed |
 | deployment.quorum_node_no | string | `nil` | The number of the deployed Quorum node |
 | fullnameOverride | string | `"quorum"` | Override the full name |
