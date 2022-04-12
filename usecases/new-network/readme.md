@@ -4,8 +4,8 @@
 
 Deploy a single quorum node with the node and genesis cryptography generated at runtime. After the deployment, the genesis and node connection information is uploaded to a chosen repository. 
 
-Chart name: quorum-node<br/>
-Plugin : new-network
+[Chart name: quorum-node](../../charts/quorum-node)<br/>
+[Plugin : new-network](https://github.com/PharmaLedger-IMI/helm-pl-plugin)
 
 ### Quorum node deployment
 
@@ -49,7 +49,7 @@ The file contains parametrization for different sets of values:
 3. storage data used by the blockchain deployment
 4. different annotations or configurations for the deployment
 
-The structure of the values.yaml file is documented in [New-Network chart folder](../../charts/new-network/readme.md) 
+The structure of the values.yaml file is documented in [quorum-node chart folder](../../charts/quorum-node/readme.md) 
 
 #### Step 4: Install the helm chart
 
@@ -70,6 +70,18 @@ helm <pl-deployment-plugin> --newNetwork -i ./my-values.yaml -o .
 ```shell
 helm upgrade --install qn-0 . -f ./my-values.yaml
 ```
+3. Upload shared data to the shared-repository
+
+The files that are needed to be uploaded are :
+1. enode - contains the enode address
+2. enode.ip - contains the public ip or dns by which the quorum node is accessible
+3. enode.ip.port - contains the quorum node port
+4. validator.address - quorum node address
+5. genesis.json - the genesis file generated and used in the quorum node deployment
+
+If the setting git_upload.enabled is _true_, then the files are uploaded by the deployment process.
+
+If the setting git_upload.enabled is _false_, then the files must be uploaded and created by using other means.  
 
 #### Step 5: Backup your installation and private information
 
@@ -115,6 +127,8 @@ helm show values helm-charts/quorum-node > values.yaml
 ```shell
 helm upgrade --install qn-0 . -f ./values.yaml -f ./my-values.yaml
 ```
+
+If the setting git_upload.enabled is _true_, then the changed files are uploaded by the deployment process. Otherwise, the changes in the shared repository must be done by using other means.
 
 #### Step 5: Backup your installation information
 

@@ -14,6 +14,8 @@ deployment:
   enode_ip: ""
   # -- The Port of the Quorum node public address
   enode_ip_port: "30303"
+  # -- NAT address, used for firewall configuration
+  NAT: "1.2.3.4"
 
 
 git_upload:
@@ -37,9 +39,11 @@ git_upload:
   # -- The name of the file that contains the enode
   enode_file_name: "enode"
   # -- The name of the file that contains the Quorum Node real ip address or dns
-  enode_ip_file_name: "enode.ip"
+  enode_address_file_name: "enode.address"
   # -- The name of the file that contains the Quorum Node port
-  enode_ip_port_file_name: "enode.ip.port"
+  enode_address_port_file_name: "enode.address.port"
+  # -- The name of the file that contains the NAT address
+  nat_file_name: "nat"
   # -- The description associated with the commit into the use case shared repository of the shareable data
   git_commit_description: "added genesis and node information"
 
@@ -55,7 +59,7 @@ quorum_source:
 
 
 blockchain:
-  # -- blockhain.blockperiod Quorum node block period
+  # -- Quorum node block period
   blockperiod: "3"
 
 
@@ -68,13 +72,13 @@ use_case:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
     # -- genesis file location
-    genesis_file_location: "https://raw.githubusercontent.com/bmastahac/usecase-shared-data/master/networks/epi/rms-1/genesis.json"
+    genesis_file_location: "https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"
 
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
-    # -- base URL for shared repository
-    shared_data_location: "https://raw.githubusercontent.com/bmastahac/usecase-shared-data/master/networks/epi"
+    # -- base URL for shared repository where the companies are located
+    shared_data_location: "https://raw.githubusercontent.com/<shared-repository>/<path>"
     # -- List of company names who act as peers
     peers: [
           company-name
