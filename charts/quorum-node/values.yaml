@@ -42,6 +42,8 @@ git_upload:
   enode_address_file_name: "enode.address"
   # -- The name of the file that contains the Quorum Node port
   enode_address_port_file_name: "enode.address.port"
+  # -- The name of the file that contains the NAT address
+  nat_file_name: "nat"
   # -- The description associated with the commit into the use case shared repository of the shareable data
   git_commit_description: "added genesis and node information"
 
