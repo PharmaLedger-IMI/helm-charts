@@ -6,8 +6,8 @@
   + <use case> (eg. epi)
     + <company-name> (eg. rms, novartis, msd, bayer, etc.)
       - enode
-      - enode.ip
-      - enode.ip.port
+      - enode.address
+      - enode.address.port
       - genesis.json
       - validator.address
 ```
