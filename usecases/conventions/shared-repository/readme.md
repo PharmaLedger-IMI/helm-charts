@@ -4,11 +4,11 @@
 ```shell
 + networks
   + <use case> (eg. epi)
+    - genesis.json
     + <company-name> (eg. rms, novartis, msd, bayer, etc.)
       - enode
       - enode.address
       - enode.address.port
-      - genesis.json
       - validator.address
       - nat
 ```

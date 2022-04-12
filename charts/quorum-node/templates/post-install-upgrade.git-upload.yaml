@@ -34,6 +34,7 @@ spec:
             git config --global user.email \"{{ .Values.git_upload.email }}\";
             git config --global user.name \"{{ .Values.git_upload.user }}\";
             {{- $storagepath :=  printf "%s/%s/%s" .Values.git_upload.git_repo_storage_path .Values.deployment.network_name .Values.deployment.company }}
+            {{- $genesisstoragepath :=  printf "%s/%s" .Values.git_upload.git_repo_storage_path .Values.deployment.network_name }}
 
             {{- $validatorAddress := printf "%s/%s" $storagepath .Values.git_upload.validator_file_name }}
             {{- $enode := printf "%s/%s" $storagepath  .Values.git_upload.enode_file_name }}
@@ -52,7 +53,7 @@ spec:
             rm -f {{ $nat }};
 
             {{- if .Values.use_case.newNetwork.enabled }}
-            {{- $genesisfile := printf "%s/%s" $storagepath .Values.git_upload.genesis_file_name }}
+            {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.git_upload.genesis_file_name }}
             rm -f {{ $genesisfile }};
             cat /etc/quorum/genesis/genesis-geth.json > {{ $genesisfile }};
             git add {{ $genesisfile }};
