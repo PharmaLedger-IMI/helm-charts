@@ -10,6 +10,7 @@
       - enode.address.port
       - genesis.json
       - validator.address
+      - nat
 ```
 ## Files content
 See the files from the current directory for an example 
