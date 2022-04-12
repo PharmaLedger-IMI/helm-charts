@@ -22,9 +22,9 @@ git_upload:
   # --  Enable the automatic upload to the use case shared repository of the shareable data
   enabled: true
   # -- The email used by the git in order to upload the data
-  email: "mab@rms.ro"
+  email: ""
   # -- The user used by the git in order to upload the data
-  user: "mab"
+  user: ""
   # -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
   git_repo_with_access_token: "https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git"
   # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step
