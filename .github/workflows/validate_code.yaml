@@ -37,12 +37,13 @@ jobs:
       - uses: pre-commit/action@9b88afc9cd57fd75b655d5c71bd38146d07135fe # v2.0.3
         name: Run pre-commit
 
-  checkov:
-    runs-on: ubuntu-latest
+# ToDo: Implement Checkov for Helm charts in order to follow unified good practices.
+  # checkov:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-        name: Checkout
+  #   steps:
+  #     - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+  #       name: Checkout
 
-      - uses: bridgecrewio/checkov-action@00cc657f4d415593e5c8897bc87f490497ccb5f9 # v12.641.0
-        name: Run Checkov action
+  #     - uses: bridgecrewio/checkov-action@00cc657f4d415593e5c8897bc87f490497ccb5f9 # v12.641.0
+  #       name: Run Checkov action
