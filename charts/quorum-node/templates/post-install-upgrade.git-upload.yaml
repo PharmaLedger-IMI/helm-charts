@@ -62,9 +62,9 @@ spec:
             git add {{ $validatorAddress }};
             echo {{ $enodeValue }} > {{ $enode }};
             git add {{ $enode }};
-            echo {{ .Values.deployment.enode_ip }} > {{ $enodeaddress }};
+            echo {{ .Values.deployment.enode_address }} > {{ $enodeaddress }};
             git add {{ $enodeaddress }};
-            echo {{ .Values.deployment.enode_ip_port }} > {{ $enodeport }};
+            echo {{ .Values.deployment.enode_address_port }} > {{ $enodeport }};
             git add {{ $enodeport }};
             echo {{ .Values.deployment.NAT }} > {{ $nat }};
             git add {{ $nat }};
