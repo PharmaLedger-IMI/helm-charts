@@ -49,6 +49,6 @@ jobs:
         name: Checkov ethadapter
         with:
           config_file: .checkov/ethadapter/.checkov.yaml
-          # it seems that these values will always be explicitly set regardless of the settings in config file
-          output_format: 'cli'
-          directory: '' # charts/ethadapter
+          # we need to override these values as they will always set by the github action
+          output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37
+          directory: 'scripts' # override default value '.' with a directory that does not contain any helm charts. Otherwise checkov runs twice - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L8
