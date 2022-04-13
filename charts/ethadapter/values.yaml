@@ -12,6 +12,9 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
