@@ -142,7 +142,7 @@ service:
     # Healthcheck setting - must be within [2, 10] - defaults to 3
     # We use the mininum of 2 to add/remove targets faster from target group
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+    service.beta.kubernetes.iodasdasdasdsa/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
     # Use a static Elastic IP address - Elastic IP Allocation IDs required!
     # From offical docs: Public Facing lb only. Length/order must match subnets
     service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaXXXXXXXXXXXXXX
