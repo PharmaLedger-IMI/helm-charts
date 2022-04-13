@@ -53,21 +53,21 @@ spec:
           args:
             - "-cx"
             - "if [ ! -f $QUORUM_DATA_DIR/genesis_created ]; then
-              /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init /etc/quorum/genesis/genesis-geth.json;
+              /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
               date > $QUORUM_DATA_DIR/genesis_created;
            fi;
           "
           env:
             - name: QUORUM_DATA_DIR
-              value: /etc/quorum/qdata/dd
+              value: {{ .Values.blockchain.quorum_data_dir }}
             - name: QHOME
-              value: /etc/quorum/qdata
+              value: {{ .Values.blockchain.quorum_home }}
           volumeMounts:
             - name: quorum-persistent-storage
-              mountPath:  /etc/quorum/qdata
+              mountPath:  {{ .Values.blockchain.quorum_home }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: genesis-config-persistent-storage
-              mountPath: /etc/quorum/genesis/genesis-geth.json
+              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
               subPath: genesis-geth.json
 
       containers:
@@ -94,7 +94,7 @@ spec:
            ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/permissioned-nodes.json;
            ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/static-nodes.json;
 
-           cat /etc/quorum/genesis/genesis-geth.json;
+           cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
 
            chmod 644 $QUORUM_DATA_DIR/keystore/key;
 
@@ -119,7 +119,7 @@ spec:
            --rpcapi $RPC_APIS \
            --rpccorsdomain=\"*\" \
            --rpcvhosts={{ include "quorumNode.Identifier" . }}-rpc \
-            2>&1 | tee -a /etc/quorum/qdata/logs/quorum.log;"
+            2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
           ports:
             - containerPort: 8545
             - containerPort: 30303
@@ -128,47 +128,47 @@ spec:
             - name: PRIVATE_CONFIG
               value: "ignore"
             - name: QUORUM_DATA_DIR
-              value: /etc/quorum/qdata/dd
+              value: {{ .Values.blockchain.quorum_data_dir }}
             - name: QUORUM_HOME
-              value: /etc/quorum/qdata
+              value: {{ .Values.blockchain.quorum_home }}
             - name: QHOME
-              value: /etc/quorum/qdata
+              value: {{ .Values.blockchain.quorum_home }}
             - name: THIS_NODE_ID
               value: {{ include "quorumNode.Identifier" . }}
             - name: THIS_ENODE
               value: {{ $enode }}
           volumeMounts:
             - name: quorum-persistent-storage
-              mountPath: /etc/quorum/qdata
+              mountPath: {{ .Values.blockchain.quorum_home }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: quorum-persistent-storage-logs
-              mountPath: /etc/quorum/qdata/logs
+              mountPath: {{ .Values.blockchain.quorum_home }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
             - name: genesis-config-persistent-storage
-              mountPath: /etc/quorum/genesis/genesis-geth.json
+              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
               subPath: genesis-geth.json
             - name: quorum-nodekey
-              mountPath: /etc/quorum/qdata/dd/geth/nodekey
+              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
               subPath: nodekey
 {{- if .Values.use_case.newNetwork.enabled }}
             - name: quorum-key-config-persistent-storage
-              mountPath: /etc/quorum/qdata/dd/keystore/key
+              mountPath: {{ .Values.blockchain.quorum_data_dir }}/keystore/key
               subPath: key
 {{- end }}
             - name: quorum-enode
-              mountPath: /etc/quorum/qdata/dd/geth/enode
+              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
               subPath: enode
             - name: {{ include "quorumnode.PermissionedCfg" . }}
-              mountPath: /etc/quorum/qdata/permission-nodes
+              mountPath: {{ .Values.blockchain.quorum_home }}/permission-nodes
             - name: {{ include "quorumnode.gethHelpers" . }}
               mountPath: /geth-helpers
             - name: {{ include "quorumnode.IValidatorCfg" . }}
-              mountPath: /etc/quorum/qdata/istanbul-validator-config.toml
+              mountPath: {{ .Values.blockchain.quorum_home }}/istanbul-validator-config.toml
             - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: /etc/quorum/qdata/node-management/ibft_propose.sh
+              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
             - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: /etc/quorum/qdata/node-management/ibft_propose_all.sh
+              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
 {{- if .Values.use_case.newNetwork.enabled }}
