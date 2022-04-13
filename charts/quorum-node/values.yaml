@@ -125,7 +125,7 @@ service:
   annotations:
     # Let Kubernetes In-tree LoadBalancer controller NOT process this resource (but AWS LB controller 2.2 in this case)
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#configuration
-    # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+# service.beta.kubernetes.io/aws-load-balancer-type: "external"
     # We want the NLB to be Internet-facing (public)
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
     # service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
