@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -58,7 +58,7 @@ This is to prevent exposing the service to the internet by accident!**
 Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract address from pre-existing ConfigMap created by helm chart *smartcontract*.
 
 ```bash
-helm upgrade --install ethadapter ph-ethadapter/ethadapter --version=0.4.0 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.1 \
   --install \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
   --wait \
@@ -79,7 +79,7 @@ helm upgrade --install ethadapter ph-ethadapter/ethadapter --version=0.4.0 \
 2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
 
     ```bash
-    helm upgrade --install ethadapter ph-ethadapter/ethadapter --version=0.4.0 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.1 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -90,7 +90,7 @@ helm upgrade --install ethadapter ph-ethadapter/ethadapter --version=0.4.0 \
 3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
 
     ```bash
-    helm upgrade --install ethadapter ph-ethadapter/ethadapter --version=0.4.0 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.1 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -230,23 +230,23 @@ rm -rf ./testresults/*
 # https://github.com/helm/helm/issues/5618
 echo ""
 echo "Default values and secret passed as String"
-helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.1 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
 
 echo ""
 echo "Default values and secret passed as base64 encoded String"
-helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.1 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
 
 echo ""
 echo "LoadBalancer"
-helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.1 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
 
 echo ""
 echo "LoadBalancer and annotations"
-helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.1 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
 
 echo ""
 echo "Ingress via AWS LB Controller"
-helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.1 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
 ```
 
 ## Maintainers
@@ -272,6 +272,7 @@ helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values 
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
 | image.repository | string | `"pharmaledger/apiadapter"` | The repository of the container image |
+| image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` | Ingress annotations. For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
@@ -294,6 +295,7 @@ helm template test-ethadapter ph-ethadapter/ethadapter --version=0.4.0 --values 
 | service.port | int | `3000` | Port where the service will be exposed |
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |

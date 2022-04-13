@@ -1,3 +1,6 @@
+image:
+  sha: "somedigest"
+
 # -- Security Context for the pod.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 podSecurityContext: {}

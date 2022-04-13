@@ -12,6 +12,9 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
@@ -31,6 +34,10 @@ serviceAccount:
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
+  # -- Whether automounting API credentials for a service account is enabled or not.
+  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
+  automountServiceAccountToken: false
 
 # -- Annotations added to the pod
 podAnnotations: {}
