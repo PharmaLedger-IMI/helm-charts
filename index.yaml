@@ -40,4 +40,16 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/ethadapter-0.4.0/ethadapter-0.4.0.tgz
     version: 0.4.0
-generated: "2022-04-13T12:22:50.268848038Z"
+  quorum-node:
+  - apiVersion: v2
+    appVersion: 21.7.1
+    created: "2022-04-13T12:25:22.258159328Z"
+    description: A Helm chart for the deployment of the quorum node on Kubernetes
+      suporting new-network, join-network and update-partners-info use cases.
+    digest: cf004473c9c540411003d3a04f3e0139be8474ea6b3eb2a20caf5ccd4af94a0b
+    name: quorum-node
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-13T12:25:22.258176828Z"
