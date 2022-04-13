@@ -140,7 +140,11 @@ spec:
             exit 0
         env:
           - name: FULL_IMAGE
+            {{- if .Values.image.sha }}
+            value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+            {{- else }}
             value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            {{- end }}
         volumeMounts:
             # We mount a temporary volume in order to signal if build process must run or not
           - name: container-shared-data
