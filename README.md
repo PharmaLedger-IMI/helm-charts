@@ -1,5 +1,21 @@
 # Helm charts
 
+This is the new home of Helm Charts for Pharma Ledger.
+
+## Requirements
+
+- [helm 3](https://helm.sh/docs/intro/install/)
+
+## Installing the Helm Repository
+
+Add the repo as follow
+
+```bash
+helm repo add pharmaledger-imi https://pharmaledger-imi.github.io/helm-charts
+```
+
+Then you can run `helm search repo pharmaledger-imi` to see the chart(s). On installation use the `--version` flag to specify a chart version.
+
 ## Development
 
 1. We use [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow).
