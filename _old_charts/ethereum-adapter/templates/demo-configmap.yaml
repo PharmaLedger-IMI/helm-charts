@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: genesis-config-demo
   labels:
-    name: genesis-config-demo
+    name: "genesis-config-demo"
 data:
   load-genesis.json: |-
     {{- $genesis := .Files.Get "common.json" | fromJson }}
