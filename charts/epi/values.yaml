@@ -12,6 +12,9 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
 # image:
 #   # -- The repository of the container image
@@ -44,6 +47,9 @@ serviceAccount:
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # -- Whether automounting API credentials for a service account is enabled or not.
+  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
+  automountServiceAccountToken: false
 
 # -- Annotations added to the pod
 podAnnotations: {}
@@ -78,6 +84,7 @@ securityContext: {}
   # runAsUser: 1000
 
 # -- Settings for Container with kubectl installed used by Init and Cleanup Job
+# <!-- pragma: allowlist secret -->
 kubectl:
   image:
     # -- The repository of the container image containing kubectl
@@ -86,6 +93,11 @@ kubectl:
     pullPolicy: IfNotPresent
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
     tag: "1.21.8"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # <!-- # pragma: allowlist secret -->
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
 # -- Enable persistence using Persistent Volume Claims
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)

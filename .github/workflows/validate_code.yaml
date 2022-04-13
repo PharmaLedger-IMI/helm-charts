@@ -52,3 +52,12 @@ jobs:
           # we need to override these values as they will always set by the github action
           directory: 'charts/ethadapter' # we need to set this value! - see https://github.com/bridgecrewio/checkov-action/issues/77
           output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37
+
+      # https://github.com/bridgecrewio/checkov-action/tree/v12.1469.0
+      - uses: bridgecrewio/checkov-action@85bd3080490ce5978dce5f754a993c42b1ef1d2b # v12.1469.0
+        name: Checkov epi
+        with:
+          config_file: .checkov/epi/.checkov.yaml
+          # we need to override these values as they will always set by the github action
+          directory: 'charts/epi' # we need to set this value! - see https://github.com/bridgecrewio/checkov-action/issues/77
+          output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37

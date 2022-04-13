@@ -81,17 +81,7 @@ metadata:
 ---
 
 {{- /*
-3. This Job starts the apihub, then starts the build process. 
-   After build process completion the seedsBackup ConfigMap will updated.
-
-Details:
-The pod consists of an initContainer and a "main" container which share a temporary volume.
-A dedicated ServiceAccount with write permissions to the ConfigMap containing the seedsBackup is used by the pod.
-1. The apiHub/epi application runs in the initContainer as background process. 
-   After a short delay (10s) the build process starts and writes the seedsBackup to the mounted temporary volume share with the "main" container.
-   Then the process exists and the init container stops.
-2. The "main" container starts and writes the content of the seedBackup file into a ConfigMap.
-   It has the permission doing so via the ServiceAccount
+3. This Job cleans up resources created on init/upgrade hook
 
 */}}
 apiVersion: batch/v1
@@ -111,8 +101,9 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # Use the init ServiceAccount which has permissions to write to configMap
+      # Use the cleanup ServiceAccount which has permissions to cleanup
       serviceAccountName: {{ include "epi.fullname" . }}-cleanup
+      automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -120,7 +111,11 @@ spec:
       restartPolicy: Never
       containers:
       - name: cleanup
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh

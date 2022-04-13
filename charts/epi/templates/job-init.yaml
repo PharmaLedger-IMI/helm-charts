@@ -106,6 +106,7 @@ spec:
       {{- end }}
       # Use the init ServiceAccount which has permissions to write to configMap
       serviceAccountName: {{ include "epi.fullname" . }}-init
+      automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -113,7 +114,11 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: build-necessity-check
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
@@ -135,14 +140,22 @@ spec:
             exit 0
         env:
           - name: FULL_IMAGE
+            {{- if .Values.image.sha }}
+            value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+            {{- else }}
             value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            {{- end }}
         volumeMounts:
             # We mount a temporary volume in order to signal if build process must run or not
           - name: container-shared-data
             mountPath: /container-shared-data
             readOnly: false
       - name: init-epi
+        {{- if .Values.image.sha }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+        {{- else }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         {{- with .Values.securityContext }}
         securityContext:
@@ -250,7 +263,11 @@ spec:
             readOnly: false
       containers:
       - name: write-configmap
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
