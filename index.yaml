@@ -11,4 +11,19 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/dummy-0.1.0/dummy-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-13T08:20:36.094235499Z"
+  ethadapter:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2022-04-13T09:17:01.132598834Z"
+    description: A Helm chart for Pharma Ledger Ethereum Adapter Service
+    digest: af856266eb3ebe51a2504d24529c81ab0429c34e2cea391345ca672f16d0a986
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: ethadapter
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/ethadapter-0.4.0/ethadapter-0.4.0.tgz
+    version: 0.4.0
+generated: "2022-04-13T09:17:01.132610335Z"
