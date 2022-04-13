@@ -36,6 +36,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       serviceAccountName: {{ include "epi.serviceAccountName" . }}
       {{- with .Values.podSecurityContext }}
       securityContext:
