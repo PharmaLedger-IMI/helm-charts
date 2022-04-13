@@ -1,4 +1,4 @@
-suite: test deployment with an custom image
+suite: test deployment with an custom image and pullPolicy Always
 templates:
   - deployment.yaml
   - configmap.yaml

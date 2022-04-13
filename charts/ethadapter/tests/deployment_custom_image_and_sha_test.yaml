@@ -14,22 +14,10 @@ tests:
         orgAccountJson: "{ \"key\": \"value\" }"
       image:
         repository: custom_repository
-        pullPolicy: Always
         tag: "custom_tag"
         sha: "custom_sha"
     asserts:
       - template: deployment.yaml
-        isKind:
-          of: Deployment
-      - template: deployment.yaml
-        matchRegex:
-          path: metadata.name
-          pattern: -ethadapter$
-      - template: deployment.yaml
         equal:
           path: spec.template.spec.containers[0].image
           value: custom_repository:custom_tag@sha256:custom_sha
-      - template: deployment.yaml
-        equal:
-          path: spec.template.spec.containers[0].imagePullPolicy
-          value: Always
