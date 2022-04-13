@@ -4,6 +4,6 @@ target-branch: master
 chart-dirs:
   - charts
 chart-repos:
-  - ph-ethadapter=https://pharmaledger-imi.github.io/helmchart-ethadapter
+  - pharmaledger-imi=https://pharmaledger-imi.github.io/helm-charts
 helm-extra-args: --timeout 600s
 validate-maintainers: false
