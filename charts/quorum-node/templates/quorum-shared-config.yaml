@@ -1,11 +1,11 @@
 {{- $enode := "" }}
 {{- $nodeAddress := ""}}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 {{- $enode = $generatedPublicJson.enode }}
 {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
 {{- else }}
-{{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
 {{- $enode = $generatedPublicJson.enode }}
 {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
 {{- end }}
@@ -22,7 +22,7 @@ data:
     [
                   "enode://{{ $enode }}@{{ include "quorumNode.Identifier" . }}:30303?discport=0"
     {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := .Files.Get "update-partners-info.plugin.json" | fromJson }}
+    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
     {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
     {{- range $peers }}
     {{- $peer := . }}
@@ -80,7 +80,7 @@ data:
     validators = [
             {{ $nodeAddress | quote }}
     {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := .Files.Get "update-partners-info.plugin.json" | fromJson }}
+    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
     {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
     {{- range $peers }}
     {{- $peer := . }}

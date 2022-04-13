@@ -2,11 +2,11 @@
 {{- $nodeAddressValue := ""}}
 {{- $enodeValue := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
 {{- $enodeValue = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
 {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
 {{- $enodeValue = $generatedPublicJson.enode }}
 {{- end }}

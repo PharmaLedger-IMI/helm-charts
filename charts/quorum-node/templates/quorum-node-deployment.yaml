@@ -1,9 +1,9 @@
 {{- $enode := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 {{- $enode = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
 {{- $enode = $generatedPublicJson.enode }}
 {{- end }}
 ---

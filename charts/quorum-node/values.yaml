@@ -70,16 +70,35 @@ use_case:
   newNetwork:
     # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: true
+    plugin_data_common: "{
+      \"extradata\":\"0x0\",
+      \"enode\":\"\",
+      \"nodeAddress\":\"\",
+      \"genesisAccount\":\"0x89\"}
+    }"
+    plugin_data_secrets: "{
+    \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",
+    \"nodeKey\": \"47\"
+    }"
 
   joinNetwork:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
     # -- genesis file location
     genesis_file_location: "https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"
+    plugin_data_common: "{
+    \"enode\":\"08\",
+    \"nodeAddress\":\"0x3\",
+    \"genesis\":\"\"
+    }"
+    plugin_data_secrets: "{
+      \"nodeKey\":\"3b\"
+    }"
 
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
+    plugin_data_common: "{}"
     # -- base URL for shared repository where the companies are located
     shared_data_location: "https://raw.githubusercontent.com/<shared-repository>/<path>"
     # -- List of company names who act as peers
@@ -112,36 +131,36 @@ service:
   annotations:
     # Let Kubernetes In-tree LoadBalancer controller NOT process this resource (but AWS LB controller 2.2 in this case)
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#configuration
-    #service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
     # We want the NLB to be Internet-facing (public)
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
-    #service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     # A custom name
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#load-balancer-name
-    #service.beta.kubernetes.io/aws-load-balancer-name: qn-0
+    service.beta.kubernetes.io/aws-load-balancer-name: qn-0
     # Forward traffic to EC2 Instance (thus, a nodePort on the instance will be used)
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#instance-mode_1
     # and https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#nlb-target-type
-    #service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
     # IPv4 only
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#ip-address-type
-    #service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
+    service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
     # Important: Preserve Client (public) IP address of caller on forwarding traffic to target
     # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#target-group-attributes
-    #service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
     # Healthcheck setting - must be within [2, 10] - defaults to 3
     # We use the mininum of 2 to add/remove targets faster from target group
-    #service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
-    #service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
     # Use a static Elastic IP address - Elastic IP Allocation IDs required!
     # From offical docs: Public Facing lb only. Length/order must match subnets
-    #service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaXXXXXXXXXXXXXX
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaXXXXXXXXXXXXXX
     # We put the NLB into a certain public subnet only - You can provide the subnet ID or the value of the 'Name' tag
     # From offical docs: You must specify at least one subnet in any of the AZs, both subnetID or subnetName(Name tag on subnets) can be used.
     # See: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#subnets
-    #service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
+    service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
     # Only set to true if NLBs subnet is in a different availability zone than the zone affinity of the deployment.
-    #service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
     # 1. Load Balancer Proxy Protocol does not work for HTTP based workload!
     # 2. We do not need the Load Balancer Proxy Protocol in our use case, therefore we do not enable it
     # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
