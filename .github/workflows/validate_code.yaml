@@ -50,5 +50,5 @@ jobs:
         with:
           config_file: .checkov/ethadapter/.checkov.yaml
           # we need to override these values as they will always set by the github action
-          directory: 'charts/ethadapter' # we need to set this value as the value from config file will be ignored if running via github action
+          directory: 'charts/ethadapter' # we need to set this value!
           output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37
