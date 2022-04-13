@@ -48,4 +48,6 @@ jobs:
         name: Checkov ethadapter
         with:
           config_file: .checkov/ethadapter/.checkov.yaml
+          # it seems that these values will always be explicitly set regardless of the settings in config file
+          output: cli
           directory: charts/ethadapter
