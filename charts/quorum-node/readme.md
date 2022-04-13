@@ -43,7 +43,7 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
 | resources | object | `{}` | Pod resources |
 | securityContext | object | `{}` |  |
-| service.annotations | object | `{"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled":"false","service.beta.kubernetes.io/aws-load-balancer-eip-allocations":"eipalloc-0aaXXXXXXXXXXXXXX","service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold":"2","service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold":"2","service.beta.kubernetes.io/aws-load-balancer-ip-address-type":"ipv4","service.beta.kubernetes.io/aws-load-balancer-name":"qn-0","service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":"instance","service.beta.kubernetes.io/aws-load-balancer-scheme":"internet-facing","service.beta.kubernetes.io/aws-load-balancer-subnets":"eks-ireland-1-vpc-public-eu-west-1b","service.beta.kubernetes.io/aws-load-balancer-target-group-attributes":"preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip","service.beta.kubernetes.io/aws-load-balancer-type":"external"}` | Custom service annotations |
+| service.annotations | string | `nil` | Custom service annotations |
 | service.labels | string | `nil` | Custom service labels |
 | service.spec.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges which can access the pod(s) for this service. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | storage.data | string | `"3Gi"` | Size for the data volume of the Quorum Node |
@@ -52,13 +52,13 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | tolerations | list | `[]` | Pod tolerations |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.joinNetwork.genesis_file_location | string | `"https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"` | genesis file location |
-| use_case.joinNetwork.plugin_data_common | string | `"{ \"enode\":\"08\", \"nodeAddress\":\"0x3\", \"genesis\":\"\" }"` |  |
-| use_case.joinNetwork.plugin_data_secrets | string | `"{ \"nodeKey\":\"3b\" }"` |  |
+| use_case.joinNetwork.plugin_data_common | string | `"\"{\n    \"enode\":\"08\",\n    \"nodeAddress\":\"0x3\",\n    \"genesis\":\"\"\n}\""` |  |
+| use_case.joinNetwork.plugin_data_secrets | string | `"\"{\n    \"nodeKey\":\"3b\"\n}\""` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
-| use_case.newNetwork.plugin_data_common | string | `"{ \"extradata\":\"0x0\", \"enode\":\"\", \"nodeAddress\":\"\", \"genesisAccount\":\"0x89\"} }"` |  |
-| use_case.newNetwork.plugin_data_secrets | string | `"{ \"genesisKeyStoreAccount\": \"eyJhZGRyZX\", \"nodeKey\": \"47\" }"` |  |
+| use_case.newNetwork.plugin_data_common | string | `"\"{\n  \"extradata\":\"0x0\",\n  \"enode\":\"\",\n  \"nodeAddress\":\"\",\n  \"genesisAccount\":\"0x89\"\n}\""` |  |
+| use_case.newNetwork.plugin_data_secrets | string | `"\"{\n  \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",\n  \"nodeKey\": \"47\"\n}\""` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
-| use_case.updatePartnersInfo.peers | list | `["company-name"]` | List of company names who act as peers |
+| use_case.updatePartnersInfo.peers | list | `[]` | List of company names who act as peers |
 | use_case.updatePartnersInfo.plugin_data_common | string | `"{}"` |  |
 | use_case.updatePartnersInfo.shared_data_location | string | `"https://raw.githubusercontent.com/<shared-repository>/<path>"` | base URL for shared repository where the companies are located |
 
