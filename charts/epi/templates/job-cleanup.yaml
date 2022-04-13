@@ -120,7 +120,11 @@ spec:
       restartPolicy: Never
       containers:
       - name: cleanup
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh

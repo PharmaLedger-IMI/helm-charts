@@ -89,6 +89,10 @@ kubectl:
     pullPolicy: IfNotPresent
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
     tag: "1.21.8"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"
 
 # -- Enable persistence using Persistent Volume Claims
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)

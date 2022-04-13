@@ -113,7 +113,11 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: build-necessity-check
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
@@ -254,7 +258,11 @@ spec:
             readOnly: false
       containers:
       - name: write-configmap
+        {{- if .Values.kubectl.image.sha }}
+        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
