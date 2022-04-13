@@ -28,12 +28,12 @@ image:
 #   # This value must be set or orgAccountJsonBase64.
 #   orgAccountJson: "someOrgAccount"
 
-# # -- Resource constraints for a pod
-# resources:
-#   limits:
-#     cpu: 100m
-#     memory: 128Mi
-#   requests:
-#     cpu: 5m
-#     memory: 128Mi
+# -- Resource constraints for a pod
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 5m
+    memory: 128Mi
 
