@@ -2,11 +2,11 @@
 {{- $nodeAddressValue := ""}}
 {{- $enodeValue := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
 {{- $enodeValue = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
+{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
 {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
 {{- $enodeValue = $generatedPublicJson.enode }}
 {{- end }}
@@ -55,7 +55,7 @@ spec:
             {{- if .Values.use_case.newNetwork.enabled }}
             {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.git_upload.genesis_file_name }}
             rm -f {{ $genesisfile }};
-            cat /etc/quorum/genesis/genesis-geth.json > {{ $genesisfile }};
+            cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json > {{ $genesisfile }};
             git add {{ $genesisfile }};
             {{- end }}
             echo {{ $nodeAddressValue }} > {{ $validatorAddress }};
@@ -75,14 +75,14 @@ spec:
           volumeMounts:
 {{- if .Values.use_case.newNetwork.enabled }}
             - name: genesis-config-persistent-storage
-              mountPath: /etc/quorum/genesis/genesis-geth.json
+              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
               subPath: genesis-geth.json
 {{- end }}
             - name: quorum-nodekey
-              mountPath: /etc/quorum/qdata/dd/geth/nodekey
+              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
               subPath: nodekey
             - name: quorum-enode
-              mountPath: /etc/quorum/qdata/dd/geth/enode
+              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
               subPath: enode
       restartPolicy: Never
       volumes:

@@ -1,6 +1,6 @@
 {{- if .Values.use_case.newNetwork.enabled }}
 # ethereum / geth account keys (keystore)
-{{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+{{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
 ---
 apiVersion: v1
 kind: ConfigMap
