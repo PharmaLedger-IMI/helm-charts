@@ -142,7 +142,11 @@ spec:
             mountPath: /container-shared-data
             readOnly: false
       - name: init-epi
+        {{- if .Values.image.sha }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+        {{- else }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         {{- with .Values.securityContext }}
         securityContext:
