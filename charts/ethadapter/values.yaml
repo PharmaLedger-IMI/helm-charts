@@ -44,8 +44,11 @@ podAnnotations: {}
 
 # -- Security Context for the pod.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+# and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
 podSecurityContext: {}
-  # fsGroup: 2000
+  # runAsUser: 1000
+  # seccompProfile:
+  #   type: RuntimeDefault
 
 # -- Security Context for the container.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -54,6 +57,7 @@ securityContext: {}
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
+  # allowPrivilegeEscalation: false
   # runAsNonRoot: true
   # runAsUser: 1000
 
