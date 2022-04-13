@@ -97,9 +97,7 @@ use_case:
     # -- base URL for shared repository where the companies are located
     shared_data_location: "https://raw.githubusercontent.com/<shared-repository>/<path>"
     # -- List of company names who act as peers
-    peers: [
-          company-name
-      ]
+    peers: []
 
 storage:
   # -- Size for the data volume of the Quorum Node
@@ -172,7 +170,7 @@ service:
 # See https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
 # -- Pod Affinity
 affinity:
-  #nodeAffinity:
+ # nodeAffinity:
   #  requiredDuringSchedulingIgnoredDuringExecution:
   #    nodeSelectorTerms:
   #      - matchExpressions:
