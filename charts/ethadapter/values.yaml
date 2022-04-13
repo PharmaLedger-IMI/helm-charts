@@ -32,6 +32,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+  # -- Whether automounting API credentials for a service account is enabled or not.
+  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
+  automountServiceAccountToken: false
+
 # -- Annotations added to the pod
 podAnnotations: {}
 
