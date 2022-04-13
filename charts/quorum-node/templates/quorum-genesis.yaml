@@ -1,5 +1,5 @@
 {{- if .Values.use_case.newNetwork.enabled }}
-  {{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -59,7 +59,7 @@ metadata:
     name: {{ include "quorumNode.Identifier" . }}-genesis-config
 data:
   genesis-geth.json: |-
-    {{- $genesis := .Files.Get "join-network.plugin.json" | fromJson }}
+    {{- $genesis := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
     {{- $genesis.genesis | nindent 6 }}
 {{- end }}
 

@@ -2,14 +2,14 @@
 {{- $nodeAddress := "" }}
 {{- $enode := "" }}
   {{- if .Values.use_case.newNetwork.enabled }}
-  {{- $generatedPublicJson := .Files.Get "new-network.plugin.json" | fromJson }}
-  {{- $generatedPrivateJson := .Files.Get "new-network.plugin.secrets.json" | fromJson }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
   {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
   {{- else }}
-  {{- $generatedPublicJson := .Files.Get "join-network.plugin.json" | fromJson }}
-  {{- $generatedPrivateJson := .Files.Get "join-network.plugin.secrets.json" | fromJson }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $generatedPrivateJson := ( .Values.use_case.joinNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
   {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}

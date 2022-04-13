@@ -10,6 +10,9 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 |-----|------|---------|-------------|
 | affinity | string | `nil` | Pod Affinity |
 | blockchain.blockperiod | string | `"3"` | Quorum node block period |
+| blockchain.quorum_data_dir | string | `"/etc/quorum/qdata/dd"` |  |
+| blockchain.quorum_genesis_location | string | `"/etc/quorum/genesis"` |  |
+| blockchain.quorum_home | string | `"/etc/quorum/qdata"` |  |
 | deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
 | deployment.company | string | `""` | The name of the company that makes the deployment |
 | deployment.enode_address | string | `""` | The Quorum node public ip address |
@@ -40,7 +43,7 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
 | resources | object | `{}` | Pod resources |
 | securityContext | object | `{}` |  |
-| service.annotations | string | `nil` | Custom service annotations |
+| service.annotations | object | `{"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled":"false","service.beta.kubernetes.io/aws-load-balancer-eip-allocations":"eipalloc-0aaXXXXXXXXXXXXXX","service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold":"2","service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold":"2","service.beta.kubernetes.io/aws-load-balancer-ip-address-type":"ipv4","service.beta.kubernetes.io/aws-load-balancer-name":"qn-0","service.beta.kubernetes.io/aws-load-balancer-nlb-target-type":"instance","service.beta.kubernetes.io/aws-load-balancer-scheme":"internet-facing","service.beta.kubernetes.io/aws-load-balancer-subnets":"eks-ireland-1-vpc-public-eu-west-1b","service.beta.kubernetes.io/aws-load-balancer-target-group-attributes":"preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip","service.beta.kubernetes.io/aws-load-balancer-type":"external"}` | Custom service annotations |
 | service.labels | string | `nil` | Custom service labels |
 | service.spec.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges which can access the pod(s) for this service. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | storage.data | string | `"3Gi"` | Size for the data volume of the Quorum Node |
@@ -49,9 +52,14 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | tolerations | list | `[]` | Pod tolerations |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.joinNetwork.genesis_file_location | string | `"https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"` | genesis file location |
+| use_case.joinNetwork.plugin_data_common | string | `"{ \"enode\":\"08\", \"nodeAddress\":\"0x3\", \"genesis\":\"\" }"` |  |
+| use_case.joinNetwork.plugin_data_secrets | string | `"{ \"nodeKey\":\"3b\" }"` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
+| use_case.newNetwork.plugin_data_common | string | `"{ \"extradata\":\"0x0\", \"enode\":\"\", \"nodeAddress\":\"\", \"genesisAccount\":\"0x89\"} }"` |  |
+| use_case.newNetwork.plugin_data_secrets | string | `"{ \"genesisKeyStoreAccount\": \"eyJhZGRyZX\", \"nodeKey\": \"47\" }"` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
 | use_case.updatePartnersInfo.peers | list | `["company-name"]` | List of company names who act as peers |
+| use_case.updatePartnersInfo.plugin_data_common | string | `"{}"` |  |
 | use_case.updatePartnersInfo.shared_data_location | string | `"https://raw.githubusercontent.com/<shared-repository>/<path>"` | base URL for shared repository where the companies are located |
 
 ----------------------------------------------
