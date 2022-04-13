@@ -1,0 +1,162 @@
+# Default values for ethadapter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- The number of replicas if autoscaling is false
+replicaCount: 1
+
+image:
+  # -- The repository of the container image
+  repository: "pharmaledger/apiadapter"
+  # -- Image Pull Policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# -- Secret(s) for pulling an container image from a private registry.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+imagePullSecrets: []
+# -- nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+nameOverride: ""
+# -- fullnameOverride completely replaces the generated name.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: false
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Annotations added to the pod
+podAnnotations: {}
+
+# -- Security Context for the pod.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Security Context for the container.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # -- Either ClusterIP, NodePort or LoadBalancer.
+  # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
+  type: ClusterIP
+  # -- Port where the service will be exposed
+  port: 3000
+  # -- Annotations for the service.
+  # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
+  # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
+  annotations: {}
+
+config:
+  # -- URL of the Quorum node
+  rpcAddress: "http://quorum-validator1.quorum:8545"
+  # -- Address of the Smart Contract.
+  # If not set/empty, tries to get value from ConfigMap '.config.smartContractConfigMapName' with key '.config.smartContractConfigMapAddressKey'
+  smartContractAddress: ""
+  # -- Abi (interface) of the Smart Contract.
+  # Must match the Abi of the deployed Smartcontract.
+  # Current default value compatible to epi application v1.1.x or higher
+  # Taken from https://github.com/PharmaLedger-IMI/eth-adapter/blob/2cc324b54c55e7b0019d46f2202740dcfa54444a/EthAdapter/k8s/ethadapter-configmap.yaml#L8
+  smartContractAbi: '[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"str","type":"bool"}],"name":"BoolResult","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes1","name":"str","type":"bytes1"}],"name":"Bytes1Result","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes32","name":"str","type":"bytes32"}],"name":"Bytes32Result","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"statusCode","type":"uint256"}],"name":"InvokeStatus","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes","name":"str","type":"bytes"}],"name":"Result","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string[2]","name":"str","type":"string[2]"}],"name":"StringArray2Result","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string[]","name":"str","type":"string[]"}],"name":"StringArrayResult","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"str","type":"string"}],"name":"StringResult","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"str","type":"uint256"}],"name":"UIntResult","type":"event"},{"inputs":[{"internalType":"string","name":"anchorId","type":"string"},{"internalType":"string","name":"newAnchorValue","type":"string"},{"internalType":"uint8","name":"v","type":"uint8"}],"name":"createAnchor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"anchorId","type":"string"},{"internalType":"string","name":"newAnchorValue","type":"string"},{"internalType":"uint8","name":"v","type":"uint8"}],"name":"appendAnchor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"anchorId","type":"string"}],"name":"getAllVersions","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"string","name":"anchorId","type":"string"}],"name":"getLastVersion","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"string[]","name":"anchors","type":"string[]"}],"name":"createOrUpdateMultipleAnchors","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"from","type":"uint256"},{"internalType":"uint256","name":"limit","type":"uint256"},{"internalType":"uint256","name":"maxSize","type":"uint256"}],"name":"dumpAnchors","outputs":[{"components":[{"internalType":"string","name":"anchorId","type":"string"},{"internalType":"string[]","name":"anchorValues","type":"string[]"}],"internalType":"struct Anchoring.Anchor[]","name":"","type":"tuple[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalNumberOfAnchors","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"hash","type":"bytes32"},{"internalType":"bytes","name":"signature","type":"bytes"},{"internalType":"uint8","name":"v","type":"uint8"}],"name":"recover","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"nonpayable","type":"function"}]'
+
+  # -- The name of the existing ConfigMap to look for in case value 'smartContractAddress' is not defined.
+  smartContractConfigMapName: "smartcontract-anchoring-info"
+  # -- The key of the SmartContract Address in the existing ConfigMap in case 'smartContractAddress' is not explictly defined.
+  smartContractConfigMapAddressKey: "address"
+
+secrets:
+  # -- Org Account in JSON format.
+  # This value must be set or orgAccountJsonBase64.
+  orgAccountJson: ""
+  # -- Org Account in JSON format base64 encoded.
+  # This value must be set or orgAccountJson
+  orgAccountJsonBase64: ""
+
+ingress:
+  # -- Whether to create ingress or not.
+  # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
+  enabled: false
+  # -- The className specifies the IngressClass object which is responsible for that class.
+  # Note for Kubernetes >= 1.18 it is required to have an existing IngressClass object.
+  # If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead.
+  # For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'.
+  # See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
+  className: ""
+  # -- Ingress annotations.
+  # For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/)
+  # For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/)
+  # For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/)
+  # For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations)
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  # -- A list of hostnames and path(s) to listen at the Ingress Controller
+  hosts:
+    -
+      # -- The FQDN/hostname
+      host: ethadapter.some-pharma-company.com
+      paths:
+        -
+          # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
+          path: /
+          # -- The type of path. This value is required since Kubernetes 1.18.
+          # For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific
+          # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types)
+          # and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/)
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- Resource constraints for a pod
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  # -- Whether to enable horizontal pod autoscaling or not.
+  # See [https://kubernetes.io/de/docs/tasks/run-application/horizontal-pod-autoscale/](https://kubernetes.io/de/docs/tasks/run-application/horizontal-pod-autoscale/)
+  enabled: false
+  # -- The minimum number of replicas in case autoscaling is enabled.
+  minReplicas: 1
+  # -- The maximum number of replicas in case autoscaling is enabled.
+  maxReplicas: 100
+  # -- The CPU utilization in percentage as a target for autoscaling.
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Node Selectors in order to assign pods to certain nodes.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+nodeSelector: {}
+
+# -- Tolerations for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+tolerations: []
+
+# -- Affinity for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+affinity: {}

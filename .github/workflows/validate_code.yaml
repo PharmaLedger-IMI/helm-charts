@@ -37,13 +37,18 @@ jobs:
       - uses: pre-commit/action@9b88afc9cd57fd75b655d5c71bd38146d07135fe # v2.0.3
         name: Run pre-commit
 
-# ToDo: Implement Checkov for Helm charts in order to follow unified good practices.
-  # checkov:
-  #   runs-on: ubuntu-latest
+  checkov:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
-  #       name: Checkout
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+        name: Checkout
 
-  #     - uses: bridgecrewio/checkov-action@00cc657f4d415593e5c8897bc87f490497ccb5f9 # v12.641.0
-  #       name: Run Checkov action
+      # https://github.com/bridgecrewio/checkov-action/tree/v12.1469.0
+      - uses: bridgecrewio/checkov-action@85bd3080490ce5978dce5f754a993c42b1ef1d2b # v12.1469.0
+        name: Checkov ethadapter
+        with:
+          config_file: .checkov/ethadapter/.checkov.yaml
+          # we need to override these values as they will always set by the github action
+          directory: 'charts/ethadapter' # we need to set this value! - see https://github.com/bridgecrewio/checkov-action/issues/77
+          output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37
