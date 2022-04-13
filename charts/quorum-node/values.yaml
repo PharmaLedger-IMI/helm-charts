@@ -72,10 +72,9 @@ use_case:
           "nodeAddress":"",
           "genesisAccount":"0x89"
         }"
-    plugin_data_secrets: >-
-        "{
-          "genesisKeyStoreAccount": "eyJhZGRyZX",
-          "nodeKey": "47"
+    plugin_data_secrets: "{
+          \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",
+          \"nodeKey\": \"47\"
         }"
 
   joinNetwork:
