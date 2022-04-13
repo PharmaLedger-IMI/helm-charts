@@ -49,5 +49,5 @@ jobs:
         with:
           config_file: .checkov/ethadapter/.checkov.yaml
           # it seems that these values will always be explicitly set regardless of the settings in config file
-          output: cli
+          output_format: cli
           directory: charts/ethadapter
