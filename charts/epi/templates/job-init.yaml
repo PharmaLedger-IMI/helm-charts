@@ -106,6 +106,7 @@ spec:
       {{- end }}
       # Use the init ServiceAccount which has permissions to write to configMap
       serviceAccountName: {{ include "epi.fullname" . }}-init
+      automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
