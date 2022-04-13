@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  dummy:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-04-13T08:20:36.094222099Z"
+    description: A Helm chart for Kubernetes
+    digest: 4e68a360a18fc2194b0283c6ca06a91859bb2b6e1dec10ea69ade0fe073f9558
+    name: dummy
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/dummy-0.1.0/dummy-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-13T08:20:36.094235499Z"
