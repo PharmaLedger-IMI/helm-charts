@@ -173,18 +173,19 @@ tolerations: []
 affinity: {}
 
 # -- Liveness probe.
+# Defaults to check if the server is listening.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 livenessProbe:
-  httpGet:
-    path: /totalNumberOfAnchors/
+  tcpSocket:
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
-  timeoutSeconds: 3
+  timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
 
 # -- Readiness probe.
+# Defaults to check if server can query data.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 readinessProbe:
   httpGet:

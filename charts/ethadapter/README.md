@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -58,7 +58,7 @@ This is to prevent exposing the service to the internet by accident!**
 Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract address from pre-existing ConfigMap created by helm chart *smartcontract*.
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.3 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.4 \
   --install \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
   --wait \
@@ -79,7 +79,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.3 \
 2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.3 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.4 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -90,7 +90,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.3 \
 3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.3 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.4.4 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -230,23 +230,23 @@ rm -rf ./testresults/*
 # https://github.com/helm/helm/issues/5618
 echo ""
 echo "Default values and secret passed as String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.4 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
 
 echo ""
 echo "Default values and secret passed as base64 encoded String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.4 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
 
 echo ""
 echo "LoadBalancer"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.4 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
 
 echo ""
 echo "LoadBalancer and annotations"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.4 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
 
 echo ""
 echo "Ingress via AWS LB Controller"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.4 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
 ```
 
 ## Maintainers
@@ -282,12 +282,12 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.4.3 --valu
 | ingress.hosts[0].paths[0].path | string | `"/"` | The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples) Note: For Ingress Controllers like AWS LB Controller see their specific documentation. |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | The type of path. This value is required since Kubernetes 1.18. For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/) |
 | ingress.tls | list | `[]` |  |
-| livenessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/totalNumberOfAnchors/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}` | Liveness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| livenessProbe | object | `{"failureThreshold":3,"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":"http"},"timeoutSeconds":1}` | Liveness probe. Defaults to check if the server is listening. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | nameOverride | string | `""` | nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/) |
-| readinessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/totalNumberOfAnchors/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| readinessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/totalNumberOfAnchors/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}` | Readiness probe. Defaults to check if server can query data. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | replicaCount | int | `1` | The number of replicas if autoscaling is false |
 | resources | object | `{}` | Resource constraints for a pod |
 | secrets.orgAccountJson | string | `""` | Org Account in JSON format. This value must be set or orgAccountJsonBase64. |
