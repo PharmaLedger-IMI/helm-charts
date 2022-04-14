@@ -1,9 +1,0 @@
-1. Get the application URL by running these commands:
-
-NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-Execute in the command line :
-
-            kubectl get svc nginx
-
-Copy the EXTERNAL-IP and paste it in a browser
-
