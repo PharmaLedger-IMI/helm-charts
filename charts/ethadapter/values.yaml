@@ -175,12 +175,11 @@ affinity: {}
 # -- Liveness probe.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 livenessProbe:
-  httpGet:
-    path: /totalNumberOfAnchors/
+  tcpSocket:
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
-  timeoutSeconds: 3
+  timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
 
