@@ -23,11 +23,11 @@ spec:
           args:
             - "-cx"
             - "
-            kubectl scale --replicas=0 deployment/{{ include "quorumNode.Identifier" . }}-deployment;
+            kubectl scale --replicas=0 deployment/{{ include "quorumNode.fullname" . }}-deployment;
             sleep 120;
-            kubectl scale --replicas=1 deployment/{{ include "quorumNode.Identifier" . }}-deployment;
+            kubectl scale --replicas=1 deployment/{{ include "quorumNode.fullname" . }}-deployment;
             sleep 120;
-            kubectl exec -it deploy/{{ include "quorumNode.Identifier" . }}-deployment -- /etc/quorum/qdata/node-management/ibft_propose_all.sh;
+            kubectl exec -it deploy/{{ include "quorumNode.fullname" . }}-deployment -- /etc/quorum/qdata/node-management/ibft_propose_all.sh;
             "
       restartPolicy: Never
 ---
