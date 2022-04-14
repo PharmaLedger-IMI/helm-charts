@@ -66,15 +66,14 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
-          # NOT WORKING ANYMORE. ERROR: TypeError: anchorFactory.methods.check is not a function
-          # livenessProbe:
-          #   httpGet:
-          #     path: /check
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /check
-          #     port: http
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
