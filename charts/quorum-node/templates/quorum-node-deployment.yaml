@@ -118,7 +118,7 @@ spec:
            --rpcport 8545 \
            --rpcapi $RPC_APIS \
            --rpccorsdomain=\"*\" \
-           --rpcvhosts={{ include "quorumNode.Identifier" . }}-rpc \
+           --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
             2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
           ports:
             - containerPort: 8545
