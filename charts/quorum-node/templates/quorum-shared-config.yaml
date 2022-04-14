@@ -20,7 +20,7 @@ data:
   permissioned-nodes.json: |
 
     [
-                  "enode://{{ $enode }}@{{ include "quorumNode.Identifier" . }}:30303?discport=0"
+                  "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
     {{- if .Values.use_case.updatePartnersInfo.enabled }}
     {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
     {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
