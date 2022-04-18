@@ -18,7 +18,7 @@ git_upload:
   # The user used by the git in order to upload the data
   user: "xyz"
   # The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
-  git_repo_with_access_token: https://GITHUB-TOKEN:x-oauth-basic@github.com/<shared repository name>
+  git_repo_with_access_token: "https://GITHUB-TOKEN:x-oauth-basic@github.com/<shared repository name>"
 
 use_case:
   newNetwork:
