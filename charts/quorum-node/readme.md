@@ -1,8 +1,85 @@
 # quorum-node
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
-A Helm chart for the deployment of the quorum node on Kubernetes suporting new-network, join-network and update-partners-info use cases.
+![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square) 
+
+A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
+
+## Requirements
+
+- [helm 3](https://helm.sh/docs/intro/install/)
+
+- Deployment use case matrix
+
+| Use case | Configuration |
+|----------|--------|
+| **new-network** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
+| **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**<br/> `use_case.joinNetwork.genesis_file_location:` **Required**|
+| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.shared_data_location:` **Required**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
+| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.shared_data_location:` **Required**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
+
+Configuration example for the field `use_case.updatePartnersInfo.peers:`
+```yaml
+use_case:
+  updatePartnersInfo:
+    peers: [
+       company1,
+       company2,
+       company3
+    ]
+```
+
+
+## Usage
+
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+
+## Installing the Chart
+
+**Note:** It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.<br/>
+The chart requires the execution of the plugin located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git). The details about operating the plugin can be found in the specific use case documentation.<br/>
+
+
+| Use case | Installation type | Example of command |
+|----------|--------------------|-------------------|
+| **new-network** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json`|
+| **join-network** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json`|
+| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json`|
+| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json`|
+
+### Expose Service via Load Balancer
+
+**Note:**
+By default, for AWS, the quorum node will be exposed by a service of type Classic Load Balancer. You can use [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/) instead to expose it as Network Load Balancer.
+
+Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.<br/>
+Example of configuration for Network Load Balancer in the **my-values.yaml** file:
+
+```yaml
+annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-name: echo-server-yaml
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+    service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aa2e63a9a1551278
+    service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
+spec:
+  loadBalancerSourceRanges:
+    - 8.8.8.8/32
+    - 8.8.4.4/32
+```
+
+
+
+
+
+
 
 ## Values
 
@@ -56,11 +133,12 @@ A Helm chart for the deployment of the quorum node on Kubernetes suporting new-n
 | use_case.joinNetwork.plugin_data_secrets | string | `"\"{\n    \"nodeKey\":\"3b\"\n}\""` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.newNetwork.plugin_data_common | string | `"\"{\n  \"extradata\":\"0x0\",\n  \"enode\":\"\",\n  \"nodeAddress\":\"\",\n  \"genesisAccount\":\"0x89\"\n}\""` |  |
-| use_case.newNetwork.plugin_data_secrets | string | `"\"{\n  \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",\n  \"nodeKey\": \"47\"\n}\""` |  |
+| use_case.newNetwork.plugin_data_secrets | string | `"{ \"genesisKeyStoreAccount\": \"eyJhZGRyZX\", \"nodeKey\": \"47\" }"` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
 | use_case.updatePartnersInfo.peers | list | `[]` | List of company names who act as peers |
 | use_case.updatePartnersInfo.plugin_data_common | string | `"{}"` |  |
 | use_case.updatePartnersInfo.shared_data_location | string | `"https://raw.githubusercontent.com/<shared-repository>/<path>"` | base URL for shared repository where the companies are located |
+
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.8.1](https://github.com/norwoodj/helm-docs/releases/v1.8.1)
