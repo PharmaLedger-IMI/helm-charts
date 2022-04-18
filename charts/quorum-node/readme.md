@@ -106,7 +106,7 @@ spec:
 | git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
 | git_upload.git_repo_clone_directory | string | `"helm-charts"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step |
 | git_upload.git_repo_storage_path | string | `"networks"` | The repository base folder name where the shareable data to will be uploaded |
-| git_upload.git_repo_with_access_token | string | `""` | The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git |
+| git_upload.git_repo_with_access_token | string | `""` | The repository url using access token |
 | git_upload.nat_file_name | string | `"nat"` | The name of the file that contains the NAT address |
 | git_upload.user | string | `""` | The user used by the git in order to upload the data |
 | git_upload.validator_file_name | string | `"validator.address"` | The name of the file that contains the validator address |

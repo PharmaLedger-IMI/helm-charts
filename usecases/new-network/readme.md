@@ -75,7 +75,7 @@ git_upload:
   email: "xxx@yyy.zz"
   ## @param git_upload.user The user used by the git in order to upload the data
   user: "xyz"
-  ## @param git_upload.git_repo_with_access_token The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
+  ## The repository url using access token
   git_repo_with_access_token: "github url using token access"
 ```
 
