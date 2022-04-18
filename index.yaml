@@ -116,6 +116,17 @@ entries:
   quorum-node:
   - apiVersion: v2
     appVersion: 21.7.1
+    created: "2022-04-18T13:25:48.480958945Z"
+    description: A Helm chart for the deployment of the quorum node on Kubernetes
+      supporting new-network, join-network and update-partners-info use cases.
+    digest: b26135c8e895eb04dc1319a1847a470db144f8bc15cfbe5167d2b1738258faa8
+    name: quorum-node
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.2.6/quorum-node-0.2.6.tgz
+    version: 0.2.6
+  - apiVersion: v2
+    appVersion: 21.7.1
     created: "2022-04-14T11:07:49.295034576Z"
     description: A Helm chart for the deployment of the quorum node on Kubernetes
       suporting new-network, join-network and update-partners-info use cases.
@@ -180,4 +191,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-14T13:34:31.077178922Z"
+generated: "2022-04-18T13:25:48.481088547Z"
