@@ -25,7 +25,7 @@ git_upload:
   # -- The user used by the git in order to upload the data
   user: ""
   # -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
-  git_repo_with_access_token: "https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git"
+  git_repo_with_access_token: ""
   # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step
   git_repo_clone_directory: "helm-charts"
   # -- The repository base folder name where the shareable data to will be uploaded
