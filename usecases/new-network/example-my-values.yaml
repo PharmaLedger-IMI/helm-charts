@@ -1,0 +1,41 @@
+
+deployment:
+  # The name of the company that makes the deployment
+  company: "company"
+  # The name of the use case that is being deployed
+  network_name: "epi"
+  # The Quorum node dns/public ip address
+  enode_address: ""
+  ## @param deployment.enode_ip_port The Port of the Quorum node public address
+  enode_address_port: "30303"
+  nat: "1.2.3.4"
+
+git_upload:
+  # Enable the automatic upload to the use case shared repository of the shareable data
+  enabled: true
+  # The email used by the git in order to upload the data
+  email: "xxx@yyy.zz"
+  # The user used by the git in order to upload the data
+  user: "xyz"
+  # The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/PharmaLedger-IMI/helm-charts.git
+  git_repo_with_access_token: ""
+
+use_case:
+  newNetwork:
+    # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case
+    enabled: true
+
+  joinNetwork:
+    # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
+    enabled: false
+
+  updatePartnersInfo:
+    # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network or join-network use case
+    enabled: false
+
+fullnameOverride: "quorum-epi"
+
+blockchain:
+  quorum_data_dir: "/quorumnode/qdata/dd"
+  quorum_home: "/quorumnode/qdata"
+  quorum_genesis_location: "/quorumnode/genesis"
