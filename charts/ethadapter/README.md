@@ -21,7 +21,7 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
 
 ## Changelog
 
-- From 0.4.x to 0.5.x
+- From 0.4.x to 0.5.x - Set "Good practice" values by default
   - SecurityContext (`podSecurityContext` and `securityContext` default to good practice values) enabled by default. Your Todo: Depending on your environment it is also recommended to set `podSecurityContext.seccompProfile`.
   - Resource limits and requests (`resources`) set to appropriate default values.
   - `image.pullPolicy` set to `Always` (before: `IfNotPresent`)
