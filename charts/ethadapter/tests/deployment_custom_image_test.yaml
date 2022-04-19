@@ -1,4 +1,4 @@
-suite: test deployment with an custom image and pullPolicy Always
+suite: test deployment with an custom image and pullPolicy IfNotPresent
 templates:
   - deployment.yaml
   - configmap.yaml
@@ -14,7 +14,7 @@ tests:
         orgAccountJson: "{ \"key\": \"value\" }"
       image:
         repository: custom_repository
-        pullPolicy: Always
+        pullPolicy: IfNotPresent
         tag: "custom_tag"
     asserts:
       - template: deployment.yaml
@@ -31,4 +31,4 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.spec.containers[0].imagePullPolicy
-          value: Always
+          value: IfNotPresent

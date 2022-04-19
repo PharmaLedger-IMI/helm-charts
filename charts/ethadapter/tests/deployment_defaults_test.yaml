@@ -27,4 +27,4 @@ tests:
       - template: deployment.yaml
         equal:
           path: spec.template.spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: Always
