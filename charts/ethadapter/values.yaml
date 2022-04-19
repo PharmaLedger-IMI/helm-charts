@@ -25,6 +25,9 @@ nameOverride: ""
 # -- fullnameOverride completely replaces the generated name.
 # From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
 fullnameOverride: ""
+# -- Override the deployment namespace.
+# Very useful for multi-namespace deployments in combined charts
+namespaceOverride: ""
 
 serviceAccount:
   # -- Specifies whether a service account should be created

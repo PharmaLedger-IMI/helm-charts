@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "ethadapter.fullname" . }}
+  namespace: {{ template "ethadapter.namespace" . }}
   labels:
     {{- include "ethadapter.labels" . | nindent 4 }}
 spec:
