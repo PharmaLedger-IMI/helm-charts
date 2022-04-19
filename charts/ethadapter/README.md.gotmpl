@@ -21,6 +21,9 @@
 
 ## Changelog
 
+- From 0.4.x to 0.5.x
+  - SecurityContext (`podSecurityContext` and `securityContext` default to good practice values) enabled by default. Your Todo: Depending on your environment it is also recommended to set `podSecurityContext.seccompProfile`.
+
 - From 0.3.x to 0.4.x
   - New SmartContract Abi set as default value ready for epi application v1.1.x or higher.
   - Either value `secrets.orgAccountJson` or `secrets.orgAccountJsonBase64` is always required. The OrgAccount data is not be provided by helm chart *smartcontract* anymore.
