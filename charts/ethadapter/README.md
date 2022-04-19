@@ -24,6 +24,7 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
 - From 0.4.x to 0.5.x
   - SecurityContext (`podSecurityContext` and `securityContext` default to good practice values) enabled by default. Your Todo: Depending on your environment it is also recommended to set `podSecurityContext.seccompProfile`.
   - Resource limits and requests (`resources`) set to appropriate default values.
+  - `image.pullPolicy` set to `Always` (before: `IfNotPresent`)
 
 - From 0.3.x to 0.4.x
   - New SmartContract Abi set as default value ready for epi application v1.1.x or higher.
@@ -274,7 +275,7 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --valu
 | config.smartContractConfigMapAddressKey | string | `"address"` | The key of the SmartContract Address in the existing ConfigMap in case 'smartContractAddress' is not explictly defined. |
 | config.smartContractConfigMapName | string | `"smartcontract-anchoring-info"` | The name of the existing ConfigMap to look for in case value 'smartContractAddress' is not defined. |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
-| image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
+| image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"pharmaledger/apiadapter"` | The repository of the container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
