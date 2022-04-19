@@ -14,7 +14,7 @@ tests:
         orgAccountJson: "{ \"key\": \"value\" }"
       image:
         repository: custom_repository
-        pullPolicy: Always
+        pullPolicy: IfNotPresent
         tag: "custom_tag"
     asserts:
       - template: deployment.yaml
