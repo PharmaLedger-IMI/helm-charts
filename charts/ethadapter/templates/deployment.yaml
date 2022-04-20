@@ -17,7 +17,7 @@ spec:
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- if .Values.csiSecretsStore.enabled }}
+        {{- if .Values.secretProviderClass.enabled }}
         checksum/secret: {{ include (print $.Template.BasePath "/secretproviderclass.yaml") . | sha256sum }}
         {{- else }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
@@ -90,7 +90,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
       - name: secrets
-      {{- if .Values.csiSecretsStore.enabled }}
+      {{- if .Values.secretProviderClass.enabled }}
         csi:
           driver: secrets-store.csi.k8s.io
           readOnly: true
