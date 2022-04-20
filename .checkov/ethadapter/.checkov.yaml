@@ -7,8 +7,6 @@ external-modules-download-path: .external_modules
 framework:
 - helm
 quiet: true
-soft-fail-on:
-- CKV_K8S_35 # "Prefer using secrets as files over secrets as environment variables"
 var-file:
 - .checkov/ethadapter/values.yaml
 output: cli
