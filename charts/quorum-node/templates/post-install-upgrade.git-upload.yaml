@@ -1,4 +1,4 @@
-{{- if and .Values.git_upload.enabled ( eq .Values.use_case.updatePartnersInfo.enabled false) }}
+{{- if .Values.git_upload.enabled  }}
 {{- $nodeAddressValue := ""}}
 {{- $enodeValue := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
@@ -33,16 +33,19 @@ spec:
             - "
             git config --global user.email \"{{ .Values.git_upload.email }}\";
             git config --global user.name \"{{ .Values.git_upload.user }}\";
-            {{- $storagepath :=  printf "%s/%s/%s" .Values.git_upload.git_repo_storage_path .Values.deployment.network_name .Values.deployment.company }}
-            {{- $genesisstoragepath :=  printf "%s/%s" .Values.git_upload.git_repo_storage_path .Values.deployment.network_name }}
+            {{- $storagepath :=  printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name .Values.deployment.company }}
+            {{- $genesisstoragepath :=  printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name }}
 
-            {{- $validatorAddress := printf "%s/%s" $storagepath .Values.git_upload.validator_file_name }}
-            {{- $enode := printf "%s/%s" $storagepath  .Values.git_upload.enode_file_name }}
-            {{- $enodeaddress := printf "%s/%s" $storagepath .Values.git_upload.enode_address_file_name }}
-            {{- $enodeport := printf "%s/%s" $storagepath .Values.git_upload.enode_address_port_file_name }}
-            {{- $nat := printf "%s/%s" $storagepath .Values.git_upload.nat_file_name }}
+            {{- /*
+            # pragma: allowlist nextline secret
+            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name  }}
+            {{- $validatorAddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
+            {{- $enode := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
+            {{- $enodeaddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
+            {{- $enodeport := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
+            {{- $nat := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
 
-            git clone {{ .Values.git_upload.git_repo_with_access_token }} {{ .Values.git_upload.git_repo_clone_directory }};
+            git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }};
             cd {{ .Values.git_upload.git_repo_clone_directory }}/;
             mkdir -p {{ $storagepath }};
 
@@ -53,7 +56,7 @@ spec:
             rm -f {{ $nat }};
 
             {{- if .Values.use_case.newNetwork.enabled }}
-            {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.git_upload.genesis_file_name }}
+            {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
             rm -f {{ $genesisfile }};
             cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json > {{ $genesisfile }};
             git add {{ $genesisfile }};

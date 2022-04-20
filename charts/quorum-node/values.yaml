@@ -16,6 +16,11 @@ deployment:
   # -- NAT address, used for firewall configuration
   NAT: "1.2.3.4"
 
+git_shared_configuration:
+  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
+  repository_name: ""
+  # -- github read-write token
+  read_write_token: ""
 
 git_upload:
   # --  Enable the automatic upload to the use case shared repository of the shareable data
@@ -24,13 +29,14 @@ git_upload:
   email: ""
   # -- The user used by the git in order to upload the data
   user: ""
-  # -- The repository url using access token
-  git_repo_with_access_token: ""
   # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step
   git_repo_clone_directory: "helm-charts"
-  # -- The repository base folder name where the shareable data to will be uploaded
-  git_repo_storage_path: "networks"
+  # -- The description associated with the commit into the use case shared repository of the shareable data
+  git_commit_description: "added genesis and node information"
 
+shared_repository_conventions:
+  # -- The repository base folder name where the shareable data to will be uploaded
+  base_shareable_storage_path: "networks"
   # -- The name of the file that contains the genesis file
   genesis_file_name: "genesis.json"
   # -- The name of the file that contains the validator address
@@ -43,8 +49,6 @@ git_upload:
   enode_address_port_file_name: "enode.address.port"
   # -- The name of the file that contains the NAT address
   nat_file_name: "nat"
-  # -- The description associated with the commit into the use case shared repository of the shareable data
-  git_commit_description: "added genesis and node information"
 
 quorum_source:
   # -- Quorum docker image registry
@@ -80,8 +84,6 @@ use_case:
   joinNetwork:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
-    # -- genesis file location
-    genesis_file_location: "https://raw.githubusercontent.com/<shared-repository>/<path>/genesis.json"
     plugin_data_common: >-
         "{
             "enode":"08",
@@ -97,8 +99,6 @@ use_case:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
     plugin_data_common: "{}"
-    # -- base URL for shared repository where the companies are located
-    shared_data_location: "https://raw.githubusercontent.com/<shared-repository>/<path>"
     # -- List of company names who act as peers
     peers: []
 
