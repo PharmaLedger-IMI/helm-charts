@@ -10,7 +10,6 @@
 {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
 {{- $enodeValue = $generatedPublicJson.enode }}
 {{- end }}
-# pragma: allowlist secret
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -36,7 +35,9 @@ spec:
             git config --global user.name \"{{ .Values.git_upload.user }}\";
             {{- $storagepath :=  printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name .Values.deployment.company }}
             {{- $genesisstoragepath :=  printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name }}
-
+{{- /*
+pragma: allowlist nextline secret
+*/}}
             {{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name  }}
 
             {{- $validatorAddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
