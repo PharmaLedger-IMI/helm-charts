@@ -106,8 +106,11 @@ secrets:
 csiSecretsStore:
   # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
   enabled: false
-  # -- Api Version of the SecretProviderClass
-  apiVersion: "secrets-store.csi.x-k8s.io/v1"
+
+  secretProviderClass:
+    # -- Api Version of the SecretProviderClass
+    apiVersion: "secrets-store.csi.x-k8s.io/v1"
+    spec: {}
 
 ingress:
   # -- Whether to create ingress or not.
