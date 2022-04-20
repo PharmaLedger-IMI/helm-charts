@@ -75,8 +75,16 @@ git_upload:
   email: "xxx@yyy.zz"
   ## @param git_upload.user The user used by the git in order to upload the data
   user: "xyz"
-  ## The repository url using access token
-  git_repo_with_access_token: "github url using token access"
+```
+
+### Configure shared repository
+Example
+```yaml
+git_shared_configuration:
+  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
+  repository_name: "PharmaLedger-IMI/epi-shared-configuration"
+  # -- github read-write token
+  read_write_token: "git hub read write token"
 ```
 
 ### Configure the Pharmaledger use case
