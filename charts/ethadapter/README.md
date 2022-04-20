@@ -213,7 +213,18 @@ Please note that the mounted file name/objectAlias of the mounted secret must be
 
 Sample for AWS:
 
+First store the *orgAccountJson* in a secret in *AWS Secrets Manager* as PlainText.
+Then deploy the application; replace the *TODO* placeholders in belows configuration with valid values!
+
 ```yaml
+config:
+  rpcAddress: "TODO: The URL of the Quorum node"
+  smartContractAddress: "TODO: Address"
+
+# Important!
+# It is not necessary to provide secrets.orgAccountJson or secrets.orgAccountJsonBase64 anymore
+# as its value is stored in AWS Secrets Manager
+
 serviceAccount:
   create: true
   annotations:
