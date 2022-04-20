@@ -201,6 +201,36 @@ config:
   smartContractAddress: "smartContractAddress_value"
 ```
 
+## CSI Secrets Driver
+
+This enables storing secret OrgAccountJson on one of the supported Secret stores, e.g. Azure Key Vault or AWS Secrets Manager.
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Please note that the mounted file name/objectAlias of the mounted secret must be *orgAccountJson*.
+
+Sample for AWS:
+
+```yaml
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "TODO: The ARN of the IAM role"
+
+secretProviderClass:
+  enabled: true
+  spec:
+    provider: aws
+    parameters:
+      objects: |
+        - objectName: "TODO: ARN or Name of Secret"
+          objectType: "secretsmanager"
+          objectAlias: "orgAccountJson"
+
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `ethadapter` deployment:

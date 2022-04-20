@@ -201,6 +201,36 @@ config:
   smartContractAddress: "smartContractAddress_value"
 ```
 
+## CSI Secrets Driver
+
+This enables storing secret OrgAccountJson on one of the supported Secret stores, e.g. Azure Key Vault or AWS Secrets Manager.
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Please note that the mounted file name/objectAlias of the mounted secret must be *orgAccountJson*.
+
+Sample for AWS:
+
+```yaml
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "TODO: The ARN of the IAM role"
+
+secretProviderClass:
+  enabled: true
+  spec:
+    provider: aws
+    parameters:
+      objects: |
+        - objectName: "TODO: ARN or Name of Secret"
+          objectType: "secretsmanager"
+          objectAlias: "orgAccountJson"
+
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `ethadapter` deployment:
@@ -311,7 +341,7 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --valu
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
-| serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created. Must be true if secretProviderClass.enabled is true |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 
