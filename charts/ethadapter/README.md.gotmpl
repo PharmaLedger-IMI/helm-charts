@@ -21,6 +21,10 @@
 
 ## Changelog
 
+- From 0.5.x to 0.6.x
+  - Secret/Sensitive OrgAccountJson is not mounted as environment variable but as file what is good practice.
+  - Support for CSI Secrets Driver to store OrgAccountJson e.g. on Azure Key Vault or AWS Secrets Manager instead of using a Kubernetes Secret.
+
 - From 0.4.x to 0.5.x - Set "Good practice" values by default
   - SecurityContext (`podSecurityContext` and `securityContext` default to good practice values) enabled by default. Your Todo: Depending on your environment it is also recommended to set `podSecurityContext.seccompProfile`.
   - Resource limits and requests (`resources`) set to appropriate default values.
@@ -41,10 +45,10 @@
 
 ## How it works
 
-This helm chart creates an own ConfigMap and Secret with required configuration values.
+This helm chart creates an own ConfigMap and Secret (by default) with required configuration values.
 
 - The ConfigMap is being used to store a) address of Quorum Node, b) address of Smart Contract anchoring and c) Abi of the SmartContract.
-- The Secret contains the ETH Account and its private key.
+- The Secret contains the ETH Account and its private key. Please note: The Secret is only create on `secretProviderClass.enabled: true`.
 
 In case you do not explictly provide `config.smartContractAddress` this value will be read from pre-existing ConfigMap (provided by helm chart *smartcontract*) in context of the user executing helm.
 
