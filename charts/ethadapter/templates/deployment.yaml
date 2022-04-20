@@ -50,8 +50,7 @@ spec:
           # The OrgAccount is mounted as file but the process expects it as ENV variable.
           args:
             - |
-              ORGACCOUNT=$(cat /config/secrets/orgAccountJson)
-              echo $ORGACCOUNT
+              export ORGACCOUNT=$(cat /config/secrets/orgAccountJson)
               exec node index.js
           env:
             - name: RPC_ADDRESS
