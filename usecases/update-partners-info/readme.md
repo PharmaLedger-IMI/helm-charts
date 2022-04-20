@@ -2,12 +2,14 @@
 
 ## updatePartnersInfo use case
 
-Update, create or remove partners information from the Quorum Blockchain Node. It applies in cases where a new node is joining the network, a node changed its connection details, or a node is leaving the network. 
+Update peers/validators information in the Quorum Blockchain Node. 
 
-Chart name: update-partners-info <br/>
+Chart name: quorum-node <br/>
 Plugin : update-partners-info
 
 ### Update Partners Information in a deployed Quorum node
+
+![](update-partners-info.jpg)
 
 #### Step 1: Clone your private config repository in the folder "private_configs"
 
@@ -16,51 +18,64 @@ Plugin : update-partners-info
 ```shell
 cd private_configs
 ```
-2. Create a folder which will represent your installation, like "network_name/charts/update-partners-info-qn-0" and change the directory to that folder
+2. Change to the folder which represent your installation, like "network_name/charts/quorum-node"
 ```shell
-cd network_name/charts/update-partners-info-qn-0
+cd network_name/charts/quorum-node
 ```
 
-#### Step 2: Install the helm chart and the plugin
+### Step 2: Update the helm charts
 
-1. Register the official, or the forked helm charts repository
+1. Execute:
 ```shell
-helm repo add helm-charts https://raw.githubusercontent.com/PharmaLedger-IMI/helm-charts/master/charts/releases
-```
-2. Install the helm chart _update-partners-info_
-```shell
-helm pull helm-charts/update-partners-info --untar
-```
-3. Install the _update-partners-info_ plugin
-```shell
-helm plugin install https://github.com/PharmaLedger-IMI/helm-charts/plugins/update-partners-info
+helm repo update pharmaledger-imi
 ```
 
-#### Step 3: Adjust private_configs/network_name/charts/update-partners-info-qn-0/update-partners-info/values.yaml
+#### Step 3: Adjust private_configs/network_name/charts/quorum-node/my-values.yaml
 
-The file contains parametrization for different sets of values:
-1. specific data for the download of the public shared information
-2. specific data for the use case network, company name, etc.
-3. different annotations or configurations for the deployment
+
+### Enable the use case
+Example :
+```yaml
+use_case:
+   updatePartnersInfo:
+      enabled: true
+      shared_data_location: "https://raw.githubusercontent.com/<path to the deployed use case eg. Pharmaledger-IMI/usecase-shared-data/master/networks/epi >"
+      peers: [
+            company-1,
+            company-2,
+            company-3
+      ]
+```
 
 #### Step 4: Install the helm chart
 
-1. Use the _update-partners-info_ plugin to download and aggregate the quorum node connection details and network validators list. 
+1. Use the _pl-plugin_ plugin to download and aggregate the quorum node connection details and network validators list. 
    The execution of the plugin will produce:
    1. _update-partners-info.plugin.json_ file that will contain all the generated information, like the list of all validators and enode connections. The json file will be used by the helm charts.
    
 ```shell
-helm update-partners-info -i ./values.yaml -o .
+helm pl-plugin --update-partners-info -i ./values.yaml -o .
 ```
 
-2. Install the helm chart
+2. Install the helm chart 
+<br/><br/>***Note: Chose the upgrade path based on your initial use case***<br/><br/>
+   
+2.1 Upgraded installation is of use case type **new-network**
+  
 ```shell
-helm install update-partners-info . -f ./values.yaml
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
 ```
-The execution of the chart will update all the validators and enode connections. Also, will execute propose operations for the validators.
+
+2.2 Upgraded installation is of use case type **join-network**
+
+```shell
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+```
+
+The execution of the chart will update all the peers and propose all the peers as validators.
 
 #### Step 5: Backup your installation and private information
 
-Upload to your private repository all the data located in the folder _private_configs/network_name/charts/update-partners-info-qn-0_
+Upload to your private repository all the data located in the folder _private_configs/network_name/charts/quorum-node_
 
 

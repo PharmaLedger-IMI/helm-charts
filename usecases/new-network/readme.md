@@ -43,7 +43,7 @@ helm show values pharmaledger-imi/quorum-node > my-values.yaml
 helm plugin install https://github.com/PharmaLedger-IMI/helm-pl-plugin
 ```
 
-### Step 3: Adjust private_configs/network_name/charts/quorum-node/new-network/my-values.yaml
+### Step 3: Adjust private_configs/network_name/charts/quorum-node/my-values.yaml
 
 The file contains parametrization for different sets of values:
 1. specific data for the upload of the public shared information (example github token, user, email, etc)
@@ -158,10 +158,10 @@ cd network_name/charts/quorum-node
 helm repo update pharmaledger-imi
 ```
 
-### Step 3: Adjust private_configs/network_name/charts/quorum-node/new-network/my-values.yaml
+### Step 3: Adjust private_configs/network_name/charts/quorum-node/my-values.yaml
 
 1. Check the release notes from breaking changes or resolutions regarding the upgrades
-2. Update the values not affecting the use case behaviour with new values in the _private_configs/network_name/charts/quorum-node/new-network/my-values.yaml_ file
+2. Update the values not affecting the use case behaviour with new values in the _private_configs/network_name/charts/quorum-node/my-values.yaml_ file
 
 ### Step 4: Upgrade the installation using the helm chart
 
