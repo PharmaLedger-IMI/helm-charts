@@ -39,13 +39,23 @@ Example :
 use_case:
    updatePartnersInfo:
       enabled: true
-      shared_data_location: "https://raw.githubusercontent.com/<path to the deployed use case eg. Pharmaledger-IMI/usecase-shared-data/master/networks/epi >"
       peers: [
             company-1,
             company-2,
             company-3
       ]
 ```
+
+### Configure shared repository
+Example
+```yaml
+git_shared_configuration:
+  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
+  repository_name: "PharmaLedger-IMI/epi-shared-configuration"
+  # -- github read-write token
+  read_write_token: "git hub read write token"
+```
+
 
 #### Step 4: Install the helm chart
 

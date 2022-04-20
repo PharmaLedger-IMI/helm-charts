@@ -1,7 +1,7 @@
 # quorum-node
 
 
-![Version: 0.2.7](https://img.shields.io/badge/Version-0.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square) 
+![Version: 0.2.8](https://img.shields.io/badge/Version-0.2.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square) 
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -11,12 +11,13 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
 
 - Deployment use case matrix
 
+
 | Use case | Configuration |
 |----------|--------|
 | **new-network** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
-| **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**<br/> `use_case.joinNetwork.genesis_file_location:` **Required**|
-| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.shared_data_location:` **Required**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
-| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.shared_data_location:` **Required**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
+| **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
+| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
+| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
 
 Configuration example for the field `use_case.updatePartnersInfo.peers:`
 ```yaml
@@ -27,6 +28,22 @@ use_case:
        company2,
        company3
     ]
+```
+
+- Integration with shared repository
+
+| Integration with shared repository configuration|
+|-----------------------------------|
+| `git_shared_configuration.repository_name:` **Required** |
+| `git_shared_configuration.read_write_token:` **Required** |
+
+Configuration example for the shared repository:
+```yaml
+git_shared_configuration:
+  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
+  repository_name: "PharmaLedger-IMI/epi-shared-configuration"
+  # -- github read-write token
+  read_write_token: "git hub read write token"
 ```
 
 
