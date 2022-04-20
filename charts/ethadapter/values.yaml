@@ -103,6 +103,12 @@ secrets:
   # This value must be set or orgAccountJson
   orgAccountJsonBase64: ""
 
+csiSecretsStore:
+  # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
+  enabled: false
+  # -- Api Version of the SecretProviderClass
+  apiVersion: "secrets-store.csi.x-k8s.io/v1"
+
 ingress:
   # -- Whether to create ingress or not.
   # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
