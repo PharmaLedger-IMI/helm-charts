@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -20,6 +20,10 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
   **Note about ETH account:** For Sandbox environment (helm chart *standalone-quorum*) use `{"address": "0xb5ced4530d6ccbb31b2b542fd9b4558b52296784", "privateKey": "0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5"}`
 
 ## Changelog
+
+- From 0.5.x to 0.6.x
+  - Secret/Sensitive OrgAccountJson is not mounted as environment variable but as file what is good practice.
+  - Support for CSI Secrets Driver to store OrgAccountJson e.g. on Azure Key Vault or AWS Secrets Manager instead of using a Kubernetes Secret.
 
 - From 0.4.x to 0.5.x - Set "Good practice" values by default
   - SecurityContext (`podSecurityContext` and `securityContext` default to good practice values) enabled by default. Your Todo: Depending on your environment it is also recommended to set `podSecurityContext.seccompProfile`.
@@ -41,10 +45,10 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
 
 ## How it works
 
-This helm chart creates an own ConfigMap and Secret with required configuration values.
+This helm chart creates an own ConfigMap and Secret (by default) with required configuration values.
 
 - The ConfigMap is being used to store a) address of Quorum Node, b) address of Smart Contract anchoring and c) Abi of the SmartContract.
-- The Secret contains the ETH Account and its private key.
+- The Secret contains the ETH Account and its private key. Please note: The Secret is only create on `secretProviderClass.enabled: true`.
 
 In case you do not explictly provide `config.smartContractAddress` this value will be read from pre-existing ConfigMap (provided by helm chart *smartcontract*) in context of the user executing helm.
 
@@ -63,7 +67,7 @@ This is to prevent exposing the service to the internet by accident!**
 Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract address from pre-existing ConfigMap created by helm chart *smartcontract*.
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.5.0 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.6.0 \
   --install \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
   --wait \
@@ -84,7 +88,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.5.0 \
 2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.5.0 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.6.0 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -95,7 +99,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.5.0 \
 3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.5.0 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.6.0 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -197,6 +201,47 @@ config:
   smartContractAddress: "smartContractAddress_value"
 ```
 
+## CSI Secrets Driver
+
+This enables storing secret OrgAccountJson on one of the supported Secret stores, e.g. Azure Key Vault or AWS Secrets Manager.
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Please note that the mounted file name/objectAlias of the mounted secret must be *orgAccountJson*.
+
+Sample for AWS:
+
+First store the *orgAccountJson* in a secret in *AWS Secrets Manager* as PlainText.
+Then deploy the application; replace the *TODO* placeholders in belows configuration with valid values!
+
+```yaml
+config:
+  rpcAddress: "TODO: The URL of the Quorum node"
+  smartContractAddress: "TODO: Address"
+
+# Important!
+# It is not necessary to provide secrets.orgAccountJson or secrets.orgAccountJsonBase64 anymore
+# as its value is stored in AWS Secrets Manager
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "TODO: The ARN of the IAM role"
+
+secretProviderClass:
+  enabled: true
+  spec:
+    provider: aws
+    parameters:
+      objects: |
+        - objectName: "TODO: ARN or Name of Secret"
+          objectType: "secretsmanager"
+          objectAlias: "orgAccountJson"
+
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `ethadapter` deployment:
@@ -235,23 +280,23 @@ rm -rf ./testresults/*
 # https://github.com/helm/helm/issues/5618
 echo ""
 echo "Default values and secret passed as String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
 
 echo ""
 echo "Default values and secret passed as base64 encoded String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
 
 echo ""
 echo "LoadBalancer"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
 
 echo ""
 echo "LoadBalancer and annotations"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
 
 echo ""
 echo "Ingress via AWS LB Controller"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.6.0 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
 ```
 
 ## Maintainers
@@ -296,6 +341,9 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --valu
 | readinessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/totalNumberOfAnchors/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":3}` | Readiness probe. Defaults to check if server can query data. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | replicaCount | int | `1` | The number of replicas if autoscaling is false |
 | resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"5m","memory":"64Mi"}}` | Resource constraints for a pod |
+| secretProviderClass.apiVersion | string | `"secrets-store.csi.x-k8s.io/v1"` | API Version of the SecretProviderClass |
+| secretProviderClass.enabled | bool | `false` | Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret. |
+| secretProviderClass.spec | object | `{}` | Spec for the SecretProviderClass. Note: The orgAccountJson must be mounted as objectAlias orgAccountJson |
 | secrets.orgAccountJson | string | `""` | Org Account in JSON format. This value must be set or orgAccountJsonBase64. |
 | secrets.orgAccountJsonBase64 | string | `""` | Org Account in JSON format base64 encoded. This value must be set or orgAccountJson |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
@@ -304,7 +352,7 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.5.0 --valu
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
-| serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created. Must be true if secretProviderClass.enabled is true |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 

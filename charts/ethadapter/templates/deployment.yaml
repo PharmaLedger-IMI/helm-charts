@@ -17,7 +17,11 @@ spec:
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.secretProviderClass.enabled }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secretproviderclass.yaml") . | sha256sum }}
+        {{- else }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -42,6 +46,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+          # The OrgAccount is mounted as file but the process expects it as ENV variable.
+          args:
+            - |
+              export ORGACCOUNT=$(cat /config/secrets/orgAccountJson)
+              exec node index.js
           env:
             - name: RPC_ADDRESS
               valueFrom:
@@ -58,11 +70,10 @@ spec:
                 configMapKeyRef:
                   name: {{ include "ethadapter.fullname" . }}
                   key: smartContractAbi
-            - name: ORGACCOUNT
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "ethadapter.fullname" . }}
-                  key: orgAccountJson
+          volumeMounts:
+            - name: secrets
+              mountPath: "/config/secrets"
+              readOnly: true
           ports:
             - name: http
               containerPort: 3000
@@ -77,6 +88,19 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: secrets
+      {{- if .Values.secretProviderClass.enabled }}
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "ethadapter.fullname" . }}
+      {{- else }}
+        secret:
+          secretName: {{ include "ethadapter.fullname" . }}
+          defaultMode: 0400
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
