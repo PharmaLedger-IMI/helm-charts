@@ -58,6 +58,11 @@ quorum_source:
   # -- Quorum docker image version
   version: "21.7.1"
 
+## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
+## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+deploymentStrategy:
+  type: Recreate
+
 blockchain:
   # -- Quorum node block period
   blockperiod: "3"
