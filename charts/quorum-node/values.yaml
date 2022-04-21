@@ -79,13 +79,13 @@ quorum:
   homePath: "/etc/quorum/qdata"
   # -- Directory path to the Quorum Data Dir. Must be beyond 'homePath' in order to store data on the persistent volume
   dataDirPath: "/etc/quorum/qdata/dd"
+  # -- File path to genesis file
+  genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
 
 
 blockchain:
   # -- Quorum node block period
   blockperiod: "3"
-  # -- File path to genesis file
-  quorum_genesis_location: "/etc/quorum/genesis/genesis-geth.json"
 
 use_case:
   newNetwork:

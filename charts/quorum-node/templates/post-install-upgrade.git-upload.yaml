@@ -58,7 +58,7 @@ spec:
             {{- if .Values.use_case.newNetwork.enabled }}
             {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
             rm -f {{ $genesisfile }};
-            cat {{ .Values.blockchain.quorum_genesis_location }} > {{ $genesisfile }};
+            cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisfile }};
             git add {{ $genesisfile }};
             {{- end }}
             echo {{ $nodeAddressValue }} > {{ $validatorAddress }};
@@ -78,7 +78,7 @@ spec:
           volumeMounts:
 {{- if .Values.use_case.newNetwork.enabled }}
             - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}
+              mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
 {{- end }}
             - name: quorum-nodekey
