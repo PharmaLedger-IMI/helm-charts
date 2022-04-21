@@ -126,6 +126,7 @@ storage:
 storageClass:
   # -- Enable the creation of storage class (AWS specific)
   enabled: true
+
 # -- Number of replicas for the quorum-node !! DO NOT CHANGE !!
 replicasCount: 1
 # -- Override the full name
@@ -186,11 +187,13 @@ service:
     #  - 8.8.8.8/32
     #  - 8.8.4.4/32
 
-# Pod Affinity - we want to schedule the pod in a certain availability zone, here eu-west-1a
+# -- Affinity for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+#
+# Notes for AWS: We want to schedule the pod in a certain availability zone, here eu-west-1a
 # Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets
 # Please note, that your nodes must be labeled accordingly!
-# See https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
-# -- Pod Affinity
+# See [https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone)
 affinity:
  # nodeAffinity:
   #  requiredDuringSchedulingIgnoredDuringExecution:
@@ -200,6 +203,7 @@ affinity:
   #            operator: In
   #            values:
   #              - eu-west-1a
+
 # -- Pod resources
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -212,20 +216,22 @@ resources: {}
   # requests:
   #   cpu: 100m
 #   memory: 128Mi
-# -- Pod node selector
+
+# -- Node Selectors in order to assign pods to certain nodes.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 nodeSelector: {}
-# -- Pod tolerations
+
+# -- Tolerations for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
 tolerations: []
 
+# -- Annotations added to the pod
 podAnnotations: {}
 
+# -- Security Context for the pod.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 podSecurityContext: {}
-# fsGroup: 2000
 
+# -- Security Context for the application container
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-# runAsUser: 1000
