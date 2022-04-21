@@ -83,7 +83,7 @@ spec:
               fi
           volumeMounts:
             - name: quorum-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_home }}
+              mountPath: {{ .Values.quorum.homePath }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: genesis-config-persistent-storage
               mountPath: {{ .Values.blockchain.quorum_genesis_location }}
@@ -119,8 +119,8 @@ spec:
               # TODO: Not needed? JQ seems not to be used anywhere!
               # apk add jq
 
-              ln -sf {{ .Values.blockchain.quorum_home }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
-              ln -sf {{ .Values.blockchain.quorum_home }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
+              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
+              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
               cat {{ .Values.blockchain.quorum_genesis_location }}
               chmod 644 {{ .Values.blockchain.quorum_data_dir }}/keystore/key
               touch {{ .Values.blockchain.quorum_data_dir }}/password.txt
@@ -139,7 +139,7 @@ spec:
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul \
                 --rpccorsdomain="*" --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
-                  2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
+                  2>&1 | tee -a {{ .Values.quorum.homePath }}/logs/quorum.log;"
           ports:
             - containerPort: 8545  # RPC Port
             - containerPort: 30303 # Node communication
@@ -152,10 +152,10 @@ spec:
               value: {{ $enode }}
           volumeMounts:
             - name: quorum-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_home }}
+              mountPath: {{ .Values.quorum.homePath }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: quorum-persistent-storage-logs
-              mountPath: {{ .Values.blockchain.quorum_home }}/logs
+              mountPath: {{ .Values.quorum.homePath }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
             - name: genesis-config-persistent-storage
               mountPath: {{ .Values.blockchain.quorum_genesis_location }}
@@ -172,16 +172,16 @@ spec:
               mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
               subPath: enode
             - name: {{ include "quorumnode.PermissionedCfg" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/permission-nodes
+              mountPath: {{ .Values.quorum.homePath }}/permission-nodes
             - name: {{ include "quorumnode.gethHelpers" . }}
               mountPath: /geth-helpers
             - name: {{ include "quorumnode.IValidatorCfg" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/istanbul-validator-config.toml
+              mountPath: {{ .Values.quorum.homePath }}/istanbul-validator-config.toml
             - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose.sh
+              mountPath: {{ .Values.quorum.homePath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
             - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose_all.sh
+              mountPath: {{ .Values.quorum.homePath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
         {{- if .Values.use_case.newNetwork.enabled }}

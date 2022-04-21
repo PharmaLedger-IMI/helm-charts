@@ -106,7 +106,7 @@ spec:
 | blockchain.blockperiod | string | `"3"` | Quorum node block period |
 | blockchain.quorum_data_dir | string | `"/etc/quorum/qdata/dd"` |  |
 | blockchain.quorum_genesis_location | string | `"/etc/quorum/genesis"` |  |
-| blockchain.quorum_home | string | `"/etc/quorum/qdata"` |  |
+| quorum.homePath | string | `"/etc/quorum/qdata"` |  |
 | deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
 | deployment.company | string | `""` | The name of the company that makes the deployment |
 | deployment.enode_address | string | `""` | The Quorum node public ip address |

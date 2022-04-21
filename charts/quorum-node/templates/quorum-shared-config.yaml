@@ -62,9 +62,9 @@ data:
     #!/bin/ash
     #set -xe
 
-    for Addr in $( awk '/validators/,0' {{ .Values.blockchain.quorum_home }}/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
+    for Addr in $( awk '/validators/,0' {{ .Values.quorum.homePath }}/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
       echo $Addr
-      {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose.sh $Addr true
+      {{ .Values.quorum.homePath }}/node-management/ibft_propose.sh $Addr true
     done
 ---
 apiVersion: v1
@@ -106,7 +106,7 @@ data:
     # helper for connecting to geth from
     # outside the container
     # kubectl exec -it $POD -c quorum -- /geth-helpers/geth-attach.sh
-    echo "connecting to geth {{ .Values.blockchain.quorum_home }}"
+    echo "connecting to geth {{ .Values.quorum.homePath }}"
     geth attach --datadir {{ .Values.blockchain.quorum_data_dir }} {{ .Values.blockchain.quorum_data_dir }}/geth.ipc
   geth-exec.sh: |-
     #!/bin/sh
