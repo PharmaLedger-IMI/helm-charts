@@ -125,16 +125,16 @@ spec:
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
 
-              NETWORK_ID=10
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
                 --nodiscover \
-                --verbosity {{ .Values.quorum.log.verbosity }} \
-                --gcmode archive --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --syncmode full \
-                --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --permissioned \
                 --nat=none \
-                --networkid $NETWORK_ID \
+                --verbosity {{ .Values.quorum.log.verbosity }} \
+                --gcmode archive \
+                --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
+                --syncmode full --nousb \
+                --networkid {{ .Values.quorum.networkId }} \
                 --emitcheckpoints \
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul \

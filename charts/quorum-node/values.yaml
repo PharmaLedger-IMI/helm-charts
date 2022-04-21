@@ -81,6 +81,8 @@ quorum:
   dataDirPath: "/etc/quorum/qdata/dd"
   # -- File path to genesis file
   genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
+  # -- Explicitly set network id
+  networkId: 10
 
   miner:
     # -- Number of CPU threads to use for mining
