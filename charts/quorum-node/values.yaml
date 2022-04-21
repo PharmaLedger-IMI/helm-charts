@@ -82,10 +82,12 @@ quorum:
   # -- File path to genesis file
   genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
 
+  miner:
+    # -- Number of miner threads
+    threads: 1
+    # -- Miner block period
+    blockPeriod: 3
 
-blockchain:
-  # -- Quorum node block period
-  blockperiod: "3"
 
 use_case:
   newNetwork:

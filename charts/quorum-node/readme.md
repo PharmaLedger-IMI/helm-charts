@@ -103,7 +103,7 @@ spec:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | string | `nil` | Pod Affinity |
-| blockchain.blockperiod | string | `"3"` | Quorum node block period |
+| quorum.miner.blockPeriod | string | `"3"` | Quorum node block period |
 | quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` |  |
 | quorum.genesisFilePath | string | `"/etc/quorum/genesis"` |  |
 | quorum.homeDirPath | string | `"/etc/quorum/qdata"` |  |

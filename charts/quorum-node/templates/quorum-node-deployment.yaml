@@ -128,8 +128,8 @@ spec:
               NETWORK_ID=10
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
-                --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full \
-                --mine --miner.threads 1 \
+                --gcmode archive --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --syncmode full \
+                --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --permissioned \
                 --nodiscover \
                 --nat=none \
