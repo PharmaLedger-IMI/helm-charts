@@ -15,15 +15,22 @@ metadata:
   labels:
     {{- include "quorumNode.labels" . | nindent 4 }}
 
+{{- /*
+Deployment Spec:
+*/}}
 spec:
   replicas: {{ .Values.replicasCount }}
   selector:
     matchLabels:
       {{- include "quorumNode.selectorLabels" . | nindent 6 }}
-{{- with .Values.deploymentStrategy }}
+  {{- with .Values.deploymentStrategy }}
   strategy:
-{{ toYaml . | trim | indent 4 }}
-{{- end }}
+    {{ toYaml . | trim | indent 4 }}
+  {{- end }}
+
+  {{- /*
+  Pod Template:
+  */}}
   template:
     metadata:
       name:  {{ include "quorumNode.fullname" . }}
@@ -34,6 +41,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       nodeSelector:

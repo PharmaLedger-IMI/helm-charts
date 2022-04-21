@@ -133,6 +133,10 @@ fullnameOverride: "quorum"
 # -- override the name
 nameOverride: "quorum"
 
+# -- Secret(s) for pulling an container image from a private registry.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+imagePullSecrets: []
+
 service:
   # -- Custom service labels
   labels:
