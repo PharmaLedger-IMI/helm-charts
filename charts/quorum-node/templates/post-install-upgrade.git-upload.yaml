@@ -82,10 +82,10 @@ spec:
               subPath: genesis-geth.json
 {{- end }}
             - name: quorum-nodekey
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
             - name: quorum-enode
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
       restartPolicy: Never
       volumes:

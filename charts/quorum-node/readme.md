@@ -104,7 +104,7 @@ spec:
 |-----|------|---------|-------------|
 | affinity | string | `nil` | Pod Affinity |
 | blockchain.blockperiod | string | `"3"` | Quorum node block period |
-| blockchain.quorum_data_dir | string | `"/etc/quorum/qdata/dd"` |  |
+| quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` |  |
 | blockchain.quorum_genesis_location | string | `"/etc/quorum/genesis"` |  |
 | quorum.homePath | string | `"/etc/quorum/qdata"` |  |
 | deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |

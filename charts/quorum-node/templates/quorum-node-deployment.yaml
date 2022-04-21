@@ -77,9 +77,9 @@ spec:
             - -cx
           args:
             - |
-              if [ ! -f {{ .Values.blockchain.quorum_data_dir }}/genesis_created ]; then
-                /usr/local/bin/geth --datadir {{ .Values.blockchain.quorum_data_dir }} init {{ .Values.blockchain.quorum_genesis_location }}
-                date > {{ .Values.blockchain.quorum_data_dir }}/genesis_created
+              if [ ! -f {{ .Values.quorum.dataDirPath }}/genesis_created ]; then
+                /usr/local/bin/geth --datadir {{ .Values.quorum.dataDirPath }} init {{ .Values.blockchain.quorum_genesis_location }}
+                date > {{ .Values.quorum.dataDirPath }}/genesis_created
               fi
           volumeMounts:
             - name: quorum-persistent-storage
@@ -108,7 +108,7 @@ spec:
             exec:
               command:
                 - ls
-                - {{ .Values.blockchain.quorum_data_dir }}/geth.ipc
+                - {{ .Values.quorum.dataDirPath }}/geth.ipc
             initialDelaySeconds: 20
             periodSeconds: 3
           command:
@@ -119,15 +119,15 @@ spec:
               # TODO: Not needed? JQ seems not to be used anywhere!
               # apk add jq
 
-              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
-              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
+              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/permissioned-nodes.json
+              ln -sf {{ .Values.quorum.homePath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/static-nodes.json
               cat {{ .Values.blockchain.quorum_genesis_location }}
-              chmod 644 {{ .Values.blockchain.quorum_data_dir }}/keystore/key
-              touch {{ .Values.blockchain.quorum_data_dir }}/password.txt
+              chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
+              touch {{ .Values.quorum.dataDirPath }}/password.txt
 
               NETWORK_ID=10
               /usr/local/bin/geth \
-                --datadir {{ .Values.blockchain.quorum_data_dir }} \
+                --datadir {{ .Values.quorum.dataDirPath }} \
                 --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full \
                 --mine --miner.threads 1 \
                 --permissioned \
@@ -161,15 +161,15 @@ spec:
               mountPath: {{ .Values.blockchain.quorum_genesis_location }}
               subPath: genesis-geth.json
             - name: quorum-nodekey
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
             {{- if .Values.use_case.newNetwork.enabled }}
             - name: quorum-key-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/keystore/key
+              mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
             {{- end }}
             - name: quorum-enode
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
             - name: {{ include "quorumnode.PermissionedCfg" . }}
               mountPath: {{ .Values.quorum.homePath }}/permission-nodes
