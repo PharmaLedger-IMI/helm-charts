@@ -88,6 +88,9 @@ quorum:
     # -- Miner block period
     blockPeriod: 3
 
+  log:
+    # -- Verbosity of the log
+    verbosity: 3
 
 use_case:
   newNetwork:

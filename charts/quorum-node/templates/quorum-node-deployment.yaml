@@ -128,12 +128,12 @@ spec:
               NETWORK_ID=10
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
+                --nodiscover \
+                --verbosity {{ .Values.quorum.log.verbosity }} \
                 --gcmode archive --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --syncmode full \
                 --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --permissioned \
-                --nodiscover \
                 --nat=none \
-                --verbosity 3 \
                 --networkid $NETWORK_ID \
                 --emitcheckpoints \
                 --port 30303 \
