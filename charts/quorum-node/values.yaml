@@ -50,7 +50,17 @@ shared_repository_conventions:
   # -- The name of the file that contains the NAT address
   nat_file_name: "nat"
 
-quorum_source:
+image:
+  # -- The repository of the Quorum container image
+  repository: quorumengineering/quorum
+  # -- Image Pull Policy
+  pullPolicy: Always
+  # -- Image tag
+  tag: "21.7.1"
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
+
   # -- Quorum docker image registry
   registry: quorumengineering
   # -- Quorum docker image name

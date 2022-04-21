@@ -49,7 +49,11 @@ spec:
         - name: quorum-genesis-init-container
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.quorum_source.registry }}/{{ .Values.quorum_source.image }}:{{ .Values.quorum_source.version }}"
+          {{- if .Values.image.sha }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@sha256:{{ .Values.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- end }}
           command: [ "sh" ]
           args:
             - "-cx"
@@ -77,8 +81,12 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
-          image: "{{ .Values.quorum_source.registry }}/{{ .Values.quorum_source.image }}:{{ .Values.quorum_source.version }}"
+          {{- if .Values.image.sha }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@sha256:{{ .Values.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           readinessProbe:
             exec:
               command:
