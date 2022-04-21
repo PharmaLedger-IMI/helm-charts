@@ -119,8 +119,8 @@ spec:
               # TODO: Not needed? JQ seems not to be used anywhere!
               # apk add jq
 
-              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
-              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
+              ln -sf {{ .Values.blockchain.quorum_home }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
+              ln -sf {{ .Values.blockchain.quorum_home }}/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
               cat {{ .Values.blockchain.quorum_genesis_location }}
               chmod 644 {{ .Values.blockchain.quorum_data_dir }}/keystore/key
               touch {{ .Values.blockchain.quorum_data_dir }}/password.txt
@@ -146,8 +146,6 @@ spec:
           env:
             - name: PRIVATE_CONFIG
               value: "ignore"
-            - name: QUORUM_HOME
-              value: {{ .Values.blockchain.quorum_home }}
             - name: THIS_NODE_ID
               value: {{ include "quorumNode.Identifier" . }}
             - name: THIS_ENODE
