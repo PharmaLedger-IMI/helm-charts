@@ -78,7 +78,8 @@ blockchain:
   blockperiod: "3"
   quorum_data_dir: "/etc/quorum/qdata/dd"
   quorum_home: "/etc/quorum/qdata"
-  quorum_genesis_location: "/etc/quorum/genesis"
+  # -- Path to genesis file
+  quorum_genesis_location: "/etc/quorum/genesis/genesis-geth.json"
 
 use_case:
   newNetwork:

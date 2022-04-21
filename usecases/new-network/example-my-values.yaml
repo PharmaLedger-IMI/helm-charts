@@ -38,4 +38,4 @@ fullnameOverride: "quorum-epi"
 blockchain:
   quorum_data_dir: "/quorumnode/qdata/dd"
   quorum_home: "/quorumnode/qdata"
-  quorum_genesis_location: "/quorumnode/genesis"
+  quorum_genesis_location: "/quorumnode/genesis/genesis-geth.json"

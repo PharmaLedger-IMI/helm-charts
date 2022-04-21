@@ -78,7 +78,7 @@ spec:
           args:
             - |
               if [ ! -f {{ .Values.blockchain.quorum_data_dir }}/genesis_created ]; then
-                /usr/local/bin/geth --datadir {{ .Values.blockchain.quorum_data_dir }} init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+                /usr/local/bin/geth --datadir {{ .Values.blockchain.quorum_data_dir }} init {{ .Values.blockchain.quorum_genesis_location }}
                 date > {{ .Values.blockchain.quorum_data_dir }}/genesis_created
               fi
           env:
@@ -89,7 +89,7 @@ spec:
               mountPath: {{ .Values.blockchain.quorum_home }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+              mountPath: {{ .Values.blockchain.quorum_genesis_location }}
               subPath: genesis-geth.json
       containers:
         - name: quorum
@@ -124,7 +124,7 @@ spec:
 
               ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
               ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
-              cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+              cat {{ .Values.blockchain.quorum_genesis_location }}
               chmod 644 {{ .Values.blockchain.quorum_data_dir }}/keystore/key
               touch {{ .Values.blockchain.quorum_data_dir }}/password.txt
 
@@ -165,7 +165,7 @@ spec:
               mountPath: {{ .Values.blockchain.quorum_home }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
             - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+              mountPath: {{ .Values.blockchain.quorum_genesis_location }}
               subPath: genesis-geth.json
             - name: quorum-nodekey
               mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
