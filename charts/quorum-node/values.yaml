@@ -93,6 +93,8 @@ quorum:
   log:
     # -- Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
     verbosity: 3
+    # -- If enabled, emit specially formatted logging checkpoints
+    emitcheckpoints: true
 
 use_case:
   newNetwork:

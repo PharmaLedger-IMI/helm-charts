@@ -125,17 +125,21 @@ spec:
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
 
+              # TODO: Continue at rpc and align to 
+              # https://github.com/ConsenSys/quorum-kubernetes/blob/84709fd7ba26ec01f8a1bec3856f9ac33a5b6802/prod/helm/charts/goquorum-node/templates/node-statefulset.yaml
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
                 --nodiscover \
                 --permissioned \
                 --nat=none \
                 --verbosity {{ .Values.quorum.log.verbosity }} \
+                {{- if .Values.quorum.log.emitcheckpoints }}
+                --emitcheckpoints \
+                {{- end }}
                 --gcmode archive \
                 --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --syncmode full --nousb \
                 --networkid {{ .Values.quorum.networkId }} \
-                --emitcheckpoints \
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul \
                 --rpccorsdomain="*" --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
