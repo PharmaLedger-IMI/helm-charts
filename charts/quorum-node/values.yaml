@@ -83,13 +83,13 @@ quorum:
   genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
 
   miner:
-    # -- Number of miner threads
+    # -- Number of CPU threads to use for mining
     threads: 1
-    # -- Miner block period
+    # -- Default minimum difference between two consecutive block's timestamps in seconds
     blockPeriod: 3
 
   log:
-    # -- Verbosity of the log
+    # -- Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
     verbosity: 3
 
 use_case:
