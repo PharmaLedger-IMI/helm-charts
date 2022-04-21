@@ -30,3 +30,46 @@ Then you can run `helm search repo pharmaledger-imi` to see the chart(s). On ins
     1. bump the version in `Chart.yaml`,
     2. Run `pre-commit run -a` to update the documentation.
 4. After your Pull Request has been accepted and has been merged to `master` branch, an automated process will create a new Release of the modified helm charts.
+
+## Some checks are failing? What can I do?
+
+- Detect-Secrets checks are failing? Check if all "detected secrets" are *false positives*.
+
+    You can mark *false positives*, see [here](https://github.com/Yelp/detect-secrets#inline-allowlisting)
+
+    E.g.
+
+    ```yaml
+    # Secret and comment in same line (note: not always working):
+
+    SomeSecretString # pragma: allowlist secret
+
+    # or comment one line above Secret:
+
+    # pragma: allowlist nextline secret
+    SomeSecretString
+
+    # or for helm template comments:
+
+    {{- /*
+        # pragma: allowlist nextline secret
+    */}}SomeSecretString
+
+    ```
+
+- Checkov checks are failing? See [here](https://www.checkov.io/2.Basics/Suppressing%20and%20Skipping%20Policies.html) and scroll down to Kubernetes Examples
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+    name: mypod
+    annotations:
+        checkov.io/skip1: CKV_K8S_20=I don't care about Privilege Escalation :-O
+        checkov.io/skip2: CKV_K8S_14
+        checkov.io/skip3: CKV_K8S_11=I have not set CPU limits as I want BestEffort QoS
+    spec:
+    containers:
+    ...
+    
+    ```
