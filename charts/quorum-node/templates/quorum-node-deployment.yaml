@@ -45,35 +45,42 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
-      {{- end}}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
         - name: quorum-genesis-init-container
+          {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.image.sha }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@sha256:{{ .Values.image.sha }}"
           {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           {{- end }}
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "if [ ! -f $QUORUM_DATA_DIR/genesis_created ]; then
-              /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
-              date > $QUORUM_DATA_DIR/genesis_created;
-           fi;
-          "
+            - |
+              if [ ! -f $QUORUM_DATA_DIR/genesis_created ]; then
+                /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+                date > $QUORUM_DATA_DIR/genesis_created
+              fi
           env:
             - name: QUORUM_DATA_DIR
               value: {{ .Values.blockchain.quorum_data_dir }}
@@ -81,18 +88,21 @@ spec:
               value: {{ .Values.blockchain.quorum_home }}
           volumeMounts:
             - name: quorum-persistent-storage
-              mountPath:  {{ .Values.blockchain.quorum_home }}
+              mountPath: {{ .Values.blockchain.quorum_home }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: genesis-config-persistent-storage
               mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
               subPath: genesis-geth.json
-
       containers:
         - name: quorum
+          {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.image.sha }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}@sha256:{{ .Values.image.sha }}"
           {{- else }}
@@ -106,45 +116,38 @@ spec:
                 - $(QHOME)/dd/geth.ipc
             initialDelaySeconds: 20
             periodSeconds: 3
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "
-           apk add jq;
+            - |
+              # TODO: Not needed? JQ seems not to be used anywhere!
+              # apk add jq
 
-           ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/permissioned-nodes.json;
-           ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/static-nodes.json;
+              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/permissioned-nodes.json
+              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/static-nodes.json
+              cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+              chmod 644 $QUORUM_DATA_DIR/keystore/key
+              touch $QUORUM_DATA_DIR/password.txt
 
-           cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
-
-           chmod 644 $QUORUM_DATA_DIR/keystore/key;
-
-           touch $QUORUM_DATA_DIR/password.txt;
-           NETWORK_ID=10
-           RPC_APIS=admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum
-           args=\" --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full --mine --miner.threads 1 \";
-           RPC_APIS=\"$RPC_APIS,istanbul\";
-           /usr/local/bin/geth \
-           --datadir $QUORUM_DATA_DIR \
-           $args \
-           --permissioned \
-           --nodiscover \
-           --nat=none \
-           --verbosity 3 \
-           --networkid $NETWORK_ID \
-           --emitcheckpoints \
-           --port 30303 \
-           --rpc \
-           --rpcaddr 0.0.0.0 \
-           --rpcport 8545 \
-           --rpcapi $RPC_APIS \
-           --rpccorsdomain=\"*\" \
-           --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
-            2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
+              NETWORK_ID=10
+              /usr/local/bin/geth \
+                --datadir $QUORUM_DATA_DIR \
+                --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full \
+                --mine --miner.threads 1 \
+                --permissioned \
+                --nodiscover \
+                --nat=none \
+                --verbosity 3 \
+                --networkid $NETWORK_ID \
+                --emitcheckpoints \
+                --port 30303 \
+                --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul \
+                --rpccorsdomain="*" --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
+                  2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
           ports:
-            - containerPort: 8545
-            - containerPort: 30303
-
+            - containerPort: 8545  # RPC Port
+            - containerPort: 30303 # Node communication
           env:
             - name: PRIVATE_CONFIG
               value: "ignore"
@@ -171,11 +174,11 @@ spec:
             - name: quorum-nodekey
               mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
               subPath: nodekey
-{{- if .Values.use_case.newNetwork.enabled }}
+            {{- if .Values.use_case.newNetwork.enabled }}
             - name: quorum-key-config-persistent-storage
               mountPath: {{ .Values.blockchain.quorum_data_dir }}/keystore/key
               subPath: key
-{{- end }}
+            {{- end }}
             - name: quorum-enode
               mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
               subPath: enode
@@ -192,14 +195,14 @@ spec:
               mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
-{{- if .Values.use_case.newNetwork.enabled }}
+        {{- if .Values.use_case.newNetwork.enabled }}
         - name: quorum-key-config-persistent-storage
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-account-key-config
             items:
               - key: key
                 path: key
-{{- end }}
+        {{- end }}
         - name: {{ include "quorumnode.PermissionedCfg" . }}
           configMap:
             name: {{ include "quorumnode.PermissionedCfg" . }}
