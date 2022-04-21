@@ -81,9 +81,6 @@ spec:
                 /usr/local/bin/geth --datadir {{ .Values.blockchain.quorum_data_dir }} init {{ .Values.blockchain.quorum_genesis_location }}
                 date > {{ .Values.blockchain.quorum_data_dir }}/genesis_created
               fi
-          env:
-            - name: QHOME
-              value: {{ .Values.blockchain.quorum_home }}
           volumeMounts:
             - name: quorum-persistent-storage
               mountPath: {{ .Values.blockchain.quorum_home }}
@@ -150,8 +147,6 @@ spec:
             - name: PRIVATE_CONFIG
               value: "ignore"
             - name: QUORUM_HOME
-              value: {{ .Values.blockchain.quorum_home }}
-            - name: QHOME
               value: {{ .Values.blockchain.quorum_home }}
             - name: THIS_NODE_ID
               value: {{ include "quorumNode.Identifier" . }}
