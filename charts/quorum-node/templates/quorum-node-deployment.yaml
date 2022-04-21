@@ -77,13 +77,11 @@ spec:
             - -cx
           args:
             - |
-              if [ ! -f $QUORUM_DATA_DIR/genesis_created ]; then
-                /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
-                date > $QUORUM_DATA_DIR/genesis_created
+              if [ ! -f {{ .Values.blockchain.quorum_data_dir }}/genesis_created ]; then
+                /usr/local/bin/geth --datadir {{ .Values.blockchain.quorum_data_dir }} init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+                date > {{ .Values.blockchain.quorum_data_dir }}/genesis_created
               fi
           env:
-            - name: QUORUM_DATA_DIR
-              value: {{ .Values.blockchain.quorum_data_dir }}
             - name: QHOME
               value: {{ .Values.blockchain.quorum_home }}
           volumeMounts:
@@ -113,7 +111,7 @@ spec:
             exec:
               command:
                 - ls
-                - $(QHOME)/dd/geth.ipc
+                - {{ .Values.blockchain.quorum_data_dir }}/geth.ipc
             initialDelaySeconds: 20
             periodSeconds: 3
           command:
@@ -124,15 +122,15 @@ spec:
               # TODO: Not needed? JQ seems not to be used anywhere!
               # apk add jq
 
-              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/permissioned-nodes.json
-              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/static-nodes.json
+              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/permissioned-nodes.json
+              ln -sf $QUORUM_HOME/permission-nodes/permissioned-nodes.json {{ .Values.blockchain.quorum_data_dir }}/static-nodes.json
               cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
-              chmod 644 $QUORUM_DATA_DIR/keystore/key
-              touch $QUORUM_DATA_DIR/password.txt
+              chmod 644 {{ .Values.blockchain.quorum_data_dir }}/keystore/key
+              touch {{ .Values.blockchain.quorum_data_dir }}/password.txt
 
               NETWORK_ID=10
               /usr/local/bin/geth \
-                --datadir $QUORUM_DATA_DIR \
+                --datadir {{ .Values.blockchain.quorum_data_dir }} \
                 --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full \
                 --mine --miner.threads 1 \
                 --permissioned \
@@ -151,8 +149,6 @@ spec:
           env:
             - name: PRIVATE_CONFIG
               value: "ignore"
-            - name: QUORUM_DATA_DIR
-              value: {{ .Values.blockchain.quorum_data_dir }}
             - name: QUORUM_HOME
               value: {{ .Values.blockchain.quorum_home }}
             - name: QHOME
