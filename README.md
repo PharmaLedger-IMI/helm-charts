@@ -28,7 +28,7 @@ Then you can run `helm search repo pharmaledger-imi` to see the chart(s). On ins
 2. Several checks run on a Pull Request. They all need to pass, otherwise your changes will not be accepted.
 3. In case you are doing changes on a helm chart
     1. bump the version in `Chart.yaml`,
-    2. Run `pre-commit run -a` to update the documentation.
+    2. Run `pre-commit run -a` to update the documentation. Please use [Helm-Docs 1.8.1](https://github.com/norwoodj/helm-docs/releases/tag/v1.8.1).
 4. After your Pull Request has been accepted and has been merged to `master` branch, an automated process will create a new Release of the modified helm charts.
 
 ## Some checks are failing? What can I do?
