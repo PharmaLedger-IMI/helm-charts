@@ -1,5 +1,5 @@
 {{- /*
-Please note: The Init Job only runs if the image differs from last build
+Please note: The Init Job only will only be deployed by helm if the image differs from last build
 */}}
 
 {{- if ne (include "epi.lastBuiltImage" .) (include "epi.image" .) -}}
