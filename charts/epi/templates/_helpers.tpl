@@ -97,3 +97,33 @@ seedsBackup: ""
 {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+    The full image of kubectl repository:tag[@sha256:sha]
+*/}}
+{{- define "epi.kubectlImage" -}}
+{{- if .Values.kubectl.image.sha }}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
+{{- else }}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
+{{- end }}
+{{- end }}
+
+{{/*
+The Name of the ConfigMap for the Build Info Data
+*/}}
+{{- define "epi.configMapBuildInfoName" -}}
+{{- printf "%s-%s" (include "epi.fullname" .) "build-info" }}
+{{- end }}
+
+{{/*
+The image that was built at last. Return an empty string if not yet exists.
+*/}}
+{{- define "epi.lastBuiltImage" -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "epi.configMapBuildInfoName" .) -}}
+{{- if $configMap -}}
+{{ $configMap.data.lastBuiltImage | default "" }}
+{{- end -}}
+{{- end -}}
+
