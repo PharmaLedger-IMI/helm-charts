@@ -71,63 +71,36 @@ sequenceDiagram
 
 ## Init Job
 
-The Init Job is an important step and will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
-Its pod consists of three containers, two init containers and one main container.
+The Init Job is required to run the build process and to store the SeedsBackup in a ConfigMap.
 
-```mermaid
-flowchart LR
-A(Init Container 1:<br/>Check necessity for build process) -->B(Init Container 2:<br/>Run build process if necessary)
-B --> C(Main Container:<br/>Write/Update ConfigMap Seedsbackup)
-```
+- The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
+- It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
+- Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
 
 ### Init Job Details
 
-1. On `helm install` and `helm upgrade`, helm will deploy a Kubernete Job named *job-init* which schedules a pod consisting of two Init Containers and one Main Container.
+The pod consists an init containers and a main container.
 
-```mermaid
-flowchart LR
-A(Helm pre-install/pre-upgrade hook) -->|deploys| B(Init Job)
-B -->|schedules| C(Init Pod)
-```
-
-2. The first Init Container runs `kubectl` command to check existance of ConfigMap `build-info` which contains information about latest successful build process.
-   1. If ConfigMap `build-info` does not exist or latest build process does not match current epi application container image, then a *signal* file will be written to a shared volume between containers.
-   2. Otherwise the build process has already been executed for current application container image.
-
-```mermaid
-flowchart LR
-D(Init Container<br/>Kubectl) --> E{ConfigMap build-info<br/>exists and<br/>matches current<br/>container image?}
-E -->|not exists| F[Write signal file to shared data volume]
-F --> G[Exit Init Container<br/>Kubectl]
-E -->|exists| G
-```
-
-3. The second Init Container uses the container image of the epi application and checks existance of *Signal* file from first Init Container.
-4. If it does not exists, then no build process shall run and the container exists.
-5. If the *Signal* file exists, then
+1. The Init Container uses the container image of the epi application and
    1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
    2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
 
 ```mermaid
 flowchart LR
-D(Init Container<br/>application) --> E{Signal file exists?}
-E -->|yes, exists| F[start apihub server]
-F --> G[sleep short time]
-G --> H[build process]
-H --> I[write SeedsBackup file to shared data with main container]
-I --> J
-E -->|no, does not exist| J[Exit Init Container<br/>application]
+A(Init Container<br/>application) --> B[start apihub server]
+B --> C[sleep short time]
+C --> D[build process]
+D --> E[write SeedsBackup file to shared data with main container]
+E --> F[Exit Init Container<br/>application]
 ```
 
-6. The Main Container has kubectl installed and checks if SeedsBackup file was handed over by Init Container.
+2. The Main Container has `kubectl` installed and checks if SeedsBackup file was handed over by Init Container.
 
 ```mermaid
 flowchart LR
-L(Main Container) --> M{SeedsBackup file exists?}
-M -->|exists| N[Create ConfigMap SeedsBackup for current Image]
-N --> O[Update ConfigMap SeedsBackup]
-O --> P
-M -->|not exists| P[Exit Pod]
+G(Main Container) --> H[Create ConfigMap SeedsBackup for current Image]
+H --> I[Update ConfigMap SeedsBackup]
+I --> J[Exit Pod]
 ```
 
 After completion of the *Init Job* the application container will be deployed/restarted with the current *ConfigMap SeedsBackup*.

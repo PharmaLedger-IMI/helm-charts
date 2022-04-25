@@ -1,8 +1,7 @@
 {{- /*
-Please note: The Init Job only will only be deployed by helm if the image differs from last build
+Please note: The Init Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
 */}}
-
-{{- if ne (include "epi.lastBuiltImage" .) (include "epi.image" .) -}}
+{{- if or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.image" .)) -}}
 
 {{- /*
 1. Create Configmaps required for hook from template
@@ -166,7 +165,7 @@ spec:
           - name: IMAGE_TAG
             value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
         volumeMounts:
-          # As of Feb-2023 we do NOT mount seedsBackup to its desired destination /ePI-workspace/apihub-root/seedsBackup
+          # As of Feb-2022 we do NOT mount seedsBackup to its desired destination /ePI-workspace/apihub-root/seedsBackup
           # as the startup build process will write to that even if there are no changes.
           # Thus, we mount it to different location and copy it to desired location where the file is writeable then.
           - name: epi-seeds-volume
