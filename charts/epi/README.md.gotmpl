@@ -115,6 +115,8 @@ These resources are:
 2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
 3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `epi-seedsbackup-poc.1.6-final-backup-1646063552`
 
+## Installation
+
 ### Quick install with internal service of type ClusterIP
 
 By default, this helm chart installs the Ethereum Adapter Service at an internal ClusterIP Service listening at port 3000.
@@ -179,7 +181,7 @@ service:
 # further config
 ```
 
-### AWS Load Balancer Controler: Expose Service via Ingress
+### AWS Load Balancer Controller: Expose Service via Ingress
 
 Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.
 
@@ -229,7 +231,7 @@ config:
   # ... config section keys and values ...
 ```
 
-### Additional helm options
+## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
 
@@ -255,7 +257,7 @@ Run `helm upgrade --helm` for full list of options.
         --values my-config.yaml \
     ```
 
-### Potential issues
+## Potential issues
 
 1. `Error: admission webhook "vingress.elbv2.k8s.aws" denied the request: invalid ingress class: IngressClass.networking.k8s.io "alb" not found`
 
