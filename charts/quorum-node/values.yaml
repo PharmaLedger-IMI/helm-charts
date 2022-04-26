@@ -76,8 +76,8 @@ deploymentStrategy:
 quorum:
   # -- Directory path to where the persistent volume will be mounted to.
   # Also some config file will be mounted there.
-  homePath: "/etc/quorum/qdata"
-  # -- Directory path to the Quorum Data Dir. Must be beyond 'homePath' in order to store data on the persistent volume
+  homeDirPath: "/etc/quorum/qdata"
+  # -- Directory path to the Quorum Data Dir. Must be beyond 'homeDirPath' in order to store data on the persistent volume.
   dataDirPath: "/etc/quorum/qdata/dd"
   # -- File path to genesis file
   genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
@@ -95,6 +95,14 @@ quorum:
     verbosity: 3
     # -- If enabled, emit specially formatted logging checkpoints
     emitcheckpoints: true
+
+  rpc:
+    corsDomain: "*"
+    # -- The virtual hostnames for the RPC endpoint to listen for.
+    # If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local
+    vHosts: "*"
+    # -- The activated APIs at RPC endpoint.
+    api: "admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"
 
 use_case:
   newNetwork:

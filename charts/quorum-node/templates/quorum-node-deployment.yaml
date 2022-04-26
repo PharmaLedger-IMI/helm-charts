@@ -141,9 +141,9 @@ spec:
                 --syncmode full --nousb \
                 --networkid {{ .Values.quorum.networkId }} \
                 --port 30303 \
-                --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul \
-                --rpccorsdomain="*" --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
-                  2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log;"
+                --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
+                --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
+                2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log;"
           ports:
             - containerPort: 8545  # RPC Port
             - containerPort: 30303 # Node communication
