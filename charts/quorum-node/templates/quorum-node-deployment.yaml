@@ -153,8 +153,11 @@ spec:
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
                 2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log;"
           ports:
-            - containerPort: 8545  # RPC Port
-            - containerPort: 30303 # Node communication
+            - containerPort: 8545
+            - containerPort: 30303
+          {{- if .Values.quorum.metrics.enabled }}
+            - containerPort: {{ .Values.quorum.metrics.port }}
+          {{- end }}
           env:
             - name: PRIVATE_CONFIG
               value: "ignore"
