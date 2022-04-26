@@ -1,5 +1,3 @@
-{{- if .Values.use_case.newNetwork.enabled }}
-  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,6 +6,8 @@ metadata:
   labels:
     name: {{ include "quorumNode.Identifier" . }}-genesis-config
 data:
+{{- if .Values.use_case.newNetwork.enabled }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
   genesis-geth.json: |-
     {
         "alloc": {
@@ -48,18 +48,9 @@ data:
       "timestamp": "0x00"
     }
 
-
   {{- else }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "quorumNode.Identifier" . }}-genesis-config
-  namespace: {{ default .Release.Namespace }}
-  labels:
-    name: {{ include "quorumNode.Identifier" . }}-genesis-config
-data:
-  genesis-geth.json: |-
     {{- $genesis := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  genesis-geth.json: |-
     {{- $genesis.genesis | nindent 6 }}
 {{- end }}
 
