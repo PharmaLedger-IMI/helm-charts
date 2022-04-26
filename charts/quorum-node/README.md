@@ -124,14 +124,17 @@ spec:
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
-| quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homePath' in order to store data on the persistent volume |
+| quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeDirPath' in order to store data on the persistent volume. |
 | quorum.genesisFilePath | string | `"/etc/quorum/genesis/genesis-geth.json"` | File path to genesis file |
-| quorum.homePath | string | `"/etc/quorum/qdata"` | Directory path to where the persistent volume will be mounted to. Also some config file will be mounted there. |
+| quorum.homeDirPath | string | `"/etc/quorum/qdata"` | Directory path to where the persistent volume will be mounted to. Also some config file will be mounted there. |
 | quorum.log.emitcheckpoints | bool | `true` | If enabled, emit specially formatted logging checkpoints |
 | quorum.log.verbosity | int | `3` | Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail |
 | quorum.miner.blockPeriod | int | `3` | Default minimum difference between two consecutive block's timestamps in seconds |
 | quorum.miner.threads | int | `1` | Number of CPU threads to use for mining |
 | quorum.networkId | int | `10` | Explicitly set network id |
+| quorum.rpc.api | string | `"admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"` | The activated APIs at RPC endpoint. |
+| quorum.rpc.corsDomain | string | `"*"` |  |
+| quorum.rpc.vHosts | string | `"*"` | The virtual hostnames for the RPC endpoint to listen for. If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local |
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
 | resources | object | `{}` | Pod resources |
 | securityContext | object | `{}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
