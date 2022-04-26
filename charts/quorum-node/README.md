@@ -129,6 +129,11 @@ spec:
 | quorum.homeDirPath | string | `"/etc/quorum/qdata"` | Directory path to where the persistent volume will be mounted to. Also some config file will be mounted there. |
 | quorum.log.emitcheckpoints | bool | `true` | If enabled, emit specially formatted logging checkpoints |
 | quorum.log.verbosity | int | `3` | Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail |
+| quorum.metrics.addr | string | `"0.0.0.0"` | Enable stand-alone metrics HTTP server listening interface. |
+| quorum.metrics.enabled | bool | `true` |  |
+| quorum.metrics.expensive | bool | `false` | Enable expensive metrics collection and reporting. |
+| quorum.metrics.port | int | `9545` | Metrics HTTP server listening port. |
+| quorum.metrics.prometheusAnnotationsEnabled | bool | `true` | Add annotations for Prometheus to discover metrics endpoint. |
 | quorum.miner.blockPeriod | int | `3` | Default minimum difference between two consecutive block's timestamps in seconds |
 | quorum.miner.threads | int | `1` | Number of CPU threads to use for mining |
 | quorum.networkId | int | `10` | Explicitly set network id |
