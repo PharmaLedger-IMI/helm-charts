@@ -62,13 +62,21 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 {{- define "quorumnode.PvcLogs" -}}
+{{- if .Values.persistence.logs.existingClaim }}
+{{- .Values.persistence.logs.existingClaim }}
+{{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-logs-pvc" $qni }}
 {{- end }}
+{{- end }}
 
 {{- define "quorumnode.PvcData" -}}
+{{- if .Values.persistence.data.existingClaim }}
+{{- .Values.persistence.data.existingClaim }}
+{{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-pvc" $qni }}
+{{- end }}
 {{- end }}
 
 

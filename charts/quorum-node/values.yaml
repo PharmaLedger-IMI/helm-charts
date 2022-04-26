@@ -152,11 +152,54 @@ use_case:
     # -- List of company names who act as peers
     peers: []
 
-storage:
-  # -- Size for the data volume of the Quorum Node
-  data: "3Gi"
-  # -- Size for the logs volume of the Quorum Node
-  logs: "1Gi"
+# -- Enable persistence using Persistent Volume Claims
+# See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
+persistence:
+  # -- Settings for the data PVC.
+  data:
+    # -- The name of an existing PVC to use instead of creating a new one.
+    existingClaim: ""
+    # -- Name of the storage class for data PVC.
+    # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+    storageClassName: ""
+    # -- Size of the data PVC volume.
+    size: "3Gi"
+    # -- Annotations for the data PVC.
+    annotations: {}
+    # -- Finalizers for data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # -- AccessModes for the data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+    accessModes:
+      - ReadWriteOnce
+    # -- Selector Labels for the data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+    selectorLabels: {}
+
+  # -- Settings for the logs PVC.
+  logs:
+    # -- The name of an existing PVC to use instead of creating a new one.
+    existingClaim: ""
+    # -- Name of the storage class for logs PVC.
+    # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+    storageClassName: ""
+    # -- Size of the logs PVC volume.
+    size: "1Gi"
+    # -- Annotations for the logs PVC.
+    annotations: {}
+    # -- Finalizers for logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # -- AccessModes for the logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+    accessModes:
+      - ReadWriteOnce
+    # -- Selector Labels for the logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+    selectorLabels: {}
 
 storageClass:
   # -- Enable the creation of storage class (AWS specific)
