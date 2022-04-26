@@ -104,6 +104,17 @@ quorum:
     # -- The activated APIs at RPC endpoint.
     api: "admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"
 
+  metrics:
+    enabled: true
+    # -- Enable expensive metrics collection and reporting.
+    expensive: false
+    # -- Enable stand-alone metrics HTTP server listening interface.
+    addr: "0.0.0.0"
+    # -- Metrics HTTP server listening port.
+    port: 9545
+    # -- Add annotations for Prometheus to discover metrics endpoint.
+    prometheusAnnotationsEnabled: true
+
 use_case:
   newNetwork:
     # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case

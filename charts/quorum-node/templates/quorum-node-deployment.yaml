@@ -36,8 +36,13 @@ spec:
       name:  {{ include "quorumNode.fullname" . }}
       labels:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
-      {{- with .Values.podAnnotations }}
       annotations:
+        {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/debug/metrics/prometheus"
+        prometheus.io/port: {{ .Values.quorum.metrics.port | quote }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
@@ -140,6 +145,9 @@ spec:
                 --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --syncmode full --nousb \
                 --networkid {{ .Values.quorum.networkId }} \
+                {{- if .Values.quorum.metrics.enabled }}
+                --metrics --metrics.addr {{ .Values.quorum.metrics.addr | quote }} --metrics.port {{ .Values.quorum.metrics.port | quote }} \
+                {{- end }}
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
