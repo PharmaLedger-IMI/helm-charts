@@ -119,31 +119,32 @@ use_case:
   newNetwork:
     # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: true
-    plugin_data_common: >-
-        "{
-          "extradata":"0x0",
-          "enode":"",
-          "nodeAddress":"",
-          "genesisAccount":"0x89"
-        }"
-    plugin_data_secrets: "{
-          \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",
-          \"nodeKey\": \"47\"
-        }"
+    plugin_data_common: |-
+      {
+        "extradata":"0x0",
+        "enode":"",
+        "nodeAddress":"",
+        "genesisAccount":"0x89"
+      }
+    plugin_data_secrets: |-
+      {
+        "genesisKeyStoreAccount": "eyJhZGRyZX",
+        "nodeKey": "47"
+      }
 
   joinNetwork:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
-    plugin_data_common: >-
-        "{
-            "enode":"08",
-            "nodeAddress":"0x3",
-            "genesis":""
-        }"
-    plugin_data_secrets: >-
-        "{
-            "nodeKey":"3b"
-        }"
+    plugin_data_common: |-
+      {
+        "enode":"08",
+        "nodeAddress":"0x3",
+        "genesis":"{ \"key\": \"value\" }"
+      }
+    plugin_data_secrets: |-
+      {
+        "nodeKey":"3b"
+      }
 
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
