@@ -170,7 +170,6 @@ spec:
 | shared_repository_conventions.genesis_file_name | string | `"genesis.json"` | The name of the file that contains the genesis file |
 | shared_repository_conventions.nat_file_name | string | `"nat"` | The name of the file that contains the NAT address |
 | shared_repository_conventions.validator_file_name | string | `"validator.address"` | The name of the file that contains the validator address |
-| storageClass.enabled | bool | `true` | Enable the creation of storage class (AWS specific) |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.joinNetwork.plugin_data_common | string | `"\"{\n    \"enode\":\"08\",\n    \"nodeAddress\":\"0x3\",\n    \"genesis\":\"\"\n}\""` |  |

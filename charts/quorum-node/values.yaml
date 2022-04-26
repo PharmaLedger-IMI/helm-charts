@@ -201,10 +201,6 @@ persistence:
     # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
     selectorLabels: {}
 
-storageClass:
-  # -- Enable the creation of storage class (AWS specific)
-  enabled: true
-
 # -- Number of replicas for the quorum-node !! DO NOT CHANGE !!
 replicasCount: 1
 # -- Override the full name
