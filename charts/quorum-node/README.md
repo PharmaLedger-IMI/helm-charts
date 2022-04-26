@@ -122,6 +122,23 @@ spec:
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | nameOverride | string | `"quorum"` | override the name |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
+| persistence | object | `{"data":{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"3Gi","storageClassName":""},"logs":{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"1Gi","storageClassName":""}}` | Enable persistence using Persistent Volume Claims See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/) |
+| persistence.data | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"3Gi","storageClassName":""}` | Settings for the data PVC. |
+| persistence.data.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
+| persistence.data.annotations | object | `{}` | Annotations for the data PVC. |
+| persistence.data.existingClaim | string | `""` | The name of an existing PVC to use instead of creating a new one. |
+| persistence.data.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
+| persistence.data.selectorLabels | object | `{}` | Selector Labels for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
+| persistence.data.size | string | `"3Gi"` | Size of the data PVC volume. |
+| persistence.data.storageClassName | string | `""` | Name of the storage class for data PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
+| persistence.logs | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"1Gi","storageClassName":""}` | Settings for the logs PVC. |
+| persistence.logs.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
+| persistence.logs.annotations | object | `{}` | Annotations for the logs PVC. |
+| persistence.logs.existingClaim | string | `""` | The name of an existing PVC to use instead of creating a new one. |
+| persistence.logs.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
+| persistence.logs.selectorLabels | object | `{}` | Selector Labels for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
+| persistence.logs.size | string | `"1Gi"` | Size of the logs PVC volume. |
+| persistence.logs.storageClassName | string | `""` | Name of the storage class for logs PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeDirPath' in order to store data on the persistent volume. |
@@ -153,8 +170,6 @@ spec:
 | shared_repository_conventions.genesis_file_name | string | `"genesis.json"` | The name of the file that contains the genesis file |
 | shared_repository_conventions.nat_file_name | string | `"nat"` | The name of the file that contains the NAT address |
 | shared_repository_conventions.validator_file_name | string | `"validator.address"` | The name of the file that contains the validator address |
-| storage.data | string | `"3Gi"` | Size for the data volume of the Quorum Node |
-| storage.logs | string | `"1Gi"` | Size for the logs volume of the Quorum Node |
 | storageClass.enabled | bool | `true` | Enable the creation of storage class (AWS specific) |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
