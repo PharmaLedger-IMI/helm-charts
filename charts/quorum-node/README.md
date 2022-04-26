@@ -172,11 +172,11 @@ spec:
 | shared_repository_conventions.validator_file_name | string | `"validator.address"` | The name of the file that contains the validator address |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
-| use_case.joinNetwork.plugin_data_common | string | `"\"{\n    \"enode\":\"08\",\n    \"nodeAddress\":\"0x3\",\n    \"genesis\":\"\"\n}\""` |  |
-| use_case.joinNetwork.plugin_data_secrets | string | `"\"{\n    \"nodeKey\":\"3b\"\n}\""` |  |
+| use_case.joinNetwork.plugin_data_common | string | `"{\n  \"enode\": \"08\",\n  \"nodeAddress\": \"0x3\",\n  \"genesis\": \"{ \\\"key\\\": \\\"value\\\" }\"\n}"` |  |
+| use_case.joinNetwork.plugin_data_secrets | string | `"{\n  \"nodeKey\": \"3b\"\n}"` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
-| use_case.newNetwork.plugin_data_common | string | `"\"{\n  \"extradata\":\"0x0\",\n  \"enode\":\"\",\n  \"nodeAddress\":\"\",\n  \"genesisAccount\":\"0x89\"\n}\""` |  |
-| use_case.newNetwork.plugin_data_secrets | string | `"{ \"genesisKeyStoreAccount\": \"eyJhZGRyZX\", \"nodeKey\": \"47\" }"` |  |
+| use_case.newNetwork.plugin_data_common | string | `"{\n  \"extradata\": \"0x0\",\n  \"enode\": \"\",\n  \"nodeAddress\": \"\",\n  \"genesisAccount\": \"0x89\"\n}"` |  |
+| use_case.newNetwork.plugin_data_secrets | string | `"{\n  \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",\n  \"nodeKey\": \"47\"\n}"` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
 | use_case.updatePartnersInfo.peers | list | `[]` | List of company names who act as peers |
 | use_case.updatePartnersInfo.plugin_data_common | string | `"{}"` |  |
