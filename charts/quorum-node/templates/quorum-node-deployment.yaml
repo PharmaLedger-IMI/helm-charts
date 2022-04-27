@@ -181,10 +181,10 @@ spec:
               mountPath: /geth-helpers
             - name: {{ include "quorumnode.IValidatorCfg" . }}
               mountPath: {{ .Values.quorum.homeDirPath }}/istanbul-validator-config.toml
-            - name: {{ include "quorumnode.NodeManagement" . }}
+            - name: cm-node-management
               mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
-            - name: {{ include "quorumnode.NodeManagement" . }}
+            - name: cm-node-management
               mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
@@ -232,7 +232,7 @@ spec:
         - name: {{ include "quorumnode.IValidatorCfg" . }}
           configMap:
             name: {{ include "quorumnode.IValidatorCfg" . }}.toml
-        - name: {{ include "quorumnode.NodeManagement" . }}
+        - name: cm-node-management
           configMap:
             name: {{ include "quorumnode.NodeManagement" . }}
             items:
