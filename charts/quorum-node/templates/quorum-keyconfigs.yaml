@@ -16,7 +16,7 @@
 {{- end }}
 ---
 # 
-# TODO: Put into Secret
+# TODO: Put into Secret <!-- pragma: allowlist secret -->
 # Secret: nodekey private to the node, used to verify identity.
 #
 apiVersion: v1
