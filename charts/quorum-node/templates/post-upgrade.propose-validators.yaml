@@ -27,7 +27,7 @@ spec:
             sleep 120;
             kubectl scale --replicas=1 deployment/{{ include "quorumNode.fullname" . }};
             sleep 120;
-            kubectl exec -it deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose_all.sh;
+            kubectl exec -it deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh;
             "
       restartPolicy: Never
 ---

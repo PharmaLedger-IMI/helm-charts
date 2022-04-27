@@ -68,13 +68,17 @@ deploymentStrategy:
 
 # Quorum configuration settings.
 quorum:
-  # -- Directory path to where the persistent volume will be mounted to.
+  # -- Directory path to where the persistent volume "data" will be mounted to.
   # Also some config file will be mounted there.
-  homeDirPath: "/etc/quorum/qdata"
-  # -- Directory path to the Quorum Data Dir. Must be beyond 'homeDirPath' in order to store data on the persistent volume.
-  dataDirPath: "/etc/quorum/qdata/dd"
+  homeMountPath: "/quorum/home"
+  # -- Directory path to where the persistent volume "logs" will be mounted to.
+  logsMountPath: "/quorum/logs"
+  
+  # -- Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume.
+  dataDirPath: "/quorum/home/dd"
+
   # -- File path to genesis file
-  genesisFilePath: "/etc/quorum/genesis/genesis-geth.json"
+  genesisFilePath: "/quorum/home/genesis/genesis-geth.json"
   # -- Explicitly set network id
   networkId: 10
 

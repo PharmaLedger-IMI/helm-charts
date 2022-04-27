@@ -136,11 +136,12 @@ spec:
 | persistence.logs.storageClassName | string | `""` | Name of the storage class for logs PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
-| quorum.dataDirPath | string | `"/etc/quorum/qdata/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeDirPath' in order to store data on the persistent volume. |
-| quorum.genesisFilePath | string | `"/etc/quorum/genesis/genesis-geth.json"` | File path to genesis file |
-| quorum.homeDirPath | string | `"/etc/quorum/qdata"` | Directory path to where the persistent volume will be mounted to. Also some config file will be mounted there. |
+| quorum.dataDirPath | string | `"/quorum/home/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume. |
+| quorum.genesisFilePath | string | `"/quorum/home/genesis/genesis-geth.json"` | File path to genesis file |
+| quorum.homeMountPath | string | `"/quorum/home"` | Directory path to where the persistent volume "data" will be mounted to. Also some config file will be mounted there. |
 | quorum.log.emitcheckpoints | bool | `true` | If enabled, emit specially formatted logging checkpoints |
 | quorum.log.verbosity | int | `3` | Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail |
+| quorum.logsMountPath | string | `"/quorum/logs"` | Directory path to where the persistent volume "logs" will be mounted to. |
 | quorum.metrics.addr | string | `"0.0.0.0"` | Enable stand-alone metrics HTTP server listening interface. |
 | quorum.metrics.enabled | bool | `true` | Enable metrics endpoint which allows monitoring, e.g. via Prometheus |
 | quorum.metrics.expensive | bool | `false` | Enable expensive metrics collection and reporting. |

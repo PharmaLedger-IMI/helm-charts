@@ -37,5 +37,5 @@ fullnameOverride: "quorum-epi"
 
 quorum:
   dataDirPath: "/quorumnode/qdata/dd"
-  homeDirPath: "/quorumnode/qdata"
+  homeMountPath: "/quorumnode/qdata"
   genesisFilePath: "/quorumnode/genesis/genesis-geth.json"

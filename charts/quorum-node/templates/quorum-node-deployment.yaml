@@ -76,7 +76,7 @@ spec:
               fi
           volumeMounts:
             - name: pvc-data
-              mountPath: {{ .Values.quorum.homeDirPath }}
+              mountPath: {{ .Values.quorum.homeMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
@@ -106,8 +106,8 @@ spec:
               # TODO: Not needed? JQ seems not to be used anywhere!
               # apk add jq
 
-              ln -sf {{ .Values.quorum.homeDirPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/permissioned-nodes.json
-              ln -sf {{ .Values.quorum.homeDirPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/static-nodes.json
+              ln -sf {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/permissioned-nodes.json
+              ln -sf {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/static-nodes.json
               cat {{ .Values.quorum.genesisFilePath }}
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
@@ -138,7 +138,7 @@ spec:
             {{- if not .Values.persistence.logs.enabled }}
                 2>&1
             {{- else }}
-                2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log
+                2>&1 | tee -a {{ .Values.quorum.logsMountPath }}/quorum.log
             {{- end }}
           ports:
             - containerPort: 8545
@@ -155,11 +155,11 @@ spec:
               value: {{ $enode }}
           volumeMounts:
             - name: pvc-data
-              mountPath: {{ .Values.quorum.homeDirPath }}
+              mountPath: {{ .Values.quorum.homeMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
           {{- if .Values.persistence.logs.enabled }}
             - name: pvc-logs
-              mountPath: {{ .Values.quorum.homeDirPath }}/logs
+              mountPath: {{ .Values.quorum.logsMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}-logs
           {{- end }}
             - name: cm-genesis
@@ -177,16 +177,16 @@ spec:
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
             - name: cm-permissioned-nodes
-              mountPath: {{ .Values.quorum.homeDirPath }}/permission-nodes
+              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes
             - name: cm-geth-helpers
               mountPath: /geth-helpers
             - name: cm-validator-config
-              mountPath: {{ .Values.quorum.homeDirPath }}/istanbul-validator-config.toml
+              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml
             - name: cm-node-management
-              mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose.sh
+              mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
             - name: cm-node-management
-              mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose_all.sh
+              mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
       {{- if .Values.use_case.newNetwork.enabled }}
