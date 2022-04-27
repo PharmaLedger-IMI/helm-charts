@@ -172,7 +172,7 @@ spec:
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
           {{- end }}
-            - name: quorum-enode
+            - name: cm-enode
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
             - name: {{ include "quorumnode.PermissionedCfg" . }}
@@ -214,9 +214,9 @@ spec:
             items:
               - key: nodekey
                 path: nodekey
-        - name: quorum-enode
+        - name: cm-enode
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode-config
+            name: {{ include "quorumNode.Identifier" . }}-enode
             items:
               - key: enode
                 path: enode

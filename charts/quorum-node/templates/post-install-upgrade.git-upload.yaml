@@ -90,7 +90,7 @@ spec:
             - name: cm-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
-            - name: quorum-enode
+            - name: cm-enode
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
       restartPolicy: Never
@@ -109,9 +109,9 @@ spec:
             items:
               - key: nodekey
                 path: nodekey
-        - name: quorum-enode
+        - name: cm-enode
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode-config
+            name: {{ include "quorumNode.Identifier" . }}-enode
             items:
               - key: enode
                 path: enode

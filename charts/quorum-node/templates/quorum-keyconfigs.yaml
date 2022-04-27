@@ -46,10 +46,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-enode-config
+  name: {{ include "quorumNode.Identifier" . }}-enode
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-enode-config
+    name: {{ include "quorumNode.Identifier" . }}-enode
 data:
   enode: | {{ $enode | nindent 4 }}
 
