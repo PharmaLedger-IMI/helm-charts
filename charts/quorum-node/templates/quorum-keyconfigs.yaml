@@ -1,17 +1,17 @@
 {{- $nodeKey := "" }}
-{{- $nodeAddress := "" }}
+{{- $nodeKeyPublic := "" }}
 {{- $enode := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
   {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
 {{- else }}
   {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
   {{- $generatedPrivateJson := ( .Values.use_case.joinNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
 {{- end }}
 ---
@@ -31,12 +31,12 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+  name: {{ include "quorumNode.Identifier" . }}-nodekeypub
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+    name: {{ include "quorumNode.Identifier" . }}-nodekeypub
 data:
-  nodekey: | {{ $nodeAddress | nindent 4 }}
+  nodekey.pub: | {{ $nodeKeyPublic | nindent 4 }}
 
 ---
 # enode Id

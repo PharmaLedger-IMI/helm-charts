@@ -1,13 +1,13 @@
 {{- $enode := "" }}
-{{- $nodeAddress := ""}}
+{{- $nodeKeyPublic := ""}}
 {{- if .Values.use_case.newNetwork.enabled }}
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
 {{- else }}
   {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
@@ -76,14 +76,14 @@ data:
   istanbul-validator-config.toml: |-
     vanity = "0x00"
     validators = [
-      {{ $nodeAddress | quote }}
+      {{ $nodeKeyPublic | quote }}
 {{- if .Values.use_case.updatePartnersInfo.enabled }}
   {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
   {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
   {{- range $peers }}
     {{- $peer := . }}
       {{- printf "," }}
-      {{ $peer.nodeAddress | quote }}
+      {{ $peer.nodeKeyPublic | quote }}
   {{- end }}
 {{- end }}
     ]

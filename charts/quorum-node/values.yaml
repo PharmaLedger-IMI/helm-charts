@@ -39,8 +39,8 @@ shared_repository_conventions:
   base_shareable_storage_path: "networks"
   # -- The name of the file that contains the genesis file
   genesis_file_name: "genesis.json"
-  # -- The name of the file that contains the validator address
-  validator_file_name: "validator.address"
+  # -- The name of the file that contains the validators public key (aka address)
+  validator_file_name: "validator.keypub"
   # -- The name of the file that contains the enode
   enode_file_name: "enode"
   # -- The name of the file that contains the Quorum Node real ip address or dns
@@ -115,15 +115,15 @@ use_case:
     enabled: true
     plugin_data_common: >-
       {
-        "extradata": "0x0",
-        "enode": "newNetworkEnode",
-        "nodeAddress": "newNetworkNodeAddress",
-        "genesisAccount": "0x89"
+        "extradata": "newNetwork_extradata",
+        "enode": "newNetwork_Enode",
+        "nodeKeyPublic": "newNetwork_NodeKeyPublic",
+        "genesisAccount": "newNetwork_genesisAccount"
       }
     plugin_data_secrets: >-
       {
         "genesisKeyStoreAccount": "ewogICAgImFkZHJlc3MiOiAidGVzdGRhdGEiLAogICAgImNyeXB0byI6IHsKICAgICAgICAiY2lwaGVyIjogImFlcy0xMjgtY3RyIiwKICAgICAgICAiY2lwaGVydGV4dCI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImNpcGhlcnBhcmFtcyI6IHsKICAgICAgICAgICAgIml2IjogInRlc3RkYXRhIgogICAgICAgIH0sCiAgICAgICAgIm1hYyI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImtkZiI6ICJzY3J5cHQiLAogICAgICAgICJrZGZwYXJhbXMiOiB7CiAgICAgICAgICAgICJka2xlbiI6IDMyLAogICAgICAgICAgICAibiI6IDI2MjE0NCwKICAgICAgICAgICAgInIiOiA4LAogICAgICAgICAgICAicCI6IDEsCiAgICAgICAgICAgICJzYWx0IjogInRlc3RkYXRhIgogICAgICAgIH0KICAgIH0sCiAgICAiaWQiOiAidGVzdGRhdGEiLAogICAgInZlcnNpb24iOiAzCn0=",
-        "nodeKey": "47"
+        "nodeKey": "newNetwork_NodeKey"
       }
 
   joinNetwork:
@@ -131,13 +131,13 @@ use_case:
     enabled: false
     plugin_data_common: >-
       {
-        "enode": "08",
-        "nodeAddress": "0x3",
+        "enode": "joinNetwork_enode",
+        "nodeKeyPublic": "joinNetwork_nodeKeyPublic",
         "genesis": "{ \"key\": \n"value\" }"
       }
     plugin_data_secrets: >-
       {
-        "nodeKey": "3b"
+        "nodeKey": "joinNetwork_nodeKey"
       }
 
   updatePartnersInfo:
@@ -150,13 +150,13 @@ use_case:
             "enode": "peer1_enode",
             "enodeAddress": "peer1_enodeAddress",
             "enodeAddressPort": "peer1_enodeAddressPort",
-            "nodeAddress": "peer1_nodeAddress"
+            "nodeKeyPublic": "peer1_nodeKeyPublic"
           },
           {
             "enode": "peer2_enode",
             "enodeAddress": "peer2_enodeAddress",
             "enodeAddressPort": "peer2_enodeAddressPort",
-            "nodeAddress": "peer2_nodeAddress"
+            "nodeKeyPublic": "peer2_nodeKeyPublic"
           }
         ]
       }

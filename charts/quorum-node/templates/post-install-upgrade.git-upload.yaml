@@ -1,15 +1,15 @@
 {{- if .Values.git_upload.enabled  }}
-{{- $nodeAddressValue := ""}}
-{{- $enodeValue := "" }}
+{{- $nodeKeyPublic := ""}}
+{{- $enode := "" }}
 
 {{- if .Values.use_case.newNetwork.enabled }}
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-  {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-  {{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- else }}
   {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-  {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-  {{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- end }}
 apiVersion: batch/v1
 kind: Job
@@ -41,43 +41,43 @@ spec:
             {{- /*
             # pragma: allowlist nextline secret
             */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name }}
-            {{- $validatorAddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
-            {{- $enode := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
-            {{- $enodeaddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
-            {{- $enodeport := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
-            {{- $nat := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
+            {{- $validatorFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
+            {{- $enodeFilename := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
+            {{- $enodeaddressFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
+            {{- $enodeportFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
+            {{- $natFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
 
               git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }}
               cd {{ .Values.git_upload.git_repo_clone_directory }}/
               mkdir -p {{ $storagepath }}
 
-              rm -f {{ $validatorAddress }}
-              rm -f {{ $enode }}
-              rm -f {{ $enodeaddress }}
-              rm -f {{ $enodeport }}
-              rm -f {{ $nat }}
+              rm -f {{ $validatorFilename }}
+              rm -f {{ $enodeFilename }}
+              rm -f {{ $enodeaddressFilename }}
+              rm -f {{ $enodeportFilename }}
+              rm -f {{ $natFilename }}
 
             {{- if .Values.use_case.newNetwork.enabled }}
-              {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
-              rm -f {{ $genesisfile }}
-              cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisfile }}
-              git add {{ $genesisfile }}
+              {{- $genesisFilename := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
+              rm -f {{ $genesisFilename }}
+              cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisFilename }}
+              git add {{ $genesisFilename }}
             {{- end }}
             
-              echo {{ $nodeAddressValue | quote }} > {{ $validatorAddress }}
-              git add {{ $validatorAddress }}
+              echo {{ $nodeKeyPublic | quote }} > {{ $validatorFilename }}
+              git add {{ $validatorFilename }}
 
-              echo {{ $enodeValue | quote }} > {{ $enode }}
-              git add {{ $enode }}
+              echo {{ $enode | quote }} > {{ $enodeFilename }}
+              git add {{ $enodeFilename }}
 
-              echo {{ .Values.deployment.enode_address | quote }} > {{ $enodeaddress }}
-              git add {{ $enodeaddress }}
+              echo {{ .Values.deployment.enode_address | quote }} > {{ $enodeaddressFilename }}
+              git add {{ $enodeaddressFilename }}
 
-              echo {{ .Values.deployment.enode_address_port | quote }} > {{ $enodeport }}
-              git add {{ $enodeport }}
+              echo {{ .Values.deployment.enode_address_port | quote }} > {{ $enodeportFilename }}
+              git add {{ $enodeportFilename }}
 
-              echo {{ .Values.deployment.NAT | quote }} > {{ $nat }}
-              git add {{ $nat }}
+              echo {{ .Values.deployment.NAT | quote }} > {{ $natFilename }}
+              git add {{ $natFilename }}
 
               git commit -m {{ .Values.git_upload.git_commit_description | quote }}
               git push origin master
