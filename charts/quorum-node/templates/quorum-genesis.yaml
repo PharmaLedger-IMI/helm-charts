@@ -10,11 +10,11 @@ data:
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
   genesis-geth.json: |-
     {
-        "alloc": {
-          "{{ $generatedPublicJson.genesisAccount }}": {
-             "balance": "1000000000000000000000000000"
-          }
-        },
+      "alloc": {
+        "{{ $generatedPublicJson.genesisAccount }}": {
+            "balance": "1000000000000000000000000000"
+        }
+      },
       "coinbase": "0x0000000000000000000000000000000000000000",
       "config": {
         "homesteadBlock": 0,
