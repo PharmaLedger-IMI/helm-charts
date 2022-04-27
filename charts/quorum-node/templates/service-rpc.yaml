@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "quorumNode.fullname" . }}-rpc
+  namespace: {{ default .Release.Namespace }}
+  labels: {{ include "quorumNode.labels" . | nindent 4 }}
+  {{- with .Values.service.rpc.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end}}
+spec:
+  {{- with .Values.service.rpc.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "quorumNode.selectorLabels" . | nindent 4 }}
+  type: {{ .Values.service.rpc.type }}
+  ports:
+    - name: rpc-listener
+      protocol: TCP
+      port: {{ .Values.service.rpc.port }}
+      targetPort: 8545
