@@ -98,6 +98,7 @@ quorum:
     api: "admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"
 
   metrics:
+    # -- Enable metrics endpoint which allows monitoring, e.g. via Prometheus
     enabled: true
     # -- Enable expensive metrics collection and reporting.
     expensive: false

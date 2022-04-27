@@ -144,7 +144,7 @@ spec:
 | quorum.log.emitcheckpoints | bool | `true` | If enabled, emit specially formatted logging checkpoints |
 | quorum.log.verbosity | int | `3` | Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail |
 | quorum.metrics.addr | string | `"0.0.0.0"` | Enable stand-alone metrics HTTP server listening interface. |
-| quorum.metrics.enabled | bool | `true` |  |
+| quorum.metrics.enabled | bool | `true` | Enable metrics endpoint which allows monitoring, e.g. via Prometheus |
 | quorum.metrics.expensive | bool | `false` | Enable expensive metrics collection and reporting. |
 | quorum.metrics.port | int | `9545` | Metrics HTTP server listening port. |
 | quorum.metrics.prometheusAnnotationsEnabled | bool | `true` | Add annotations for Prometheus to discover metrics endpoint. |
