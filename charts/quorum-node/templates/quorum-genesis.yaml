@@ -48,9 +48,9 @@ data:
       "timestamp": "0x00"
     }
 
-  {{- else }}
+{{- else }}
     {{- $genesis := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
   genesis-geth.json: |-
-    {{- $genesis.genesis | nindent 6 }}
+    {{- $genesis.genesis | indent 4 }}
 {{- end }}
 
