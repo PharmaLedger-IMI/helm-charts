@@ -1,13 +1,13 @@
 {{- $enode := "" }}
 {{- $nodeAddress := ""}}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
-{{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
-{{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
@@ -18,20 +18,18 @@ metadata:
     name: {{ include "quorumnode.PermissionedCfg" . }}
 data:
   permissioned-nodes.json: |
-
     [
-                  "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
-    {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
-    {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
-    {{- range $peers }}
+      "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
     {{- $peer := . }}
-    {{- printf "," }}
-    {{- printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote | nindent 18 }}
-    {{- end }}
-    {{- end }}
+      {{- printf "," }}
+      {{ printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote }}
+  {{- end }}
+{{- end }}
     ]
-
 
 ---
 apiVersion: v1

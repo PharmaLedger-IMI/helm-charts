@@ -145,7 +145,18 @@ use_case:
     enabled: false
     plugin_data_common: >-
       {
-        
+        "peers": [
+          {
+            "enode": "peer1_enode",
+            "enodeAddress": "peer1_enodeAddress",
+            "enodeAddressPort": "peer1_enodeAddressPort"
+          },
+          {
+            "enode": "peer2_enode",
+            "enodeAddress": "peer2_enodeAddress",
+            "enodeAddressPort": "peer2_enodeAddressPort"
+          }
+        ]
       }
     # -- List of company names who act as peers
     peers: []
