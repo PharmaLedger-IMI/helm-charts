@@ -76,17 +76,16 @@ data:
   istanbul-validator-config.toml: |-
     vanity = "0x00"
     validators = [
-            {{ $nodeAddress | quote }}
-    {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
-    {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
-    {{- range $peers }}
+      {{ $nodeAddress | quote }}
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
     {{- $peer := . }}
-    {{- printf "," }}
-    {{- printf "%s" $peer.nodeAddress | quote | nindent 12 }}
-    {{- end }}
-    {{- end }}
-
+      {{- printf "," }}
+      {{ $peer.nodeAddress | quote }}
+  {{- end }}
+{{- end }}
     ]
 
 ---

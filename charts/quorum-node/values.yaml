@@ -149,12 +149,14 @@ use_case:
           {
             "enode": "peer1_enode",
             "enodeAddress": "peer1_enodeAddress",
-            "enodeAddressPort": "peer1_enodeAddressPort"
+            "enodeAddressPort": "peer1_enodeAddressPort",
+            "nodeAddress": "peer1_nodeAddress"
           },
           {
             "enode": "peer2_enode",
             "enodeAddress": "peer2_enodeAddress",
-            "enodeAddressPort": "peer2_enodeAddressPort"
+            "enodeAddressPort": "peer2_enodeAddressPort",
+            "nodeAddress": "peer2_nodeAddress"
           }
         ]
       }
