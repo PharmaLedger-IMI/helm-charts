@@ -143,7 +143,10 @@ use_case:
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
-    plugin_data_common: "{}"
+    plugin_data_common: >-
+      {
+        
+      }
     # -- List of company names who act as peers
     peers: []
 
