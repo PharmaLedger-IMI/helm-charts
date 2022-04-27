@@ -121,6 +121,10 @@ spec:
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
 
+            {{- if and (not .Values.persistence.logs.enabled) (not .Values.persistence.logs.existingClaim) }}
+              # If logging is disabled, we can start geth with exec to make it the primary process
+              exec \
+            {{- end }}
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
                 --nodiscover \
@@ -140,7 +144,11 @@ spec:
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
+            {{- if and (not .Values.persistence.logs.enabled) (not .Values.persistence.logs.existingClaim) }}
+                2>&1
+            {{- else }}
                 2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log
+            {{- end }}
           ports:
             - containerPort: 8545
             - containerPort: 30303
@@ -158,9 +166,11 @@ spec:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeDirPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
+          {{- if or .Values.persistence.logs.enabled .Values.persistence.logs.existingClaim }}
             - name: pvc-logs
               mountPath: {{ .Values.quorum.homeDirPath }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
+          {{- end }}
             - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
@@ -245,6 +255,8 @@ spec:
         - name: pvc-data
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcData" . }}
+      {{- if or .Values.persistence.logs.enabled .Values.persistence.logs.existingClaim }}
         - name: pvc-logs
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
+      {{- end }}
