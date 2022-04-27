@@ -9,7 +9,6 @@ metadata:
   labels:
     name: {{ include "quorumNode.Identifier" . }}-account-key-config
 data:
-  key: |-
-    {{ ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) }}
+  key: |- {{ ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) | nindent 4}}
 
 {{- end }}
