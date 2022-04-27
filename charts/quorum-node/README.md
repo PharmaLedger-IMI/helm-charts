@@ -172,7 +172,7 @@ spec:
 | use_case.joinNetwork.plugin_data_common | string | `"{\n  \"enode\": \"08\",\n  \"nodeAddress\": \"0x3\",\n  \"genesis\": \"{ \\\"key\\\": \\n\"value\\\" }\"\n}"` |  |
 | use_case.joinNetwork.plugin_data_secrets | string | `"{\n  \"nodeKey\": \"3b\"\n}"` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
-| use_case.newNetwork.plugin_data_common | string | `"{\n  \"extradata\": \"0x0\",\n  \"enode\": \"\",\n  \"nodeAddress\": \"\",\n  \"genesisAccount\": \"0x89\"\n}"` |  |
+| use_case.newNetwork.plugin_data_common | string | `"{\n  \"extradata\": \"0x0\",\n  \"enode\": \"newNetworkEnode\",\n  \"nodeAddress\": \"newNetworkNodeAddress\",\n  \"genesisAccount\": \"0x89\"\n}"` |  |
 | use_case.newNetwork.plugin_data_secrets | string | `"{\n  \"genesisKeyStoreAccount\": \"ewogICAgImFkZHJlc3MiOiAidGVzdGRhdGEiLAogICAgImNyeXB0byI6IHsKICAgICAgICAiY2lwaGVyIjogImFlcy0xMjgtY3RyIiwKICAgICAgICAiY2lwaGVydGV4dCI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImNpcGhlcnBhcmFtcyI6IHsKICAgICAgICAgICAgIml2IjogInRlc3RkYXRhIgogICAgICAgIH0sCiAgICAgICAgIm1hYyI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImtkZiI6ICJzY3J5cHQiLAogICAgICAgICJrZGZwYXJhbXMiOiB7CiAgICAgICAgICAgICJka2xlbiI6IDMyLAogICAgICAgICAgICAibiI6IDI2MjE0NCwKICAgICAgICAgICAgInIiOiA4LAogICAgICAgICAgICAicCI6IDEsCiAgICAgICAgICAgICJzYWx0IjogInRlc3RkYXRhIgogICAgICAgIH0KICAgIH0sCiAgICAiaWQiOiAidGVzdGRhdGEiLAogICAgInZlcnNpb24iOiAzCn0=\",\n  \"nodeKey\": \"47\"\n}"` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
 | use_case.updatePartnersInfo.peers | list | `[]` | List of company names who act as peers |

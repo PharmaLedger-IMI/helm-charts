@@ -116,8 +116,8 @@ use_case:
     plugin_data_common: >-
       {
         "extradata": "0x0",
-        "enode": "",
-        "nodeAddress": "",
+        "enode": "newNetworkEnode",
+        "nodeAddress": "newNetworkNodeAddress",
         "genesisAccount": "0x89"
       }
     plugin_data_secrets: >-
