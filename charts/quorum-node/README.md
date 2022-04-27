@@ -112,13 +112,10 @@ spec:
 | git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
 | git_upload.git_repo_clone_directory | string | `"helm-charts"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step |
 | git_upload.user | string | `""` | The user used by the git in order to upload the data |
-| image.image | string | `"quorum"` | Quorum docker image name |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
-| image.registry | string | `"quorumengineering"` | Quorum docker image registry |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `"21.7.1"` | Image tag |
-| image.version | string | `"21.7.1"` | Quorum docker image version |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | nameOverride | string | `"quorum"` | override the name |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
