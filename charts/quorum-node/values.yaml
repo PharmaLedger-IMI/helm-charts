@@ -122,7 +122,7 @@ use_case:
       }
     plugin_data_secrets: >-
       {
-        "genesisKeyStoreAccount": "eyJhZGRyZX",
+        "genesisKeyStoreAccount": "eyJhZGRyZXNzIjoidGVzdGRhdGEiLCJjcnlwdG8iOnsiY2lwaGVyIjoiYWVzLTEyOC1jdHIiLCJjaXBoZXJ0ZXh0IjoidGVzdGRhdGEiLCJjaXBoZXJwYXJhbXMiOnsiaXYiOiJ0ZXN0ZGF0YSJ9LCJtYWMiOiJ0ZXN0ZGF0YSIsImtkZiI6InNjcnlwdCIsImtkZnBhcmFtcyI6eyJka2xlbiI6MzIsIm4iOjI2MjE0NCwiciI6OCwicCI6MSwic2FsdCI6InRlc3RkYXRhIn19LCJpZCI6InRlc3RkYXRhIiwidmVyc2lvbiI6M30=",
         "nodeKey": "47"
       }
 

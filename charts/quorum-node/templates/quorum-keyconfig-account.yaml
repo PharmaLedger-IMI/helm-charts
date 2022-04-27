@@ -1,7 +1,6 @@
 {{- if .Values.use_case.newNetwork.enabled }}
 # ethereum / geth account keys (keystore)
 {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,7 +10,6 @@ metadata:
     name: {{ include "quorumNode.Identifier" . }}-account-key-config
 data:
   key: |-
+    {{ ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) }}
 
-
-    {{ toJson ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) }}
-  {{- end }}
+{{- end }}
