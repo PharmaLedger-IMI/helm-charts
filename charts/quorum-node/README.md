@@ -119,8 +119,6 @@ spec:
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | nameOverride | string | `"quorum"` | override the name |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| persistence | object | `{"data":{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"3Gi","storageClassName":""},"logs":{"accessModes":["ReadWriteOnce"],"annotations":{},"enabled":true,"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"1Gi","storageClassName":""}}` | Enable persistence using Persistent Volume Claims See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/) |
-| persistence.data | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"3Gi","storageClassName":""}` | Settings for the data PVC. |
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.data.annotations | object | `{}` | Annotations for the data PVC. |
 | persistence.data.existingClaim | string | `""` | The name of an existing PVC to use instead of creating a new one. |
@@ -128,7 +126,6 @@ spec:
 | persistence.data.selectorLabels | object | `{}` | Selector Labels for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
 | persistence.data.size | string | `"3Gi"` | Size of the data PVC volume. |
 | persistence.data.storageClassName | string | `""` | Name of the storage class for data PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
-| persistence.logs | object | `{"accessModes":["ReadWriteOnce"],"annotations":{},"enabled":true,"existingClaim":"","finalizers":["kubernetes.io/pvc-protection"],"selectorLabels":{},"size":"1Gi","storageClassName":""}` | Settings for the logs PVC. |
 | persistence.logs.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.logs.annotations | object | `{}` | Annotations for the logs PVC. |
 | persistence.logs.enabled | bool | `true` | Enables logging to a persistent volume. if disabled, logging will be to stdout only. |

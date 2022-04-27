@@ -66,6 +66,7 @@ image:
 deploymentStrategy:
   type: Recreate
 
+# Quorum configuration settings.
 quorum:
   # -- Directory path to where the persistent volume will be mounted to.
   # Also some config file will be mounted there.
@@ -163,10 +164,11 @@ use_case:
     # -- List of company names who act as peers
     peers: []
 
-# -- Enable persistence using Persistent Volume Claims
+# Persistence using Persistent Volume Claims
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
 persistence:
-  # -- Settings for the data PVC.
+  
+  # Settings for the data PVC.
   data:
     # -- The name of an existing PVC to use instead of creating a new one.
     existingClaim: ""
@@ -189,7 +191,7 @@ persistence:
     # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
     selectorLabels: {}
 
-  # -- Settings for the logs PVC.
+  # Settings for the logging PVC.
   logs:
     # -- Enables logging to a persistent volume.
     # if disabled, logging will be to stdout only.
