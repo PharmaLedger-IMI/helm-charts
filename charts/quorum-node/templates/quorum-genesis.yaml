@@ -51,6 +51,6 @@ data:
 {{- else }}
     {{- $genesis := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
   genesis-geth.json: |-
-    {{- $genesis.genesis | indent 4 }}
+    {{ $genesis.genesis }}
 {{- end }}
 
