@@ -167,7 +167,6 @@ use_case:
 # Persistence using Persistent Volume Claims
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
 persistence:
-  
   # Settings for the data PVC.
   data:
     # -- The name of an existing PVC to use instead of creating a new one.
