@@ -15,21 +15,22 @@ spec:
   template:
     spec:
       serviceAccountName: quorum-propose-service-account
+      restartPolicy: Never
       containers:
         - name: quorum-propose-post-upgrade
           imagePullPolicy: IfNotPresent
           image: bitnami/kubectl:1.23.5
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "
-            kubectl scale --replicas=0 deployment/{{ include "quorumNode.fullname" . }};
-            sleep 120;
-            kubectl scale --replicas=1 deployment/{{ include "quorumNode.fullname" . }};
-            sleep 120;
-            kubectl exec -it deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh;
-            "
-      restartPolicy: Never
+            - |
+              kubectl scale --replicas=0 deployment/{{ include "quorumNode.fullname" . }}
+              sleep 120
+              kubectl scale --replicas=1 deployment/{{ include "quorumNode.fullname" . }}
+              sleep 120
+              kubectl exec -it deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
+
 ---
 # TODO : add remove of validators in plugin, chart as sh ibft_un_propose_all.sh and job
 kind: ClusterRole
