@@ -66,7 +66,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- .Values.persistence.logs.existingClaim }}
 {{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-logs-pvc" $qni }}
+{{- printf "%s-logs" $qni }}
 {{- end }}
 {{- end }}
 
@@ -75,14 +75,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- .Values.persistence.data.existingClaim }}
 {{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-pvc" $qni }}
+{{- printf "%s-data" $qni }}
 {{- end }}
 {{- end }}
-
 
 {{- define "quorumnode.PermissionedCfg" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-permissioned-config" $qni }}
+{{- printf "%s-permissioned-nodes" $qni }}
 {{- end }}
 
 {{- define "quorumnode.NodeManagement" -}}
