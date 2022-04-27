@@ -99,3 +99,14 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-geth-helpers" $qni }}
 {{- end }}
+
+{{/*
+    The full image repository:tag[@sha256:sha]
+*/}}
+{{- define "quorumnode.image" -}}
+{{- if .Values.image.sha -}}
+{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}
+{{- else -}}
+{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+{{- end -}}
+{{- end -}}
