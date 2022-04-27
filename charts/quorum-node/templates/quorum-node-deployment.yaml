@@ -82,7 +82,7 @@ spec:
                 date > {{ .Values.quorum.dataDirPath }}/genesis_created
               fi
           volumeMounts:
-            - name: quorum-persistent-storage
+            - name: pvc-data
               mountPath: {{ .Values.quorum.homeDirPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
             - name: cm-genesis
@@ -155,10 +155,10 @@ spec:
             - name: THIS_ENODE
               value: {{ $enode }}
           volumeMounts:
-            - name: quorum-persistent-storage
+            - name: pvc-data
               mountPath: {{ .Values.quorum.homeDirPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
-            - name: quorum-persistent-storage-logs
+            - name: pvc-logs
               mountPath: {{ .Values.quorum.homeDirPath }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
             - name: cm-genesis
@@ -242,9 +242,9 @@ spec:
                 path: ibft_propose_all.sh
             defaultMode: 0777
         # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
-        - name: quorum-persistent-storage
+        - name: pvc-data
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcData" . }}
-        - name: quorum-persistent-storage-logs
+        - name: pvc-logs
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
