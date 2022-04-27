@@ -6,7 +6,7 @@ metadata:
   namespace: {{ default .Release.Namespace }}
   labels:
     {{- include "quorumNode.labels" . | nindent 4 }}
-  {{- with .Values.persistence.data.annotations  }}
+  {{- with .Values.persistence.data.annotations }}
   annotations: {{ toYaml . | nindent 4 }}
   {{- end }}
   {{- with .Values.persistence.data.finalizers }}

@@ -308,15 +308,15 @@ service:
 # Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets
 # Please note, that your nodes must be labeled accordingly!
 # See [https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone)
-affinity:
- # nodeAffinity:
-  #  requiredDuringSchedulingIgnoredDuringExecution:
-  #    nodeSelectorTerms:
-  #      - matchExpressions:
-  #          - key: topology.kubernetes.io/zone
-  #            operator: In
-  #            values:
-  #              - eu-west-1a
+affinity: {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #       - matchExpressions:
+  #           - key: topology.kubernetes.io/zone
+  #             operator: In
+  #             values:
+  #               - eu-west-1a
 
 # -- Pod resources
 resources: {}
@@ -329,7 +329,7 @@ resources: {}
   #   memory: 128Mi
   # requests:
   #   cpu: 100m
-#   memory: 128Mi
+  #   memory: 128Mi
 
 # -- Node Selectors in order to assign pods to certain nodes.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)

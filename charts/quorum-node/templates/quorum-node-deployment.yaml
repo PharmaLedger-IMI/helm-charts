@@ -23,7 +23,7 @@ spec:
     matchLabels:
       {{- include "quorumNode.selectorLabels" . | nindent 6 }}
   {{- with .Values.deploymentStrategy }}
-  strategy: {{ toYaml . | trim | nindent 4 }}
+  strategy: {{ toYaml . | nindent 4 }}
   {{- end }}
 
   {{- /*
@@ -45,30 +45,24 @@ spec:
       {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
+      securityContext: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
+      affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
+      tolerations: {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
         - name: quorum-genesis-init-container
           {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
+          securityContext: {{- toYaml . | nindent 12 }}
           {{- end }}
           image: {{ include "quorumnode.image" . | quote }}
           command:
@@ -90,12 +84,10 @@ spec:
       containers:
         - name: quorum
           {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
+          securityContext: {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
+          resources: {{- toYaml . | nindent 12 }}
           {{- end }}
           image: {{ include "quorumnode.image" . | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
