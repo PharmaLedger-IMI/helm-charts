@@ -79,7 +79,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 {{- end }}
 
-{{- define "quorumnode.PermissionedCfg" -}}
+{{- define "quorumnode.permissionedNodes" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-permissioned-nodes" $qni }}
 {{- end }}

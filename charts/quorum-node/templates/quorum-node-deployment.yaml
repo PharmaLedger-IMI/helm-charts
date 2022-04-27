@@ -199,7 +199,7 @@ spec:
       {{- end }}
         - name: cm-permissioned-nodes
           configMap:
-            name: {{ include "quorumnode.PermissionedCfg" . }}
+            name: {{ include "quorumnode.permissionedNodes" . }}
             items:
               - key: permissioned-nodes.json
                 path: permissioned-nodes.json
