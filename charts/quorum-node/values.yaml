@@ -191,6 +191,9 @@ persistence:
 
   # -- Settings for the logs PVC.
   logs:
+    # -- Enables logging to a persistent volume.
+    # if disabled, logging will be to stdout only.
+    enabled: true
     # -- The name of an existing PVC to use instead of creating a new one.
     existingClaim: ""
     # -- Name of the storage class for logs PVC.

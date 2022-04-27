@@ -121,7 +121,7 @@ spec:
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
 
-            {{- if and (not .Values.persistence.logs.enabled) (not .Values.persistence.logs.existingClaim) }}
+            {{- if not .Values.persistence.logs.enabled }}
               # If logging is disabled, we can start geth with exec to make it the primary process
               exec \
             {{- end }}
@@ -144,7 +144,7 @@ spec:
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
-            {{- if and (not .Values.persistence.logs.enabled) (not .Values.persistence.logs.existingClaim) }}
+            {{- if not .Values.persistence.logs.enabled }}
                 2>&1
             {{- else }}
                 2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log
@@ -166,7 +166,7 @@ spec:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeDirPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
-          {{- if or .Values.persistence.logs.enabled .Values.persistence.logs.existingClaim }}
+          {{- if .Values.persistence.logs.enabled }}
             - name: pvc-logs
               mountPath: {{ .Values.quorum.homeDirPath }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
@@ -255,7 +255,7 @@ spec:
         - name: pvc-data
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcData" . }}
-      {{- if or .Values.persistence.logs.enabled .Values.persistence.logs.existingClaim }}
+      {{- if .Values.persistence.logs.enabled }}
         - name: pvc-logs
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
