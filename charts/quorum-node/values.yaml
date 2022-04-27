@@ -278,7 +278,7 @@ service:
 
       # Do not use. Use spec.loadBalancerSourceRanges instead!
       # service.beta.kubernetes.io/load-balancer-source-ranges: "8.8.8.8/32,8.8.4.4/32"
-    
+
     # -- A list of CIDR ranges to whitelist for ingress traffic to the P2P service if type is LoadBalancer.
     # If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
     loadBalancerSourceRanges:
