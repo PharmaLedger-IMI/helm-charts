@@ -179,7 +179,7 @@ spec:
               mountPath: {{ .Values.quorum.homeDirPath }}/permission-nodes
             - name: {{ include "quorumnode.gethHelpers" . }}
               mountPath: /geth-helpers
-            - name: {{ include "quorumnode.IValidatorCfg" . }}
+            - name: cm-validator-config
               mountPath: {{ .Values.quorum.homeDirPath }}/istanbul-validator-config.toml
             - name: cm-node-management
               mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose.sh
@@ -229,9 +229,9 @@ spec:
               - key: geth-exec.sh
                 path: geth-exec.sh
             defaultMode: 0777
-        - name: {{ include "quorumnode.IValidatorCfg" . }}
+        - name: cm-validator-config
           configMap:
-            name: {{ include "quorumnode.IValidatorCfg" . }}.toml
+            name: {{ include "quorumnode.IValidatorCfg" . }}
         - name: cm-node-management
           configMap:
             name: {{ include "quorumnode.NodeManagement" . }}
