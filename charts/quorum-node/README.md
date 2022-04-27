@@ -173,7 +173,7 @@ spec:
 | use_case.joinNetwork.plugin_data_secrets | string | `"{\n  \"nodeKey\": \"3b\"\n}"` |  |
 | use_case.newNetwork.enabled | bool | `true` | Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.newNetwork.plugin_data_common | string | `"{\n  \"extradata\": \"0x0\",\n  \"enode\": \"\",\n  \"nodeAddress\": \"\",\n  \"genesisAccount\": \"0x89\"\n}"` |  |
-| use_case.newNetwork.plugin_data_secrets | string | `"{\n  \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",\n  \"nodeKey\": \"47\"\n}"` |  |
+| use_case.newNetwork.plugin_data_secrets | string | `"{\n  \"genesisKeyStoreAccount\": \"eyJhZGRyZXNzIjoidGVzdGRhdGEiLCJjcnlwdG8iOnsiY2lwaGVyIjoiYWVzLTEyOC1jdHIiLCJjaXBoZXJ0ZXh0IjoidGVzdGRhdGEiLCJjaXBoZXJwYXJhbXMiOnsiaXYiOiJ0ZXN0ZGF0YSJ9LCJtYWMiOiJ0ZXN0ZGF0YSIsImtkZiI6InNjcnlwdCIsImtkZnBhcmFtcyI6eyJka2xlbiI6MzIsIm4iOjI2MjE0NCwiciI6OCwicCI6MSwic2FsdCI6InRlc3RkYXRhIn19LCJpZCI6InRlc3RkYXRhIiwidmVyc2lvbiI6M30=\",\n  \"nodeKey\": \"47\"\n}"` |  |
 | use_case.updatePartnersInfo.enabled | bool | `false` | Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case |
 | use_case.updatePartnersInfo.peers | list | `[]` | List of company names who act as peers |
 | use_case.updatePartnersInfo.plugin_data_common | string | `"{\n  \n}"` |  |
