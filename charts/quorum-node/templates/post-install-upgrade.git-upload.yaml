@@ -1,14 +1,15 @@
 {{- if .Values.git_upload.enabled  }}
 {{- $nodeAddressValue := ""}}
 {{- $enodeValue := "" }}
+
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-{{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
+  {{- $enodeValue = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-{{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
+  {{- $enodeValue = $generatedPublicJson.enode }}
 {{- end }}
 apiVersion: batch/v1
 kind: Job
@@ -27,60 +28,65 @@ spec:
         - name: quorum-git-post-install
           imagePullPolicy: IfNotPresent
           image: alpine/git:v2.32.0
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "
-            git config --global user.email \"{{ .Values.git_upload.email }}\";
-            git config --global user.name \"{{ .Values.git_upload.user }}\";
+            - |
+              git config --global user.email {{ .Values.git_upload.email | quote }}
+              git config --global user.name {{ .Values.git_upload.user | quote }}
             {{- $storagepath :=  printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name .Values.deployment.company }}
             {{- $genesisstoragepath :=  printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name }}
 
             {{- /*
             # pragma: allowlist nextline secret
-            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name  }}
+            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name }}
             {{- $validatorAddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
             {{- $enode := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
             {{- $enodeaddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
             {{- $enodeport := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
             {{- $nat := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
 
-            git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }};
-            cd {{ .Values.git_upload.git_repo_clone_directory }}/;
-            mkdir -p {{ $storagepath }};
+              git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }}
+              cd {{ .Values.git_upload.git_repo_clone_directory }}/
+              mkdir -p {{ $storagepath }}
 
-            rm -f {{ $validatorAddress }};
-            rm -f {{ $enode }};
-            rm -f {{ $enodeaddress }};
-            rm -f {{ $enodeport }};
-            rm -f {{ $nat }};
+              rm -f {{ $validatorAddress }}
+              rm -f {{ $enode }}
+              rm -f {{ $enodeaddress }}
+              rm -f {{ $enodeport }}
+              rm -f {{ $nat }}
 
             {{- if .Values.use_case.newNetwork.enabled }}
-            {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
-            rm -f {{ $genesisfile }};
-            cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisfile }};
-            git add {{ $genesisfile }};
+              {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
+              rm -f {{ $genesisfile }}
+              cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisfile }}
+              git add {{ $genesisfile }}
             {{- end }}
-            echo {{ $nodeAddressValue }} > {{ $validatorAddress }};
-            git add {{ $validatorAddress }};
-            echo {{ $enodeValue }} > {{ $enode }};
-            git add {{ $enode }};
-            echo {{ .Values.deployment.enode_address }} > {{ $enodeaddress }};
-            git add {{ $enodeaddress }};
-            echo {{ .Values.deployment.enode_address_port }} > {{ $enodeport }};
-            git add {{ $enodeport }};
-            echo {{ .Values.deployment.NAT }} > {{ $nat }};
-            git add {{ $nat }};
+            
+              echo {{ $nodeAddressValue | quote }} > {{ $validatorAddress }}
+              git add {{ $validatorAddress }}
 
-            git commit -m \"{{ .Values.git_upload.git_commit_description }}\";
-            git push origin master;
-            "
+              echo {{ $enodeValue | quote }} > {{ $enode }}
+              git add {{ $enode }}
+
+              echo {{ .Values.deployment.enode_address | quote }} > {{ $enodeaddress }}
+              git add {{ $enodeaddress }}
+
+              echo {{ .Values.deployment.enode_address_port | quote }} > {{ $enodeport }}
+              git add {{ $enodeport }}
+
+              echo {{ .Values.deployment.NAT | quote }} > {{ $nat }}
+              git add {{ $nat }}
+
+              git commit -m {{ .Values.git_upload.git_commit_description | quote }}
+              git push origin master
           volumeMounts:
-{{- if .Values.use_case.newNetwork.enabled }}
+          {{- if .Values.use_case.newNetwork.enabled }}
             - name: genesis-config-persistent-storage
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-{{- end }}
+          {{- end }}
             - name: quorum-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
@@ -89,14 +95,14 @@ spec:
               subPath: enode
       restartPolicy: Never
       volumes:
-{{- if .Values.use_case.newNetwork.enabled }}
+      {{- if .Values.use_case.newNetwork.enabled }}
         - name: genesis-config-persistent-storage
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-genesis-config
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
-{{- end }}
+      {{- end }}
         - name: quorum-nodekey
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-nodekey-config
@@ -110,10 +116,4 @@ spec:
               - key: enode
                 path: enode
 
-
-
 {{- end }}
-
-
-
-
