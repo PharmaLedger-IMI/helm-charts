@@ -121,8 +121,6 @@ spec:
               chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
               touch {{ .Values.quorum.dataDirPath }}/password.txt
 
-              # TODO: Continue at rpc and align to 
-              # https://github.com/ConsenSys/quorum-kubernetes/blob/84709fd7ba26ec01f8a1bec3856f9ac33a5b6802/prod/helm/charts/goquorum-node/templates/node-statefulset.yaml
               /usr/local/bin/geth \
                 --datadir {{ .Values.quorum.dataDirPath }} \
                 --nodiscover \
@@ -142,7 +140,7 @@ spec:
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
-                2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log;"
+                2>&1 | tee -a {{ .Values.quorum.homeDirPath }}/logs/quorum.log
           ports:
             - containerPort: 8545
             - containerPort: 30303
