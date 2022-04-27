@@ -73,10 +73,8 @@ quorum:
   homeMountPath: "/quorum/home"
   # -- Directory path to where the persistent volume "logs" will be mounted to.
   logsMountPath: "/quorum/logs"
-  
   # -- Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume.
   dataDirPath: "/quorum/home/dd"
-
   # -- File path to genesis file
   genesisFilePath: "/quorum/home/genesis/genesis-geth.json"
   # -- Explicitly set network id
