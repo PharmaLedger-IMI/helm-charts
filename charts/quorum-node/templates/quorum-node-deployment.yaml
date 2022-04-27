@@ -175,7 +175,7 @@ spec:
             - name: cm-enode
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
-            - name: {{ include "quorumnode.PermissionedCfg" . }}
+            - name: cm-permissioned-nodes
               mountPath: {{ .Values.quorum.homeDirPath }}/permission-nodes
             - name: cm-geth-helpers
               mountPath: /geth-helpers
@@ -196,7 +196,7 @@ spec:
               - key: key
                 path: key
       {{- end }}
-        - name: {{ include "quorumnode.PermissionedCfg" . }}
+        - name: cm-permissioned-nodes
           configMap:
             name: {{ include "quorumnode.PermissionedCfg" . }}
             items:
