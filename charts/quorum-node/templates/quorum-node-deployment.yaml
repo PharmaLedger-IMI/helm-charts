@@ -177,7 +177,7 @@ spec:
               subPath: enode
             - name: {{ include "quorumnode.PermissionedCfg" . }}
               mountPath: {{ .Values.quorum.homeDirPath }}/permission-nodes
-            - name: {{ include "quorumnode.gethHelpers" . }}
+            - name: cm-geth-helpers
               mountPath: /geth-helpers
             - name: cm-validator-config
               mountPath: {{ .Values.quorum.homeDirPath }}/istanbul-validator-config.toml
@@ -220,7 +220,7 @@ spec:
             items:
               - key: enode
                 path: enode
-        - name: {{ include "quorumnode.gethHelpers" . }}
+        - name: cm-geth-helpers
           configMap:
             name: {{ include "quorumnode.gethHelpers" . }}
             items:
