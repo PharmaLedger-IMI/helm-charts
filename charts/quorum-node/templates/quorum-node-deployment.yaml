@@ -164,7 +164,7 @@ spec:
             - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-            - name: quorum-nodekey
+            - name: cm-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
           {{- if .Values.use_case.newNetwork.enabled }}
@@ -208,9 +208,9 @@ spec:
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
-        - name: quorum-nodekey
+        - name: cm-nodekey
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+            name: {{ include "quorumNode.Identifier" . }}-nodekey
             items:
               - key: nodekey
                 path: nodekey

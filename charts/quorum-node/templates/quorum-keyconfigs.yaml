@@ -15,14 +15,17 @@
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
 {{- end }}
 ---
-# nodekey private to the node, used to verify identity.
+# 
+# TODO: Put into Secret
+# Secret: nodekey private to the node, used to verify identity.
+#
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+  name: {{ include "quorumNode.Identifier" . }}-nodekey
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+    name: {{ include "quorumNode.Identifier" . }}-nodekey
 data:
   nodekey: | {{ $nodeKey | nindent 4 }}
 # Only IBFT / istanbul networks need access to the nodekey address.
