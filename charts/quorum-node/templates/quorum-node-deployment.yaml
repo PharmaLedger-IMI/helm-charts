@@ -1,12 +1,11 @@
 {{- $enode := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- end }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,15 +32,15 @@ spec:
   */}}
   template:
     metadata:
-      name:  {{ include "quorumNode.fullname" . }}
+      name: {{ include "quorumNode.fullname" . }}
       labels:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
       annotations:
-        {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
+      {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
         prometheus.io/scrape: "true"
         prometheus.io/path: "/debug/metrics/prometheus"
         prometheus.io/port: {{ .Values.quorum.metrics.port | quote }}
-        {{- end }}
+      {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -130,16 +129,16 @@ spec:
                 --permissioned \
                 --nat=none \
                 --verbosity {{ .Values.quorum.log.verbosity }} \
-                {{- if .Values.quorum.log.emitcheckpoints }}
+            {{- if .Values.quorum.log.emitcheckpoints }}
                 --emitcheckpoints \
-                {{- end }}
+            {{- end }}
                 --gcmode archive \
                 --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
                 --syncmode full --nousb \
                 --networkid {{ .Values.quorum.networkId }} \
-                {{- if .Values.quorum.metrics.enabled }}
+            {{- if .Values.quorum.metrics.enabled }}
                 --metrics --metrics.addr {{ .Values.quorum.metrics.addr | quote }} --metrics.port {{ .Values.quorum.metrics.port | quote }} \
-                {{- end }}
+            {{- end }}
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
                 --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
@@ -170,11 +169,11 @@ spec:
             - name: quorum-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
-            {{- if .Values.use_case.newNetwork.enabled }}
+          {{- if .Values.use_case.newNetwork.enabled }}
             - name: quorum-key-config-persistent-storage
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
-            {{- end }}
+          {{- end }}
             - name: quorum-enode
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
@@ -191,14 +190,14 @@ spec:
               mountPath: {{ .Values.quorum.homeDirPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
-        {{- if .Values.use_case.newNetwork.enabled }}
+      {{- if .Values.use_case.newNetwork.enabled }}
         - name: quorum-key-config-persistent-storage
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-account-key-config
             items:
               - key: key
                 path: key
-        {{- end }}
+      {{- end }}
         - name: {{ include "quorumnode.PermissionedCfg" . }}
           configMap:
             name: {{ include "quorumnode.PermissionedCfg" . }}
