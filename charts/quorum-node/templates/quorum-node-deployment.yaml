@@ -168,7 +168,7 @@ spec:
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: quorum-key-config-persistent-storage
+            - name: cm-account-key
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
           {{- end }}
@@ -189,9 +189,9 @@ spec:
               subPath: ibft_propose_all.sh
       volumes:
       {{- if .Values.use_case.newNetwork.enabled }}
-        - name: quorum-key-config-persistent-storage
+        - name: cm-account-key
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-account-key-config
+            name: {{ include "quorumNode.Identifier" . }}-account-key
             items:
               - key: key
                 path: key
