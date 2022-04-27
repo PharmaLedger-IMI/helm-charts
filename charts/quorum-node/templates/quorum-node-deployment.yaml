@@ -85,7 +85,7 @@ spec:
             - name: quorum-persistent-storage
               mountPath: {{ .Values.quorum.homeDirPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
-            - name: genesis-config-persistent-storage
+            - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
       containers:
@@ -161,7 +161,7 @@ spec:
             - name: quorum-persistent-storage-logs
               mountPath: {{ .Values.quorum.homeDirPath }}/logs
               subPath: {{ include "quorumNode.Identifier" . }}-logs
-            - name: genesis-config-persistent-storage
+            - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
             - name: quorum-nodekey
@@ -202,9 +202,9 @@ spec:
             items:
               - key: permissioned-nodes.json
                 path: permissioned-nodes.json
-        - name: genesis-config-persistent-storage
+        - name: cm-genesis
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis-config
+            name: {{ include "quorumNode.Identifier" . }}-genesis
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json

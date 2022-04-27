@@ -83,7 +83,7 @@ spec:
               git push origin master
           volumeMounts:
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: genesis-config-persistent-storage
+            - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
           {{- end }}
@@ -96,9 +96,9 @@ spec:
       restartPolicy: Never
       volumes:
       {{- if .Values.use_case.newNetwork.enabled }}
-        - name: genesis-config-persistent-storage
+        - name: cm-genesis
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis-config
+            name: {{ include "quorumNode.Identifier" . }}-genesis
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
