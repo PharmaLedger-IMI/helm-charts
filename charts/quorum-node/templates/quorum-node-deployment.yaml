@@ -1,12 +1,11 @@
 {{- $enode := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- end }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,195 +14,214 @@ metadata:
   labels:
     {{- include "quorumNode.labels" . | nindent 4 }}
 
+{{- /*
+Deployment Spec:
+*/}}
 spec:
-  strategy:
-    type: RollingUpdate
   replicas: {{ .Values.replicasCount }}
   selector:
     matchLabels:
       {{- include "quorumNode.selectorLabels" . | nindent 6 }}
+  {{- with .Values.deploymentStrategy }}
+  strategy: {{ toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- /*
+  Pod Template:
+  */}}
   template:
     metadata:
-      name:  {{ include "quorumNode.fullname" . }}
+      name: {{ include "quorumNode.fullname" . }}
       labels:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/debug/metrics/prometheus"
+        prometheus.io/port: {{ .Values.quorum.metrics.port | quote }}
+      {{- end }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      nodeSelector:
-        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end}}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
+      tolerations: {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        - name: quorum-genesis-init-container
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.quorum_source.registry }}/{{ .Values.quorum_source.image }}:{{ .Values.quorum_source.version }}"
-          command: [ "sh" ]
+        - name: quorum-genesis-init
+          {{- with .Values.securityContext }}
+          securityContext: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ include "quorumnode.image" . | quote }}
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "if [ ! -f $QUORUM_DATA_DIR/genesis_created ]; then
-              /usr/local/bin/geth --datadir $QUORUM_DATA_DIR init {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
-              date > $QUORUM_DATA_DIR/genesis_created;
-           fi;
-          "
-          env:
-            - name: QUORUM_DATA_DIR
-              value: {{ .Values.blockchain.quorum_data_dir }}
-            - name: QHOME
-              value: {{ .Values.blockchain.quorum_home }}
+            - |
+              if [ ! -f {{ .Values.quorum.dataDirPath }}/genesis_created ]; then
+                /usr/local/bin/geth --datadir {{ .Values.quorum.dataDirPath }} init {{ .Values.quorum.genesisFilePath }}
+                date > {{ .Values.quorum.dataDirPath }}/genesis_created
+              fi
           volumeMounts:
-            - name: quorum-persistent-storage
-              mountPath:  {{ .Values.blockchain.quorum_home }}
+            - name: pvc-data
+              mountPath: {{ .Values.quorum.homeMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
-            - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+            - name: cm-genesis
+              mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-
       containers:
         - name: quorum
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-
-          image: "{{ .Values.quorum_source.registry }}/{{ .Values.quorum_source.image }}:{{ .Values.quorum_source.version }}"
+          {{- with .Values.securityContext }}
+          securityContext: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ include "quorumnode.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           readinessProbe:
             exec:
               command:
                 - ls
-                - $(QHOME)/dd/geth.ipc
+                - {{ .Values.quorum.dataDirPath }}/geth.ipc
             initialDelaySeconds: 20
             periodSeconds: 3
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "
-           apk add jq;
+            - |
+              # TODO: Not needed? JQ seems not to be used anywhere!
+              # apk add jq
 
-           ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/permissioned-nodes.json;
-           ln -s $QUORUM_HOME/permission-nodes/permissioned-nodes.json $QUORUM_DATA_DIR/static-nodes.json;
+              ln -sf {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/permissioned-nodes.json
+              ln -sf {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json {{ .Values.quorum.dataDirPath }}/static-nodes.json
+              cat {{ .Values.quorum.genesisFilePath }}
+              chmod 644 {{ .Values.quorum.dataDirPath }}/keystore/key
+              touch {{ .Values.quorum.dataDirPath }}/password.txt
 
-           cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json;
-
-           chmod 644 $QUORUM_DATA_DIR/keystore/key;
-
-           touch $QUORUM_DATA_DIR/password.txt;
-           NETWORK_ID=10
-           RPC_APIS=admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum
-           args=\" --gcmode archive --istanbul.blockperiod {{ .Values.blockchain.blockperiod }} --syncmode full --mine --miner.threads 1 \";
-           RPC_APIS=\"$RPC_APIS,istanbul\";
-           /usr/local/bin/geth \
-           --datadir $QUORUM_DATA_DIR \
-           $args \
-           --permissioned \
-           --nodiscover \
-           --nat=none \
-           --verbosity 3 \
-           --networkid $NETWORK_ID \
-           --emitcheckpoints \
-           --port 30303 \
-           --rpc \
-           --rpcaddr 0.0.0.0 \
-           --rpcport 8545 \
-           --rpcapi $RPC_APIS \
-           --rpccorsdomain=\"*\" \
-           --rpcvhosts={{ include "quorumNode.fullname" . }}-rpc \
-            2>&1 | tee -a {{ .Values.blockchain.quorum_home }}/logs/quorum.log;"
+            {{- if not .Values.persistence.logs.enabled }}
+              # If logging is disabled, we can start geth with exec to make it the primary process
+              exec \
+            {{- end }}
+              /usr/local/bin/geth \
+                --datadir {{ .Values.quorum.dataDirPath }} \
+                --nodiscover \
+                --permissioned \
+                --nat=none \
+                --verbosity {{ .Values.quorum.log.verbosity }} \
+            {{- if .Values.quorum.log.emitcheckpoints }}
+                --emitcheckpoints \
+            {{- end }}
+                --gcmode archive \
+                --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
+                --syncmode full --nousb \
+                --networkid {{ .Values.quorum.networkId }} \
+            {{- if .Values.quorum.metrics.enabled }}
+                --metrics --metrics.addr {{ .Values.quorum.metrics.addr | quote }} --metrics.port {{ .Values.quorum.metrics.port | quote }} \
+            {{- end }}
+                --port 30303 \
+                --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
+                --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
+            {{- if not .Values.persistence.logs.enabled }}
+                2>&1
+            {{- else }}
+                2>&1 | tee -a {{ .Values.quorum.logsMountPath }}/quorum.log
+            {{- end }}
           ports:
             - containerPort: 8545
             - containerPort: 30303
-
+          {{- if .Values.quorum.metrics.enabled }}
+            - containerPort: {{ .Values.quorum.metrics.port }}
+          {{- end }}
           env:
             - name: PRIVATE_CONFIG
               value: "ignore"
-            - name: QUORUM_DATA_DIR
-              value: {{ .Values.blockchain.quorum_data_dir }}
-            - name: QUORUM_HOME
-              value: {{ .Values.blockchain.quorum_home }}
-            - name: QHOME
-              value: {{ .Values.blockchain.quorum_home }}
             - name: THIS_NODE_ID
               value: {{ include "quorumNode.Identifier" . }}
             - name: THIS_ENODE
               value: {{ $enode }}
           volumeMounts:
-            - name: quorum-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_home }}
+            - name: pvc-data
+              mountPath: {{ .Values.quorum.homeMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}
-            - name: quorum-persistent-storage-logs
-              mountPath: {{ .Values.blockchain.quorum_home }}/logs
+          {{- if .Values.persistence.logs.enabled }}
+            - name: pvc-logs
+              mountPath: {{ .Values.quorum.logsMountPath }}
               subPath: {{ include "quorumNode.Identifier" . }}-logs
-            - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+          {{- end }}
+            - name: cm-genesis
+              mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-            - name: quorum-nodekey
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
+            - name: cm-nodekey
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
-{{- if .Values.use_case.newNetwork.enabled }}
-            - name: quorum-key-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/keystore/key
+          {{- if .Values.use_case.newNetwork.enabled }}
+            - name: cm-account-key
+              mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
-{{- end }}
-            - name: quorum-enode
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
+          {{- end }}
+            - name: cm-enode
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
-            - name: {{ include "quorumnode.PermissionedCfg" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/permission-nodes
-            - name: {{ include "quorumnode.gethHelpers" . }}
+            - name: cm-permissioned-nodes
+              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes
+            - name: cm-geth-helpers
               mountPath: /geth-helpers
-            - name: {{ include "quorumnode.IValidatorCfg" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/istanbul-validator-config.toml
-            - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose.sh
+            - name: cm-validator-config
+              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml
+            - name: cm-node-management
+              mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
-            - name: {{ include "quorumnode.NodeManagement" . }}
-              mountPath: {{ .Values.blockchain.quorum_home }}/node-management/ibft_propose_all.sh
+            - name: cm-node-management
+              mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
-{{- if .Values.use_case.newNetwork.enabled }}
-        - name: quorum-key-config-persistent-storage
+      {{- if .Values.use_case.newNetwork.enabled }}
+        - name: cm-account-key
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-account-key-config
+            name: {{ include "quorumNode.Identifier" . }}-account-key
             items:
               - key: key
                 path: key
-{{- end }}
-        - name: {{ include "quorumnode.PermissionedCfg" . }}
+      {{- end }}
+        - name: cm-permissioned-nodes
           configMap:
-            name: {{ include "quorumnode.PermissionedCfg" . }}
+            name: {{ include "quorumnode.permissionedNodes" . }}
             items:
               - key: permissioned-nodes.json
                 path: permissioned-nodes.json
-        - name: genesis-config-persistent-storage
+        - name: cm-genesis
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis-config
+            name: {{ include "quorumNode.Identifier" . }}-genesis
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
-        - name: quorum-nodekey
+        - name: cm-nodekey
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+            name: {{ include "quorumNode.Identifier" . }}-nodekey
             items:
               - key: nodekey
                 path: nodekey
-        - name: quorum-enode
+        - name: cm-enode
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode-config
+            name: {{ include "quorumNode.Identifier" . }}-enode
             items:
               - key: enode
                 path: enode
-        - name: {{ include "quorumnode.gethHelpers" . }}
+        - name: cm-geth-helpers
           configMap:
             name: {{ include "quorumnode.gethHelpers" . }}
             items:
@@ -212,10 +230,10 @@ spec:
               - key: geth-exec.sh
                 path: geth-exec.sh
             defaultMode: 0777
-        - name: {{ include "quorumnode.IValidatorCfg" . }}
+        - name: cm-validator-config
           configMap:
-            name: {{ include "quorumnode.IValidatorCfg" . }}.toml
-        - name: {{ include "quorumnode.NodeManagement" . }}
+            name: {{ include "quorumnode.IValidatorCfg" . }}
+        - name: cm-node-management
           configMap:
             name: {{ include "quorumnode.NodeManagement" . }}
             items:
@@ -225,9 +243,11 @@ spec:
                 path: ibft_propose_all.sh
             defaultMode: 0777
         # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
-        - name: quorum-persistent-storage
+        - name: pvc-data
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcData" . }}
-        - name: quorum-persistent-storage-logs
+      {{- if .Values.persistence.logs.enabled }}
+        - name: pvc-logs
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
+      {{- end }}

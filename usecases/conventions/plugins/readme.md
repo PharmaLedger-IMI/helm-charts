@@ -11,7 +11,7 @@
 {
   "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000d8d5944a53ddbb6fac99fbb5231178adde5dc35ed84d5f80c0",
   "enode": "72dd5bd15bc1e5cd25514804fe435e6a2a2d1bbe357e7928b8b14f500cf38434c5a3f2f6889240efb4cf709d3bbbe8c5b37a35872e8aaeca0ee48d309a878a2c",
-  "nodeAddress": "0x4a53DDBb6FAc99fBB5231178addE5dc35eD84d5F",
+  "nodeKeyPublic": "0x4a53DDBb6FAc99fBB5231178addE5dc35eD84d5F",
   "genesisAccount": "0x8ab055faa44ffd27a3dc732b67d7a48b216a2709"
 }
 
@@ -47,7 +47,7 @@
 ```json
 {
   "enode": "235fdd126d12804f75afafb205bf288db9b7729fc783b9a77acd77d5d31d96c1abeaeee9795400cb6e090dc185b99561d64607b76200003e1444f04b385fe96d",
-  "nodeAddress": "0x2B2e7e62055B3F60165D9c27765b18B666eC999b",
+  "nodeKeyPublic": "0x2B2e7e62055B3F60165D9c27765b18B666eC999b",
   "genesis": "{\n    \"alloc\": {\n      \"0x8ab055faa44ffd27a3dc732b67d7a48b216a2709\": {\n         \"balance\": \"1000000000000000000000000000\"\n      }\n    },\n  \"coinbase\": \"0x0000000000000000000000000000000000000000\",\n  \"config\": {\n    \"homesteadBlock\": 0,\n    \"byzantiumBlock\": 0,\n    \"constantinopleBlock\": 0,\n    \"petersburgBlock\": 0,\n    \"istanbulBlock\": 0,\n    \"eip150Block\": 0,\n    \"eip150Hash\": \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n    \"eip155Block\": 0,\n    \"eip158Block\": 0,\n    \"maxCodeSizeConfig\": [\n      {\n        \"block\": 0,\n        \"size\": 32\n      }\n    ],\n    \"chainId\": 10,\n    \"isQuorum\": true,\n    \"istanbul\": {\n      \"epoch\": 30000,\n      \"policy\": 0\n    }\n  },\n  \"difficulty\": \"0x1\",\n  \"extraData\": \"0x0000000000000000000000000000000000000000000000000000000000000000d8d5944a53ddbb6fac99fbb5231178adde5dc35ed84d5f80c0\",\n  \"gasLimit\": \"0xE0000000\",\n  \"mixHash\": \"0x63746963616c2062797a616e74696e65206661756c7420746f6c6572616e6365\",\n  \"nonce\": \"0x0\",\n  \"parentHash\": \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n  \"timestamp\": \"0x00\"\n}"
 }
 
@@ -76,7 +76,7 @@
   "peers": [
     {
       "enode": "235fdd126d12804f75afafb205bf288db9b7729fc783b9a77acd77d5d31d96c1abeaeee9795400cb6e090dc185b99561d64607b76200003e1444f04b385fe96d",
-      "nodeAddress": "0x2B2e7e62055B3F60165D9c27765b18B666eC999b",
+      "nodeKeyPublic": "0x2B2e7e62055B3F60165D9c27765b18B666eC999b",
       "enodeAddress": "quorum-node-1",
       "enodeAddressPort": "30303"
     }
