@@ -45,11 +45,11 @@ serviceAccount:
 # -- Annotations added to the pod
 podAnnotations: {}
 
-# -- Security Context for the pod. 
+# -- Security Context for the pod.
 # IMPORTANT: Take a look at values.yaml file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 #
-# For running as root-user (which is not recommendedIf you run as root user (which is absolutely NOT recommended) then 
+# For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
 podSecurityContext: {}
   # fsGroup: 1000
   # runAsUser: 1000
@@ -61,7 +61,7 @@ podSecurityContext: {}
 # -- Security Context for the application container
 # IMPORTANT: Take a look at values.yaml file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-# 
+#
 # For running as non-root with uid 1000, remove {} from next line and uncomment next lines!
 securityContext: {}
   # capabilities:
@@ -321,10 +321,12 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - # -- The FQDN/hostname
+      - 
+        # -- The FQDN/hostname
         host: fgt.some-pharma-company.com
         paths:
-          - # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          - 
+            # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
             # -- The type of path. This value is required since Kubernetes 1.18.
@@ -357,10 +359,12 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - # -- The FQDN/hostname
+      - 
+        # -- The FQDN/hostname
         host: fgt-api.some-pharma-company.com
         paths:
-          - # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          - 
+            # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
             # -- The type of path. This value is required since Kubernetes 1.18.
@@ -393,10 +397,12 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - # -- The FQDN/hostname
+      - 
+        # -- The FQDN/hostname
         host: fgt-swagger.some-pharma-company.com
         paths:
-          - # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          - 
+            # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
             # -- The type of path. This value is required since Kubernetes 1.18.
