@@ -31,15 +31,7 @@ data:
       }
     }
 
-  predefined.json: |-
-    {
-      "anchoring": {
-        "type": "FS",
-        "option": {}
-      }
-    }
-
-  traceability.json: |-
+  {{ required "config.domain must be set" .Values.config.domain }}.json: |-
 {{- if .Values.config.ethadapterUrl }}
     {
       "anchoring": {
@@ -74,6 +66,49 @@ data:
     }
 {{- end }}
 
+  {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
+{{- if .Values.config.ethadapterUrl }}
+    {
+      "anchoring": {
+        "type": "ETH",
+        "option": {
+          "endpoint": {{ .Values.config.ethadapterUrl }}
+        },
+        "commands": {
+          "addAnchor": "anchor"
+        }
+      },
+      "enable": ["mq"],
+      "skipOAuth": [
+        "/bricking/traceability/get-brick"
+      ]
+    }
+{{- else }}
+    {
+      "anchoring": {
+        "type": "FS",
+        "option": {
+          "enableBricksLedger": false
+        },
+        "commands": {
+          "addAnchor": "anchor"
+        }
+      },
+      "enable": ["mq"],
+      "skipOAuth": [
+        "/bricking/traceability/get-brick"
+      ]
+    }
+{{- end }}
+
+  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
+    {
+      "anchoring": {
+        "type": "FS",
+        "option": {}
+      }
+    }
+  
   vault.json: |-
     {
       "anchoring": {
@@ -81,38 +116,5 @@ data:
         "option": {}
       }
     }
-{{- /*
-  {{ required "config.domain must be set" .Values.config.domain }}.json: |-
-    {
-      "anchoring": {
-        "type": "ETH",
-        "option": {
-          "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
-        }
-      },
-      "messagesEndpoint": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult"
-    }
-
-  {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
-    {
-      "anchoring": {
-        "type": "ETH",
-        "option": {
-          "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
-        },
-        "commands": {
-            "addAnchor": "anchor"
-        }
-      }
-    }
-
-  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
-    {
-      "anchoring": {
-        "type": "FS",
-         "option": {}
-      }
-    }
-*/}}
 {{- end }}
 {{- end }}

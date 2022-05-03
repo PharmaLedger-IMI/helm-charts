@@ -96,10 +96,10 @@ config:
   fgtApi: "http://fgt-api.some-pharma-company.com/traceability"
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
-  # -- The Domain, e.g. "epipoc"
-  domain: "fgt"
-  # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
-  subDomain: "fgt.my-company"
+  # -- The Domain, e.g. "fgt"
+  domain: "traceability"
+  # -- The Subdomain, should be domain.company, e.g. fgt.my-company
+  subDomain: "traceability.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
@@ -122,6 +122,39 @@ config:
           "$ORIGIN"
         ],
         "mqEndpoints": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ]
+      },
+      "traceability.my-company": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "mqEndpoints": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ]
+      },
+      "traceability.other-company": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "mqEndpoints": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ]
+      },
+      "vault.my-company": {
+        "replicas": [],
+        "brickStorages": [
           "$ORIGIN"
         ],
         "anchoringServices": [
@@ -424,3 +457,5 @@ readinessProbe:
   periodSeconds: 5
   successThreshold: 1
   failureThreshold: 60
+  # Maybe add check for DSU explorer seed later to check readiness
+  # /fgt-workspace/apihub-root/dsu-explorer/wallet-patch $ cat seed
