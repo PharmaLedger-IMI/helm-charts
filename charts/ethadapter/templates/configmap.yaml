@@ -1,3 +1,4 @@
+{{- $smartContractInfoJson := ( include "ethadapter.smartContractInfo" . | fromJson ) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,5 +10,5 @@ metadata:
     {{- include "ethadapter.labels" . | nindent 4 }}
 data:
   rpcAddress: {{ required "config.rpcAddress must be set" .Values.config.rpcAddress | quote }}
-  smartContractAddress: {{ include "ethadapter.smartContractAddress" . | quote }}
-  smartContractAbi: {{ required "config.smartContractAbi must be set" .Values.config.smartContractAbi | quote }}
+  smartContractAddress: >- {{ $smartContractInfoJson.address | nindent 4 }}
+  smartContractAbi: >- {{ $smartContractInfoJson.abi | nindent 4 }}
