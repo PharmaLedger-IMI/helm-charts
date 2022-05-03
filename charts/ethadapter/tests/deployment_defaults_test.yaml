@@ -31,3 +31,7 @@ tests:
         equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: Always
+      - template: deployment.yaml
+        equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
