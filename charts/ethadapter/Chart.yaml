@@ -1,4 +1,4 @@
-apiVersion: v2
+apiVersion: v1
 name: ethadapter
 description: A Helm chart for Pharma Ledger Ethereum Adapter Service
 
