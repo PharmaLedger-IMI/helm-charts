@@ -101,7 +101,7 @@ config:
 secrets:
   # -- Org Account in JSON format.
   # This value must be set or orgAccountJsonBase64.
-  orgAccountJson: "xy"
+  orgAccountJson: ""
   # -- Org Account in JSON format base64 encoded.
   # This value must be set or orgAccountJson
   orgAccountJsonBase64: ""
