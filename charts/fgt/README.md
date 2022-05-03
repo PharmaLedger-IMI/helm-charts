@@ -1,6 +1,6 @@
 # fgt
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.3](https://img.shields.io/badge/AppVersion-0.9.3-informational?style=flat-square)
 
 A Helm chart for a FGT deployment on Kubernetes
 
@@ -8,11 +8,12 @@ A Helm chart for a FGT deployment on Kubernetes
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 - These mandatory configuration values:
-  - Domain - The Domain - e.g. `fgt`
-  - Sub Domain - The Sub Domain - e.g. `fgt.my-company`
+  - Domain - The Domain - e.g. `traceability`
+  - + Endpoint - The Domain URL - e.g. `https://fgt-dev.pharmaledger.pdmfc.com/traceability` - default is `$ORIGIN`
+  - Sub Domain - The Sub Domain - e.g. `traceability.my-company`
   - Vault Domain - The Vault Domain - e.g. `vault.my-company`
-  - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000"
-  - bdnsHosts - The Centrally managed and provided BDNS Hosts Config -
+  - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000" - if not specified, the local file storage will be used instead
+  - bdnsHosts - The Centrally managed and provided BDNS Hosts Config
 
 ## Usage
 
@@ -21,8 +22,10 @@ A Helm chart for a FGT deployment on Kubernetes
 
 ## Changelog
 
-- Initial version 0.1.0
-  - For use with fgt v0.9.2
+- Initial version 0.1.3
+  - For use with FGT in version v0.9.3
+  - Only tested locally with Minikube yet
+  - Ingress not tested yet
 
 ## Helm Lifecycle and Kubernetes Resources Lifetime
 
@@ -51,7 +54,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.2 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -151,7 +154,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.2 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -162,7 +165,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.2 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -191,14 +194,14 @@ Tests can be found in [tests](./tests)
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| config | object | `{"apihub":"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}","bdnsHosts":"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}","credentials":"{\n  \"id\": {\n    \"secret\": \"MAH251339219\",\n    \"public\": true\n  },\n  \"name\": {\n    \"secret\": \"Company Inc.\",\n    \"public\": true\n  },\n  \"email\": {\n    \"secret\": \"pharmaledger@company.com\",\n    \"public\": true\n  },\n  \"pass\": {\n    \"secret\": \"This1sSuchAS3curePassw0rd\"\n  }\n}","domain":"fgt","ethadapterUrl":"","fgtApi":"http://fgt-api.some-pharma-company.com/traceability","role":"mah","sleepTime":"10s","subDomain":"fgt.my-company","vaultDomain":"vault.my-company"}` | Configuration. Will be put in ConfigMaps. |
+| config | object | `{"apihub":"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}","bdnsHosts":"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.other-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}","credentials":"{\n  \"id\": {\n    \"secret\": \"MAH251339219\",\n    \"public\": true\n  },\n  \"name\": {\n    \"secret\": \"Company Inc.\",\n    \"public\": true\n  },\n  \"email\": {\n    \"secret\": \"pharmaledger@company.com\",\n    \"public\": true\n  },\n  \"pass\": {\n    \"secret\": \"This1sSuchAS3curePassw0rd\"\n  }\n}","domain":"traceability","ethadapterUrl":"","fgtApi":"http://fgt-api.some-pharma-company.com/traceability","role":"mah","sleepTime":"10s","subDomain":"traceability.my-company","vaultDomain":"vault.my-company"}` | Configuration. Will be put in ConfigMaps. |
 | config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) |
-| config.bdnsHosts | string | `"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
-| config.domain | string | `"fgt"` | The Domain, e.g. "epipoc" |
+| config.bdnsHosts | string | `"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.other-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
+| config.domain | string | `"traceability"` | The Domain, e.g. "fgt" |
 | config.ethadapterUrl | string | `""` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
 | config.fgtApi | string | `"http://fgt-api.some-pharma-company.com/traceability"` | The URL of the FGT API including port |
 | config.role | string | `"mah"` | The role the FGT API Hub takes |
-| config.subDomain | string | `"fgt.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
+| config.subDomain | string | `"traceability.my-company"` | The Subdomain, should be domain.company, e.g. fgt.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
 | deploymentStrategy.type | string | `"Recreate"` |  |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
