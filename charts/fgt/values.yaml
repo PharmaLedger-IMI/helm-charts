@@ -321,11 +321,11 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - 
+      -
         # -- The FQDN/hostname
         host: fgt.some-pharma-company.com
         paths:
-          - 
+          -
             # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
@@ -359,11 +359,11 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - 
+      -
         # -- The FQDN/hostname
         host: fgt-api.some-pharma-company.com
         paths:
-          - 
+          -
             # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
@@ -397,11 +397,11 @@ ingress:
       # kubernetes.io/tls-acme: "true"
     # -- A list of hostnames and path(s) to listen at the Ingress Controller
     hosts:
-      - 
+      -
         # -- The FQDN/hostname
         host: fgt-swagger.some-pharma-company.com
         paths:
-          - 
+          -
             # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
             # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
             path: /
