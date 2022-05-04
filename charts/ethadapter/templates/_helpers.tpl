@@ -76,19 +76,19 @@ Create the name of the service account to use
 
 
 {{/*
-The value for the Smart Contract Address
+The value for the Smart Contract Info
 1. Look if value is explictly defined
 2. If not, look if ConfigMap exists and get value from there
 */}}
-{{- define "ethadapter.smartContractAddress" -}}
-{{- if .Values.config.smartContractAddress }}
-{{- .Values.config.smartContractAddress }}
+{{- define "ethadapter.smartContractInfo" -}}
+{{- if .Values.config.smartContractInfo }}
+{{- .Values.config.smartContractInfo }}
 {{- else }}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace .Values.config.smartContractConfigMapName -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace .Values.config.smartContractInfoConfigMapName -}}
 {{- if $configMap -}}
-{{- required "Either config.smartContractAddress must be set or value must exists in ConfigMap" (get $configMap.data .Values.config.smartContractConfigMapAddressKey) }}
+{{- required "Either config.smartContractInfo must be set or value must exists in ConfigMap" (get $configMap.data .Values.config.smartContractInfoConfigMapKey) }}
 {{- else -}}
-{{- required "Either config.smartContractAddress must be set or ConfigMap with value must exists" "" }}
+{{- required "Either config.smartContractInfo must be set or ConfigMap with value must exists" "" }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
