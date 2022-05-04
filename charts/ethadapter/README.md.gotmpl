@@ -327,6 +327,10 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version={{ template 
 
 {{ template "chart.requirementsSection" . }}
 
-{{ template "chart.valuesSection" . }}
+{{ template "chart.valuesHeader" . }}
+
+*Note:* Please scroll horizontally to show more columns (e.g. description)!
+
+{{ template "chart.valuesTable" . }}
 
 {{ template "helm-docs.versionFooter" . }}
