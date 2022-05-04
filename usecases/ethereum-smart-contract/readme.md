@@ -46,7 +46,7 @@ git_upload:
    email: ""
    # -- The user used by the git in order to upload the data
    user: ""
-   # -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/organisation/shared-repository.git
+   # -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/organisation/shared-repository.git <!-- # pragma: allowlist secret -->
    git_repo_with_access_token: ""
    # -- The repository base folder name where the shareable data to will be uploaded
    git_repo_storage_path: "networks"
