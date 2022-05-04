@@ -33,6 +33,17 @@ Then you can run `helm search repo pharmaledger-imi` to see the chart(s). On ins
     2. Run `pre-commit run -a` to update the documentation. Please use [Helm-Docs 1.8.1](https://github.com/norwoodj/helm-docs/releases/tag/v1.8.1).
 4. After your Pull Request has been accepted and has been merged to `master` branch, an automated process will create a new Release of the modified helm charts.
 
+### Useful links
+
+- [https://helm.sh/docs/chart_best_practices/conventions/](https://helm.sh/docs/chart_best_practices/conventions/)
+- [https://banzaicloud.com/blog/creating-helm-charts/](https://banzaicloud.com/blog/creating-helm-charts/)
+- [https://banzaicloud.com/blog/creating-helm-charts-part-2/](https://banzaicloud.com/blog/creating-helm-charts-part-2/)
+
+Some helm charts for inspiration:
+
+- [https://github.com/grafana/helm-charts/tree/main/charts/grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
+- [https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus)
+
 ### Some checks are failing? What can I do?
 
 - Detect-Secrets checks are failing? Check if all "detected secrets" are *false positives*.
