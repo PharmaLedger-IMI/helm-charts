@@ -3,10 +3,14 @@
 ## new-network use case
 
 ### new-network.plugin.json
-1. extradata : genesis extradata
-2. enode : quorum node enode
-3. nodeAddress : quorum node node address
-4. genesis account
+
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `extradata` | Genesis extradata | string ||
+| `enode` | Quorum node enode | string ||
+| `nodeKeyPublic` | Quorum node public key (aka node address) | string ||
+| `genesisAccount` | Genesis Accoount | string ||
+
 ```json
 {
   "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000d8d5944a53ddbb6fac99fbb5231178adde5dc35ed84d5f80c0",
@@ -14,15 +18,17 @@
   "nodeKeyPublic": "0x4a53DDBb6FAc99fBB5231178addE5dc35eD84d5F",
   "genesisAccount": "0x8ab055faa44ffd27a3dc732b67d7a48b216a2709"
 }
-
 ```
 
 ### new-network.plugin.secrets.json
 
-1. nodeKey : quorum node node key
-2. genesisKeyStoreAccount : base64 quorum node account info
-3. genesisKeyStoreAccountEncryptionPassword
-4. genesisAccountPrivateKey
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `nodeKey` | Quorum node private key | string ||
+| `genesisKeyStoreAccount` | Quorum node account info | string | base64 |
+| `genesisKeyStoreAccountEncryptionPassword` | Password for decrypting genesisKeyStoreAccount | string ||
+| `genesisAccountPrivateKey` | Private Key of Genesis Account | object ||
+
 ```json
 {
   "nodeKey": "e3d06efec4a7dbbc1e689b098c8af7036ffdfe4bb5960a7f32c69a0886047a8f",
@@ -40,9 +46,11 @@
 
 ### join-network.plugin.json
 
-1. enode: Quorum node enode
-2. nodeAddress: Quorum node address
-3. genesis: downloaded genesis file 
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `enode` | Quorum node enode | string ||
+| `nodeKeyPublic` | Quorum node public key (aka node address) | string ||
+| `genesis` | Genesis file | string | JSON String |
 
 ```json
 {
@@ -55,21 +63,32 @@
 
 ### join-network.plugin.secrets.json
 
-1. nodeKey: Quorum node node key
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `nodeKey` | Quorum node private key | string ||
 
 ```json
-{"nodeKey":"0c522ba3181bbe82695f92f9258359099d1ea48314185da15d1b72d48c3384b8"}
+{
+  "nodeKey": "0c522ba3181bbe82695f92f9258359099d1ea48314185da15d1b72d48c3384b8"
+}
 ```
 
 ## update-partners-info use case
 
 ### update-partners-info.plugin.json
 
-1. peers : list of the known peers
-    1. enode : partner quorum node enode
-    2. nodeAddress : partner quorum node address
-    3. enodeAddress : partner quorum node ip or dns
-    4. enodeAddressPort : partner quorum node port
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `peers` | Peers | array of objects ||
+
+Each peer object looks like this:
+
+|Key|Description|Type|Format|
+|---|-----------|----|------|
+| `enode` | Partner quorum node enode | string ||
+| `nodeKeyPublic` | Partner quorum node public key (aka node address) | string ||
+| `enodeAddress` | Partner quorum node ip or dns | string ||
+| `enodeAddressPort` | Partner quorum node port | string ||
 
 ```json
 {
