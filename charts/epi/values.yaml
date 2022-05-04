@@ -124,7 +124,7 @@ persistence:
     # # [https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/](https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/)
     # name: imported-aws-snapshot
     # kind: VolumeSnapshot
-    # apiGroup: snapshot.storage.k8s.io    
+    # apiGroup: snapshot.storage.k8s.io
 
 service:
   # -- Either ClusterIP, NodePort or LoadBalancer.
