@@ -62,19 +62,26 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 {{- define "quorumnode.PvcLogs" -}}
+{{- if .Values.persistence.logs.existingClaim }}
+{{- .Values.persistence.logs.existingClaim }}
+{{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-logs-pvc" $qni }}
+{{- printf "%s-logs" $qni }}
+{{- end }}
 {{- end }}
 
 {{- define "quorumnode.PvcData" -}}
+{{- if .Values.persistence.data.existingClaim }}
+{{- .Values.persistence.data.existingClaim }}
+{{- else }}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-pvc" $qni }}
+{{- printf "%s-data" $qni }}
+{{- end }}
 {{- end }}
 
-
-{{- define "quorumnode.PermissionedCfg" -}}
+{{- define "quorumnode.permissionedNodes" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-permissioned-config" $qni }}
+{{- printf "%s-permissioned-nodes" $qni }}
 {{- end }}
 
 {{- define "quorumnode.NodeManagement" -}}
@@ -91,3 +98,14 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-geth-helpers" $qni }}
 {{- end }}
+
+{{/*
+    The full image repository:tag[@sha256:sha]
+*/}}
+{{- define "quorumnode.image" -}}
+{{- if .Values.image.sha -}}
+{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}
+{{- else -}}
+{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+{{- end -}}
+{{- end -}}

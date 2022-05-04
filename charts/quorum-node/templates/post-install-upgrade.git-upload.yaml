@@ -1,14 +1,15 @@
 {{- if .Values.git_upload.enabled  }}
-{{- $nodeAddressValue := ""}}
-{{- $enodeValue := "" }}
+{{- $nodeKeyPublic := ""}}
+{{- $enode := "" }}
+
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-{{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $nodeAddressValue = $generatedPublicJson.nodeAddress }}
-{{- $enodeValue = $generatedPublicJson.enode }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+  {{- $enode = $generatedPublicJson.enode }}
 {{- end }}
 apiVersion: batch/v1
 kind: Job
@@ -27,93 +28,92 @@ spec:
         - name: quorum-git-post-install
           imagePullPolicy: IfNotPresent
           image: alpine/git:v2.32.0
-          command: [ "sh" ]
+          command:
+            - sh
+            - -cx
           args:
-            - "-cx"
-            - "
-            git config --global user.email \"{{ .Values.git_upload.email }}\";
-            git config --global user.name \"{{ .Values.git_upload.user }}\";
+            - |
+              git config --global user.email {{ .Values.git_upload.email | quote }}
+              git config --global user.name {{ .Values.git_upload.user | quote }}
             {{- $storagepath :=  printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name .Values.deployment.company }}
             {{- $genesisstoragepath :=  printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name }}
 
             {{- /*
             # pragma: allowlist nextline secret
-            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name  }}
-            {{- $validatorAddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
-            {{- $enode := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
-            {{- $enodeaddress := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
-            {{- $enodeport := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
-            {{- $nat := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
+            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name }}
+            {{- $validatorFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
+            {{- $enodeFilename := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
+            {{- $enodeaddressFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
+            {{- $enodeportFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
+            {{- $natFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
 
-            git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }};
-            cd {{ .Values.git_upload.git_repo_clone_directory }}/;
-            mkdir -p {{ $storagepath }};
+              git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }}
+              cd {{ .Values.git_upload.git_repo_clone_directory }}/
+              mkdir -p {{ $storagepath }}
 
-            rm -f {{ $validatorAddress }};
-            rm -f {{ $enode }};
-            rm -f {{ $enodeaddress }};
-            rm -f {{ $enodeport }};
-            rm -f {{ $nat }};
+              rm -f {{ $validatorFilename }}
+              rm -f {{ $enodeFilename }}
+              rm -f {{ $enodeaddressFilename }}
+              rm -f {{ $enodeportFilename }}
+              rm -f {{ $natFilename }}
 
             {{- if .Values.use_case.newNetwork.enabled }}
-            {{- $genesisfile := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
-            rm -f {{ $genesisfile }};
-            cat {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json > {{ $genesisfile }};
-            git add {{ $genesisfile }};
+              {{- $genesisFilename := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
+              rm -f {{ $genesisFilename }}
+              cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisFilename }}
+              git add {{ $genesisFilename }}
             {{- end }}
-            echo {{ $nodeAddressValue }} > {{ $validatorAddress }};
-            git add {{ $validatorAddress }};
-            echo {{ $enodeValue }} > {{ $enode }};
-            git add {{ $enode }};
-            echo {{ .Values.deployment.enode_address }} > {{ $enodeaddress }};
-            git add {{ $enodeaddress }};
-            echo {{ .Values.deployment.enode_address_port }} > {{ $enodeport }};
-            git add {{ $enodeport }};
-            echo {{ .Values.deployment.NAT }} > {{ $nat }};
-            git add {{ $nat }};
+            
+              echo {{ $nodeKeyPublic | quote }} > {{ $validatorFilename }}
+              git add {{ $validatorFilename }}
 
-            git commit -m \"{{ .Values.git_upload.git_commit_description }}\";
-            git push origin master;
-            "
+              echo {{ $enode | quote }} > {{ $enodeFilename }}
+              git add {{ $enodeFilename }}
+
+              echo {{ .Values.deployment.enode_address | quote }} > {{ $enodeaddressFilename }}
+              git add {{ $enodeaddressFilename }}
+
+              echo {{ .Values.deployment.enode_address_port | quote }} > {{ $enodeportFilename }}
+              git add {{ $enodeportFilename }}
+
+              echo {{ .Values.deployment.NAT | quote }} > {{ $natFilename }}
+              git add {{ $natFilename }}
+
+              git commit -m {{ .Values.git_upload.git_commit_description | quote }}
+              git push origin master
           volumeMounts:
-{{- if .Values.use_case.newNetwork.enabled }}
-            - name: genesis-config-persistent-storage
-              mountPath: {{ .Values.blockchain.quorum_genesis_location }}/genesis-geth.json
+          {{- if .Values.use_case.newNetwork.enabled }}
+            - name: cm-genesis
+              mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-{{- end }}
-            - name: quorum-nodekey
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/nodekey
+          {{- end }}
+            - name: cm-nodekey
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
-            - name: quorum-enode
-              mountPath: {{ .Values.blockchain.quorum_data_dir }}/geth/enode
+            - name: cm-enode
+              mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
       restartPolicy: Never
       volumes:
-{{- if .Values.use_case.newNetwork.enabled }}
-        - name: genesis-config-persistent-storage
+      {{- if .Values.use_case.newNetwork.enabled }}
+        - name: cm-genesis
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis-config
+            name: {{ include "quorumNode.Identifier" . }}-genesis
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
-{{- end }}
-        - name: quorum-nodekey
+      {{- end }}
+        - name: cm-nodekey
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+            name: {{ include "quorumNode.Identifier" . }}-nodekey
             items:
               - key: nodekey
                 path: nodekey
-        - name: quorum-enode
+        - name: cm-enode
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode-config
+            name: {{ include "quorumNode.Identifier" . }}-enode
             items:
               - key: enode
                 path: enode
 
-
-
 {{- end }}
-
-
-
-

@@ -1,57 +1,57 @@
 {{- $nodeKey := "" }}
-{{- $nodeAddress := "" }}
+{{- $nodeKeyPublic := "" }}
 {{- $enode := "" }}
-  {{- if .Values.use_case.newNetwork.enabled }}
+{{- if .Values.use_case.newNetwork.enabled }}
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
   {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
-  {{- else }}
+{{- else }}
   {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
   {{- $generatedPrivateJson := ( .Values.use_case.joinNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
-  {{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
   {{- $nodeKey = $generatedPrivateJson.nodeKey }}
-  {{- end }}
+{{- end }}
 ---
+# 
+# TODO: Put into Secret <!-- pragma: allowlist secret -->
 # nodekey private to the node, used to verify identity.
+#
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+  name: {{ include "quorumNode.Identifier" . }}-nodekey
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-nodekey-config
+    name: {{ include "quorumNode.Identifier" . }}-nodekey
 data:
-  nodekey: |
-    {{ $nodeKey }}
+  nodekey: | {{ $nodeKey | nindent 4 }}
 # Only IBFT / istanbul networks need access to the nodekey address.
 ---
 # nodekey address public and used to generate istanbul-validator-config.toml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+  name: {{ include "quorumNode.Identifier" . }}-nodekeypub
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-nodekey-address-config
+    name: {{ include "quorumNode.Identifier" . }}-nodekeypub
 data:
-  nodekey: |
-    {{ $nodeAddress }}
+  nodekey.pub: | {{ $nodeKeyPublic | nindent 4 }}
 
 ---
 # enode Id
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumNode.Identifier" . }}-enode-config
+  name: {{ include "quorumNode.Identifier" . }}-enode
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumNode.Identifier" . }}-enode-config
+    name: {{ include "quorumNode.Identifier" . }}-enode
 data:
-  enode: |
-    {{ $enode }}
+  enode: | {{ $enode | nindent 4 }}
 
 ---
 

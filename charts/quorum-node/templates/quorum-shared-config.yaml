@@ -1,37 +1,35 @@
 {{- $enode := "" }}
-{{- $nodeAddress := ""}}
+{{- $nodeKeyPublic := ""}}
 {{- if .Values.use_case.newNetwork.enabled }}
-{{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
-{{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
 {{- else }}
-{{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-{{- $enode = $generatedPublicJson.enode }}
-{{- $nodeAddress = $generatedPublicJson.nodeAddress }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
 {{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumnode.PermissionedCfg" . }}
+  name: {{ include "quorumnode.permissionedNodes" . }}
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumnode.PermissionedCfg" . }}
+    name: {{ include "quorumnode.permissionedNodes" . }}
 data:
   permissioned-nodes.json: |
-
     [
-                  "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
-    {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
-    {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
-    {{- range $peers }}
+      "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
     {{- $peer := . }}
-    {{- printf "," }}
-    {{- printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote | nindent 18 }}
-    {{- end }}
-    {{- end }}
+      {{- printf "," }}
+      {{ printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote }}
+  {{- end }}
+{{- end }}
     ]
-
 
 ---
 apiVersion: v1
@@ -56,21 +54,21 @@ data:
     if [ $# -eq 2 ]; then
      VOTE_BOOL=$2
     fi
-    RES=$(geth --exec "istanbul.propose(\"$1\", $VOTE_BOOL)" attach ipc:$QUORUM_HOME/dd/geth.ipc)
+    RES=$(geth --exec "istanbul.propose(\"$1\", $VOTE_BOOL)" attach ipc:{{ .Values.quorum.dataDirPath }}/geth.ipc)
     echo $RES
   ibft_propose_all.sh: |-
     #!/bin/ash
     #set -xe
 
-    for Addr in $( awk '/validators/,0' $QHOME/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
+    for Addr in $( awk '/validators/,0' {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
       echo $Addr
-      $QHOME/node-management/ibft_propose.sh $Addr true
+      {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh $Addr true
     done
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumnode.IValidatorCfg" . }}.toml
+  name: {{ include "quorumnode.IValidatorCfg" . }}
   namespace: {{ default .Release.Namespace }}
   labels:
     name: {{ include "quorumnode.IValidatorCfg" . }}
@@ -78,17 +76,16 @@ data:
   istanbul-validator-config.toml: |-
     vanity = "0x00"
     validators = [
-            {{ $nodeAddress | quote }}
-    {{- if .Values.use_case.updatePartnersInfo.enabled }}
-    {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
-    {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
-    {{- range $peers }}
+      {{ $nodeKeyPublic | quote }}
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
     {{- $peer := . }}
-    {{- printf "," }}
-    {{- printf "%s" $peer.nodeAddress | quote | nindent 12 }}
-    {{- end }}
-    {{- end }}
-
+      {{- printf "," }}
+      {{ $peer.nodeKeyPublic | quote }}
+  {{- end }}
+{{- end }}
     ]
 
 ---
@@ -106,8 +103,8 @@ data:
     # helper for connecting to geth from
     # outside the container
     # kubectl exec -it $POD -c quorum -- /geth-helpers/geth-attach.sh
-    echo "connecting to geth $QHOME"
-    geth attach --datadir $QUORUM_DATA_DIR $QUORUM_DATA_DIR/geth.ipc
+    echo "connecting to geth {{ .Values.quorum.homeMountPath }}"
+    geth attach --datadir {{ .Values.quorum.dataDirPath }} {{ .Values.quorum.dataDirPath }}/geth.ipc
   geth-exec.sh: |-
     #!/bin/sh
 
@@ -123,4 +120,4 @@ data:
     # https://github.com/ethereum/go-ethereum/issues/16905
     # to avoid warning being returned
     # "WARN [02-20|00:21:04.382] Sanitizing cache to Go's GC limits  provided=1024 updated=663"
-    geth --exec $GETH_CMD  --cache=16 attach --datadir $QUORUM_DATA_DIR $QUORUM_DATA_DIR/geth.ipc
+    geth --exec $GETH_CMD  --cache=16 attach --datadir {{ .Values.quorum.dataDirPath }} {{ .Values.quorum.dataDirPath }}/geth.ipc

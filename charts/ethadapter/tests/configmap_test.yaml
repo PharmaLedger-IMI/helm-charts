@@ -6,8 +6,11 @@ tests:
     set:
       config:
         rpcAddress: "rpcAddress_value"
-        smartContractAddress: "smartContractAddress_value"
-        smartContractAbi: "smartContractAbi_value"
+        smartContractInfo: |-
+          {
+            "address": "smartContractAddress_value",
+            "abi": "smartContractAbi_value"
+          }
       secrets:
         orgAccountJson: "{ \"key\": \"value\" }"
     asserts:

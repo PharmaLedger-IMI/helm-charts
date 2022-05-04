@@ -39,8 +39,8 @@ shared_repository_conventions:
   base_shareable_storage_path: "networks"
   # -- The name of the file that contains the genesis file
   genesis_file_name: "genesis.json"
-  # -- The name of the file that contains the validator address
-  validator_file_name: "validator.address"
+  # -- The name of the file that contains the validators public key (aka address)
+  validator_file_name: "validator.keypub"
   # -- The name of the file that contains the enode
   enode_file_name: "enode"
   # -- The name of the file that contains the Quorum Node real ip address or dns
@@ -50,67 +50,176 @@ shared_repository_conventions:
   # -- The name of the file that contains the NAT address
   nat_file_name: "nat"
 
-quorum_source:
-  # -- Quorum docker image registry
-  registry: quorumengineering
-  # -- Quorum docker image name
-  image: quorum
-  # -- Quorum docker image version
-  version: "21.7.1"
+image:
+  # -- The repository of the Quorum container image
+  repository: quorumengineering/quorum
+  # -- Image Pull Policy
+  pullPolicy: Always
+  # -- Image tag
+  tag: "21.7.1"
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
-blockchain:
-  # -- Quorum node block period
-  blockperiod: "3"
-  quorum_data_dir: "/etc/quorum/qdata/dd"
-  quorum_home: "/etc/quorum/qdata"
-  quorum_genesis_location: "/etc/quorum/genesis"
+## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
+## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+deploymentStrategy:
+  type: Recreate
+
+# Quorum configuration settings.
+quorum:
+  # -- Directory path to where the persistent volume "data" will be mounted to.
+  # Also some config file will be mounted there.
+  homeMountPath: "/quorum/home"
+  # -- Directory path to where the persistent volume "logs" will be mounted to.
+  logsMountPath: "/quorum/logs"
+  # -- Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume.
+  dataDirPath: "/quorum/home/dd"
+  # -- File path to genesis file
+  genesisFilePath: "/quorum/home/genesis/genesis-geth.json"
+  # -- Explicitly set network id
+  networkId: 10
+
+  miner:
+    # -- Number of CPU threads to use for mining
+    threads: 1
+    # -- Default minimum difference between two consecutive block's timestamps in seconds
+    blockPeriod: 3
+
+  log:
+    # -- Logging verbosity: 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
+    verbosity: 3
+    # -- If enabled, emit specially formatted logging checkpoints
+    emitcheckpoints: true
+
+  rpc:
+    corsDomain: "*"
+    # -- The virtual hostnames for the RPC endpoint to listen for.
+    # If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local
+    vHosts: "*"
+    # -- The activated APIs at RPC endpoint.
+    api: "admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"
+
+  metrics:
+    # -- Enable metrics endpoint which allows monitoring, e.g. via Prometheus
+    enabled: true
+    # -- Enable expensive metrics collection and reporting.
+    expensive: false
+    # -- Enable stand-alone metrics HTTP server listening interface.
+    addr: "0.0.0.0"
+    # -- Metrics HTTP server listening port.
+    port: 9545
+    # -- Add annotations for Prometheus to discover metrics endpoint.
+    prometheusAnnotationsEnabled: true
 
 use_case:
   newNetwork:
     # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: true
     plugin_data_common: >-
-        "{
-          "extradata":"0x0",
-          "enode":"",
-          "nodeAddress":"",
-          "genesisAccount":"0x89"
-        }"
-    plugin_data_secrets: "{
-          \"genesisKeyStoreAccount\": \"eyJhZGRyZX\",
-          \"nodeKey\": \"47\"
-        }"
+      {
+        "extradata": "newNetwork_extradata",
+        "enode": "newNetwork_Enode",
+        "nodeKeyPublic": "newNetwork_NodeKeyPublic",
+        "genesisAccount": "newNetwork_genesisAccount"
+      }
+    # -- Sensitive data passed by plugin
+    # <!-- pragma: allowlist secret -->
+    plugin_data_secrets: >- # pragma: allowlist secret
+      {
+        "genesisKeyStoreAccount": "ewogICAgImFkZHJlc3MiOiAidGVzdGRhdGEiLAogICAgImNyeXB0byI6IHsKICAgICAgICAiY2lwaGVyIjogImFlcy0xMjgtY3RyIiwKICAgICAgICAiY2lwaGVydGV4dCI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImNpcGhlcnBhcmFtcyI6IHsKICAgICAgICAgICAgIml2IjogInRlc3RkYXRhIgogICAgICAgIH0sCiAgICAgICAgIm1hYyI6ICJ0ZXN0ZGF0YSIsCiAgICAgICAgImtkZiI6ICJzY3J5cHQiLAogICAgICAgICJrZGZwYXJhbXMiOiB7CiAgICAgICAgICAgICJka2xlbiI6IDMyLAogICAgICAgICAgICAibiI6IDI2MjE0NCwKICAgICAgICAgICAgInIiOiA4LAogICAgICAgICAgICAicCI6IDEsCiAgICAgICAgICAgICJzYWx0IjogInRlc3RkYXRhIgogICAgICAgIH0KICAgIH0sCiAgICAiaWQiOiAidGVzdGRhdGEiLAogICAgInZlcnNpb24iOiAzCn0=",
+        "nodeKey": "newNetwork_NodeKey"
+      }
 
   joinNetwork:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
     plugin_data_common: >-
-        "{
-            "enode":"08",
-            "nodeAddress":"0x3",
-            "genesis":""
-        }"
+      {
+        "enode": "joinNetwork_enode",
+        "nodeKeyPublic": "joinNetwork_nodeKeyPublic",
+        "genesis": "{ \"key\": \n"value\" }"
+      }
     plugin_data_secrets: >-
-        "{
-            "nodeKey":"3b"
-        }"
+      {
+        "nodeKey": "joinNetwork_nodeKey"
+      }
 
   updatePartnersInfo:
     # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
     enabled: false
-    plugin_data_common: "{}"
+    plugin_data_common: >-
+      {
+        "peers": [
+          {
+            "enode": "peer1_enode",
+            "enodeAddress": "peer1_enodeAddress",
+            "enodeAddressPort": "peer1_enodeAddressPort",
+            "nodeKeyPublic": "peer1_nodeKeyPublic"
+          },
+          {
+            "enode": "peer2_enode",
+            "enodeAddress": "peer2_enodeAddress",
+            "enodeAddressPort": "peer2_enodeAddressPort",
+            "nodeKeyPublic": "peer2_nodeKeyPublic"
+          }
+        ]
+      }
     # -- List of company names who act as peers
     peers: []
 
-storage:
-  # -- Size for the data volume of the Quorum Node
-  data: "3Gi"
-  # -- Size for the logs volume of the Quorum Node
-  logs: "1Gi"
+# Persistence using Persistent Volume Claims
+# See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
+persistence:
+  # Settings for the data PVC.
+  data:
+    # -- The name of an existing PVC to use instead of creating a new one.
+    existingClaim: ""
+    # -- Name of the storage class for data PVC.
+    # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+    storageClassName: ""
+    # -- Size of the data PVC volume.
+    size: "3Gi"
+    # -- Annotations for the data PVC.
+    annotations: {}
+    # -- Finalizers for data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # -- AccessModes for the data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+    accessModes:
+      - ReadWriteOnce
+    # -- Selector Labels for the data PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+    selectorLabels: {}
 
-storageClass:
-  # -- Enable the creation of storage class (AWS specific)
-  enabled: true
+  # Settings for the logging PVC.
+  logs:
+    # -- Enables logging to a persistent volume.
+    # if disabled, logging will be to stdout only.
+    enabled: true
+    # -- The name of an existing PVC to use instead of creating a new one.
+    existingClaim: ""
+    # -- Name of the storage class for logs PVC.
+    # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+    storageClassName: ""
+    # -- Size of the logs PVC volume.
+    size: "1Gi"
+    # -- Annotations for the logs PVC.
+    annotations: {}
+    # -- Finalizers for logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # -- AccessModes for the logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+    accessModes:
+      - ReadWriteOnce
+    # -- Selector Labels for the logs PVC.
+    # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+    selectorLabels: {}
+
 # -- Number of replicas for the quorum-node !! DO NOT CHANGE !!
 replicasCount: 1
 # -- Override the full name
@@ -118,69 +227,99 @@ fullnameOverride: "quorum"
 # -- override the name
 nameOverride: "quorum"
 
+# -- Secret(s) for pulling an container image from a private registry.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+imagePullSecrets: []
+
 service:
-  # -- Custom service labels
-  labels:
-  # -- Custom service annotations
-  annotations:
-    # Let Kubernetes In-tree LoadBalancer controller NOT process this resource (but AWS LB controller 2.2 in this case)
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#configuration
-# service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    # We want the NLB to be Internet-facing (public)
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
-    # service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-    # A custom name
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#load-balancer-name
-    # service.beta.kubernetes.io/aws-load-balancer-name: qn-0
-    # Forward traffic to EC2 Instance (thus, a nodePort on the instance will be used)
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#instance-mode_1
-    # and https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#nlb-target-type
-    # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-    # IPv4 only
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#ip-address-type
-    # service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
-    # Important: Preserve Client (public) IP address of caller on forwarding traffic to target
-    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#target-group-attributes
-    # service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
-    # Healthcheck setting - must be within [2, 10] - defaults to 3
-    # We use the mininum of 2 to add/remove targets faster from target group
-    # service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
-    # service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
-    # Use a static Elastic IP address - Elastic IP Allocation IDs required!
-    # From offical docs: Public Facing lb only. Length/order must match subnets
-    # service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaXXXXXXXXXXXXXX
-    # We put the NLB into a certain public subnet only - You can provide the subnet ID or the value of the 'Name' tag
-    # From offical docs: You must specify at least one subnet in any of the AZs, both subnetID or subnetName(Name tag on subnets) can be used.
-    # See: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#subnets
-    # service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
-    # Only set to true if NLBs subnet is in a different availability zone than the zone affinity of the deployment.
-    # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
-    # 1. Load Balancer Proxy Protocol does not work for HTTP based workload!
-    # 2. We do not need the Load Balancer Proxy Protocol in our use case, therefore we do not enable it
-    # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+  p2p:
+    # -- Either ClusterIP, NodePort or LoadBalancer for P2P Service.
+    # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
+    type: ClusterIP
+    # -- Port where the P2P service will be exposed.
+    port: 30303
+    # -- Annotations for the P2P service.
+    # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
+    # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
+    annotations: {}
+      # Let Kubernetes In-tree LoadBalancer controller NOT process this resource (but AWS LB controller 2.2 in this case)
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#configuration
+      # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+      # We want the NLB to be Internet-facing (public)
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
+      # service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      # A custom name
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#load-balancer-name
+      # service.beta.kubernetes.io/aws-load-balancer-name: qn-0
+      # Forward traffic to EC2 Instance (thus, a nodePort on the instance will be used)
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#instance-mode_1
+      # and https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#nlb-target-type
+      # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+      # IPv4 only
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#ip-address-type
+      # service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
+      # Important: Preserve Client (public) IP address of caller on forwarding traffic to target
+      # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#target-group-attributes
+      # service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
+      # Healthcheck setting - must be within [2, 10] - defaults to 3
+      # We use the mininum of 2 to add/remove targets faster from target group
+      # service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+      # service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+      # Use a static Elastic IP address - Elastic IP Allocation IDs required!
+      # From offical docs: Public Facing lb only. Length/order must match subnets
+      # service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaXXXXXXXXXXXXXX
+      # We put the NLB into a certain public subnet only - You can provide the subnet ID or the value of the 'Name' tag
+      # From offical docs: You must specify at least one subnet in any of the AZs, both subnetID or subnetName(Name tag on subnets) can be used.
+      # See: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#subnets
+      # service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
+      # Only set to true if NLBs subnet is in a different availability zone than the zone affinity of the deployment.
+      # service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
+      # 1. Load Balancer Proxy Protocol does not work for HTTP based workload!
+      # 2. We do not need the Load Balancer Proxy Protocol in our use case, therefore we do not enable it
+      # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 
-    # Do not use. Use spec.loadBalancerSourceRanges instead!
-    # service.beta.kubernetes.io/load-balancer-source-ranges: "8.8.8.8/32,8.8.4.4/32"
-  spec:
-    # -- A list of CIDR ranges which can access the pod(s) for this service. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
+      # Do not use. Use spec.loadBalancerSourceRanges instead!
+      # service.beta.kubernetes.io/load-balancer-source-ranges: "8.8.8.8/32,8.8.4.4/32"
+
+    # -- A list of CIDR ranges to whitelist for ingress traffic to the P2P service if type is LoadBalancer.
+    # If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
     loadBalancerSourceRanges:
-    #  - 8.8.8.8/32
-    #  - 8.8.4.4/32
+      # - 8.8.8.8/32
+      # - 8.8.4.4/32
 
-# Pod Affinity - we want to schedule the pod in a certain availability zone, here eu-west-1a
+  rpc:
+    # -- Either ClusterIP, NodePort or LoadBalancer for RPC Service.
+    # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
+    type: ClusterIP
+    # -- Port where the RPC service will be exposed.
+    port: 8545
+    # -- Annotations for the RPC service.
+    # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
+    # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
+    annotations: {}
+    # -- A list of CIDR ranges to whitelist for ingress traffic to the RPC service if type is LoadBalancer.
+    # If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
+    loadBalancerSourceRanges:
+      # - 8.8.8.8/32
+      # - 8.8.4.4/32
+
+# -- Affinity for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+#
+# Notes for AWS: We want to schedule the pod in a certain availability zone, here eu-west-1a
 # Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets
 # Please note, that your nodes must be labeled accordingly!
-# See https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
-# -- Pod Affinity
-affinity:
- # nodeAffinity:
-  #  requiredDuringSchedulingIgnoredDuringExecution:
-  #    nodeSelectorTerms:
-  #      - matchExpressions:
-  #          - key: topology.kubernetes.io/zone
-  #            operator: In
-  #            values:
-  #              - eu-west-1a
+# See [https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone)
+affinity: {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #       - matchExpressions:
+  #           - key: topology.kubernetes.io/zone
+  #             operator: In
+  #             values:
+  #               - eu-west-1a
+
 # -- Pod resources
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -192,21 +331,23 @@ resources: {}
   #   memory: 128Mi
   # requests:
   #   cpu: 100m
-#   memory: 128Mi
-# -- Pod node selector
+  #   memory: 128Mi
+
+# -- Node Selectors in order to assign pods to certain nodes.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 nodeSelector: {}
-# -- Pod tolerations
+
+# -- Tolerations for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
 tolerations: []
 
+# -- Annotations added to the pod
 podAnnotations: {}
 
+# -- Security Context for the pod.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 podSecurityContext: {}
-# fsGroup: 2000
 
+# -- Security Context for the application container
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-# runAsUser: 1000
