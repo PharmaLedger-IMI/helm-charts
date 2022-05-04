@@ -113,6 +113,18 @@ persistence:
     - kubernetes.io/pvc-protection
   accessModes:
     - ReadWriteOnce
+  # -- DataSource option for cloning an existing volume or creating from a snapshot.
+  dataSource: {}
+    # # For cloning from an existing volume
+    # # See [https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/](https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/)
+    # kind: PersistentVolumeClaim
+    # name: pvc-1
+
+    # # For creating from a snapshot (here AWS)
+    # # [https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/](https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/)
+    # name: imported-aws-snapshot
+    # kind: VolumeSnapshot
+    # apiGroup: snapshot.storage.k8s.io    
 
 service:
   # -- Either ClusterIP, NodePort or LoadBalancer.
