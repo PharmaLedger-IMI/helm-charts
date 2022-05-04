@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: poc.1.6](https://img.shields.io/badge/AppVersion-poc.1.6-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: poc.1.6](https://img.shields.io/badge/AppVersion-poc.1.6-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -71,64 +71,37 @@ sequenceDiagram
 
 ## Init Job
 
-The Init Job is an important step and will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
-Its pod consists of three containers, two init containers and one main container.
+The Init Job is required to run the build process and to store the SeedsBackup in a ConfigMap.
 
-```mermaid
-flowchart LR
-A(Init Container 1:<br/>Check necessity for build process) -->B(Init Container 2:<br/>Run build process if necessary)
-B --> C(Main Container:<br/>Write/Update ConfigMap Seedsbackup)
-```
+- The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
+- It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
+- Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
 
 ### Init Job Details
 
-1. On `helm install` and `helm upgrade`, helm will deploy a Kubernete Job named *job-init* which schedules a pod consisting of two Init Containers and one Main Container.
+The pod consists an init containers and a main container.
 
-```mermaid
-flowchart LR
-A(Helm pre-install/pre-upgrade hook) -->|deploys| B(Init Job)
-B -->|schedules| C(Init Pod)
-```
-
-2. The first Init Container runs `kubectl` command to check existance of ConfigMap `build-info` which contains information about latest successful build process.
-   1. If ConfigMap `build-info` does not exist or latest build process does not match current epi application container image, then a *signal* file will be written to a shared volume between containers.
-   2. Otherwise the build process has already been executed for current application container image.
-
-```mermaid
-flowchart LR
-D(Init Container<br/>Kubectl) --> E{ConfigMap build-info<br/>exists and<br/>matches current<br/>container image?}
-E -->|not exists| F[Write signal file to shared data volume]
-F --> G[Exit Init Container<br/>Kubectl]
-E -->|exists| G
-```
-
-3. The second Init Container uses the container image of the epi application and checks existance of *Signal* file from first Init Container.
-4. If it does not exists, then no build process shall run and the container exists.
-5. If the *Signal* file exists, then
+1. The Init Container uses the container image of the epi application and
    1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
    2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
 
-```mermaid
-flowchart LR
-D(Init Container<br/>application) --> E{Signal file exists?}
-E -->|yes, exists| F[start apihub server]
-F --> G[sleep short time]
-G --> H[build process]
-H --> I[write SeedsBackup file to shared data with main container]
-I --> J
-E -->|no, does not exist| J[Exit Init Container<br/>application]
-```
+    ```mermaid
+    flowchart LR
+    A(Init Container<br/>application) --> B[start apihub server]
+    B --> C[sleep short time]
+    C --> D[build process]
+    D --> E[write SeedsBackup file to shared data with main container]
+    E --> F[Exit Init Container<br/>application]
+    ```
 
-6. The Main Container has kubectl installed and checks if SeedsBackup file was handed over by Init Container.
+2. The Main Container has `kubectl` installed and checks if SeedsBackup file was handed over by Init Container.
 
-```mermaid
-flowchart LR
-L(Main Container) --> M{SeedsBackup file exists?}
-M -->|exists| N[Create ConfigMap SeedsBackup for current Image]
-N --> O[Update ConfigMap SeedsBackup]
-O --> P
-M -->|not exists| P[Exit Pod]
-```
+    ```mermaid
+    flowchart LR
+    G(Main Container) --> H[Create ConfigMap SeedsBackup for current Image]
+    H --> I[Update ConfigMap SeedsBackup]
+    I --> J[Exit Pod]
+    ```
 
 After completion of the *Init Job* the application container will be deployed/restarted with the current *ConfigMap SeedsBackup*.
 
@@ -140,6 +113,8 @@ These resources are:
 1. Init Job - The Init Job was created on pre-install/pre-upgrade and will remain after its execution.
 2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
 3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `epi-seedsbackup-poc.1.6-final-backup-1646063552`
+
+## Installation
 
 ### Quick install with internal service of type ClusterIP
 
@@ -164,7 +139,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.1 \
         --install \
         --values my-config.yaml \
     ```
@@ -205,7 +180,7 @@ service:
 # further config
 ```
 
-### AWS Load Balancer Controler: Expose Service via Ingress
+### AWS Load Balancer Controller: Expose Service via Ingress
 
 Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.
 
@@ -255,7 +230,7 @@ config:
   # ... config section keys and values ...
 ```
 
-### Additional helm options
+## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
 
@@ -264,7 +239,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.1 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -275,13 +250,13 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.1 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
     ```
 
-### Potential issues
+## Potential issues
 
 1. `Error: admission webhook "vingress.elbv2.k8s.aws" denied the request: invalid ingress class: IngressClass.networking.k8s.io "alb" not found`
 
