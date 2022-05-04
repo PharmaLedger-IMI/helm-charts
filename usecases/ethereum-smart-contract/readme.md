@@ -40,18 +40,19 @@ smart_contracts:
      smart_contract_location: "https://raw.githubusercontent.com/PharmaLedger-IMI/eth-adapter/master/SmartContracts/contracts/Anchoring.sol"
 
 git_upload:
-# --  Enable the automatic upload to the use case shared repository of the shareable data
-enabled: true
-# -- The email used by the git in order to upload the data
-email: ""
-# -- The user used by the git in order to upload the data
-user: ""
-# -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/organisation/shared-repository.git <!-- # pragma: allowlist secret -->
-git_repo_with_access_token: ""
-# -- The repository base folder name where the shareable data to will be uploaded
-git_repo_storage_path: "networks"
-# -- The repository base folder name where the shareable data to will be uploaded
-git_commit_description: "updated smart contract info"
+   # --  Enable the automatic upload to the use case shared repository of the shareable data
+   enabled: true
+   # -- The email used by the git in order to upload the data
+   email: ""
+   # -- The user used by the git in order to upload the data
+   user: ""
+   # -- The repository url eg. https://GITHUB-TOKEN:x-oauth-basic@github.com/organisation/shared-repository.git <!-- # pragma: allowlist secret -->
+   git_repo_with_access_token: ""
+   # -- The repository base folder name where the shareable data to will be uploaded
+   git_repo_storage_path: "networks"
+   # -- The repository base folder name where the shareable data to will be uploaded
+   git_commit_description: "updated smart contract info"
+
 # -- The quorum node pod name
 pod_name: "quorum-pod"
 # -- The kubernetes namespace
