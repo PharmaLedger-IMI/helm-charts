@@ -282,6 +282,8 @@ Tests can be found in [tests](./tests)
 
 ## Values
 
+*Note:* Please scroll horizontally to show more columns (e.g. description)!
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
