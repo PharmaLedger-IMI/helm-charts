@@ -24,8 +24,8 @@ image:
 #   # -- Overrides the image tag whose default is the chart appVersion.
 #   tag: "v1.0.2-builder"
 
-## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
-## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+# -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
+# See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
 deploymentStrategy:
   type: Recreate
 
@@ -71,7 +71,7 @@ podSecurityContext: {}
 # -- Security Context for the application container
 # IMPORTANT: Take a look at README.md file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-#
+# <br/>
 # For running as non-root with uid 1000, remove {} from next line and uncomment next lines!
 securityContext: {}
   # capabilities:
@@ -211,14 +211,19 @@ config:
 
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
-  #
+  # <br/>
   # For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils"
+  # <br/>
   # For SSO (not enabled by default!):
+  # <br/>
   # 1. "enableOAuth": true
+  # <br/>
   # 2. "serverAuthentication": true
+  # <br/>
   # 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.
   #    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.
   #    "redirectPath" must match the redirect URL configured at IdP
+  # <br/>
   # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
   apihub: |-
     {
