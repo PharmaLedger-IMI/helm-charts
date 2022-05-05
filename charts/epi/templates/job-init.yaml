@@ -1,4 +1,9 @@
 {{- /*
+Please note: The Init Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
+*/}}
+{{- if or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.image" .)) -}}
+
+{{- /*
 1. Create Configmaps required for hook from template
 */}}
 
@@ -28,7 +33,6 @@ rules:
   - ""
   resourceNames:
   - {{ include "epi.configMapSeedsBackupName" . | quote }}
-  - "{{ include "epi.fullname" . }}-build-info"
   resources:
   - configmaps
   verbs:
@@ -113,49 +117,8 @@ spec:
       {{- end }}
       restartPolicy: Never
       initContainers:
-      - name: build-necessity-check
-        {{- if .Values.kubectl.image.sha }}
-        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
-        {{- else }}
-        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
-        command:
-          - sh
-          - -c
-        args:
-          - |
-            # Exit on error
-            set -e
-            last_built_image=$(kubectl get cm --ignore-not-found {{ include "epi.fullname" . }}-build-info -o jsonpath='{.data.lastBuiltImage}')
-            if [ "$last_built_image" != "$FULL_IMAGE" ]
-            then 
-              echo "=======> Not build yet for image=$FULL_IMAGE!"
-              echo "=======> Writing signal file in order to start build process ..."
-              touch /container-shared-data/doBuild
-            else
-              echo "=======> Already built for image=$FULL_IMAGE"
-            fi
-            echo "=======> Exiting ..."
-            exit 0
-        env:
-          - name: FULL_IMAGE
-            {{- if .Values.image.sha }}
-            value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
-            {{- else }}
-            value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-            {{- end }}
-        volumeMounts:
-            # We mount a temporary volume in order to signal if build process must run or not
-          - name: container-shared-data
-            mountPath: /container-shared-data
-            readOnly: false
       - name: init-epi
-        {{- if .Values.image.sha }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
-        {{- else }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        {{- end }}
+        image: {{ include "epi.image" . | quote }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         {{- with .Values.securityContext }}
         securityContext:
@@ -172,35 +135,29 @@ spec:
           - |
             # Exit on error
             set -e
-            # 1. Check if build process needs to be done by checking if build process has not been executed in the past for current Image Tag.
-            # 2. If yes: Start server in background, wait, run build and copy seedBackup to shared folder with main container.
+            # Start server in background, wait, run build and copy seedBackup to shared folder with main container.
             cd /ePI-workspace
-            if [ -f /container-shared-data/doBuild ]
-            then 
-              echo "=======> Not build yet!"
-              echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
-              cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
-              echo "=======> Starting application in background process ..."
-              npm run server &
-              server_pid=$!
-              echo "=======> Application running in background with PID=$server_pid"
-              echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
-              sleep {{ .Values.config.sleepTime }}
-              echo "=======> Starting build process ..."
-              npm run build-all
-              rc=$?
-              echo "=======> Build process done - rc=$rc"
-              if [ $rc -eq 0 ]
-              then 
-                echo "=======> Copying seedsBackup to container-shared-data ..."
-                cp /ePI-workspace/apihub-root/seedsBackup /container-shared-data
-                ls -las /container-shared-data
-              else
-                echo "=======> ERROR during build process - Exiting with rc=$rc ..."
-                exit $rc
-              fi
+            echo "=======> Not build yet!"
+            echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
+            cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
+            echo "=======> Starting application in background process ..."
+            npm run server &
+            server_pid=$!
+            echo "=======> Application running in background with PID=$server_pid"
+            echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
+            sleep {{ .Values.config.sleepTime }}
+            echo "=======> Starting build process ..."
+            npm run build-all
+            rc=$?
+            echo "=======> Build process done - rc=$rc"
+            if [ $rc -eq 0 ]
+            then
+              echo "=======> Copying seedsBackup to container-shared-data ..."
+              cp /ePI-workspace/apihub-root/seedsBackup /container-shared-data
+              ls -las /container-shared-data
             else
-              echo "=======> Already built for version=$IMAGE_TAG"
+              echo "=======> ERROR during build process - Exiting with rc=$rc ..."
+              exit $rc
             fi
             echo "=======> Exiting ..."
             exit 0
@@ -208,7 +165,7 @@ spec:
           - name: IMAGE_TAG
             value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
         volumeMounts:
-          # As of Feb-2023 we do NOT mount seedsBackup to its desired destination /ePI-workspace/apihub-root/seedsBackup
+          # As of Feb-2022 we do NOT mount seedsBackup to its desired destination /ePI-workspace/apihub-root/seedsBackup
           # as the startup build process will write to that even if there are no changes.
           # Thus, we mount it to different location and copy it to desired location where the file is writeable then.
           - name: epi-seeds-volume
@@ -263,11 +220,7 @@ spec:
             readOnly: false
       containers:
       - name: write-configmap
-        {{- if .Values.kubectl.image.sha }}
-        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}"
-        {{- else }}
-        image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
-        {{- end }}
+        image: {{ include "epi.kubectlImage" . | quote }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
@@ -330,3 +283,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+{{- end -}}
