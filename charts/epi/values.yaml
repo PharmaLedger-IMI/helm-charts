@@ -24,8 +24,8 @@ image:
 #   # -- Overrides the image tag whose default is the chart appVersion.
 #   tag: "v1.0.2-builder"
 
-## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
-## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+# -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
+# See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
 deploymentStrategy:
   type: Recreate
 
@@ -57,7 +57,7 @@ podAnnotations: {}
 # -- Security Context for the pod.
 # IMPORTANT: Take a look at README.md for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-#
+# <br/>
 # For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
 podSecurityContext: {}
   # fsGroup: 1000
@@ -71,7 +71,7 @@ podSecurityContext: {}
 # -- Security Context for the application container
 # IMPORTANT: Take a look at README.md file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-#
+# <br/>
 # For running as non-root with uid 1000, remove {} from next line and uncomment next lines!
 securityContext: {}
   # capabilities:
@@ -83,7 +83,7 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# -- Settings for Container with kubectl installed used by Init and Cleanup Job
+# Settings for Container with kubectl installed used by Init and Cleanup Job.
 # <!-- pragma: allowlist secret -->
 kubectl:
   image:
@@ -95,25 +95,34 @@ kubectl:
     tag: "1.21.8"
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
+    # <br/>
     # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
     sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
-# -- Enable persistence using Persistent Volume Claims
+# Enable persistence using Persistent Volume Claims.
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
 persistence:
-  # -- Name of the storage class.
+  # -- Name of the storage class for the PVC.
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
-  # -- Size of the volume
+  # -- Size of the volume.
   size: "20Gi"
   # -- Boolean flag whether to delete the persistent volume on uninstall or not.
   deletePvcOnUninstall: true
+  # -- Finalizers for the PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
   finalizers:
     - kubernetes.io/pvc-protection
+  # -- AccessModes for the PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
   accessModes:
     - ReadWriteOnce
+  # -- Selector Labels for the logs PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+  selectorLabels: {}
   # -- DataSource option for cloning an existing volume or creating from a snapshot.
+  # See [values.yaml](values.yaml) for more details.
   dataSource: {}
     # # For cloning from an existing volume
     # # See [https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/](https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/)
@@ -137,7 +146,7 @@ service:
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
 
-# -- Configuration. Will be put in ConfigMaps.
+# Configuration. Will be put in ConfigMaps.
 config:
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
@@ -203,14 +212,19 @@ config:
 
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
-  #
+  # <br/>
   # For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils"
+  # <br/>
   # For SSO (not enabled by default!):
+  # <br/>
   # 1. "enableOAuth": true
+  # <br/>
   # 2. "serverAuthentication": true
+  # <br/>
   # 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.
   #    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.
   #    "redirectPath" must match the redirect URL configured at IdP
+  # <br/>
   # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
   apihub: |-
     {
@@ -300,18 +314,25 @@ config:
 
 ingress:
   # -- Whether to create ingress or not.
+  # <br/>
   # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
   enabled: false
   # -- The className specifies the IngressClass object which is responsible for that class.
-  # Note for Kubernetes >= 1.18 it is required to have an existing IngressClass object.
+  # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)
+  # <br/>
+  # For Kubernetes >= 1.18 it is required to have an existing IngressClass object.
   # If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead.
+  # <br/>
   # For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'.
-  # See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
   className: ""
   # -- Ingress annotations.
+  # <br/>
   # For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/)
+  # <br/>
   # For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/)
+  # <br/>
   # For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/)
+  # <br/>
   # For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations)
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -324,9 +345,11 @@ ingress:
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          # <br/>
           # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
           path: /
           # -- The type of path. This value is required since Kubernetes 1.18.
+          # <br/>
           # For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific
           # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types)
           # and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/)
