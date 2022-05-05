@@ -27,4 +27,7 @@ spec:
   selector:
     matchLabels: {{ toYaml . | nindent 6 }}
   {{- end }}
+  {{- with .Values.persistence.data.dataSource }}
+  dataSource: {{ toYaml . | nindent 4 }}
+  {{- end }}
 {{- end }}
