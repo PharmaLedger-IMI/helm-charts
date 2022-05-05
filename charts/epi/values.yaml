@@ -57,7 +57,7 @@ podAnnotations: {}
 # -- Security Context for the pod.
 # IMPORTANT: Take a look at README.md for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-#
+# <br/>
 # For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
 podSecurityContext: {}
   # fsGroup: 1000
@@ -95,6 +95,7 @@ kubectl:
     tag: "1.21.8"
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
+    # <br/>
     # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
     sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
@@ -313,18 +314,25 @@ config:
 
 ingress:
   # -- Whether to create ingress or not.
+  # <br/>
   # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
   enabled: false
   # -- The className specifies the IngressClass object which is responsible for that class.
-  # Note for Kubernetes >= 1.18 it is required to have an existing IngressClass object.
+  # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class)
+  # <br/>
+  # For Kubernetes >= 1.18 it is required to have an existing IngressClass object.
   # If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead.
+  # <br/>
   # For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'.
-  # See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
   className: ""
   # -- Ingress annotations.
+  # <br/>
   # For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/)
+  # <br/>
   # For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/)
+  # <br/>
   # For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/)
+  # <br/>
   # For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations)
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -337,9 +345,11 @@ ingress:
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+          # <br/>
           # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
           path: /
           # -- The type of path. This value is required since Kubernetes 1.18.
+          # <br/>
           # For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific
           # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types)
           # and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/)
