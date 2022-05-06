@@ -20,32 +20,25 @@ rules:
   - jobs
   verbs:
   - delete
-# Get SeedsBackup, create backup from it and delete SeedsBackup
-- apiGroups:
-  - ""
-  resourceNames:
-  - {{ include "epi.configMapSeedsBackupName" . | quote }}
-  resources:
-  - configmaps
-  verbs:
-  - get
-  # - patch
-  - delete
-# Required to create a backup of SeedsBackup
-# We cannot restrict create verb to a resourceName - See https://github.com/kubernetes/kubernetes/issues/80295
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - create
 {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
+# Delete PVC
 - apiGroups:
   - ""
   resourceNames:
   - {{ include "epi.fullname" . | quote }}
   resources:
-  - persistentvolumeclaims 
+  - persistentvolumeclaims
+  verbs:
+  - delete
+{{- end }}
+{{- if .Values.serviceAccount.create -}}
+# Delete ServiceAccount
+- apiGroups:
+  - ""
+  resourceNames:
+  - {{ include "epi.serviceAccountName" . | quote }}
+  resources:
+  - serviceaccounts
   verbs:
   - delete
 {{- end }}
@@ -81,8 +74,7 @@ metadata:
 ---
 
 {{- /*
-3. This Job cleans up resources created on init/upgrade hook
-
+2. This Job cleans up resources created on init/upgrade hook
 */}}
 apiVersion: batch/v1
 kind: Job
@@ -111,8 +103,8 @@ spec:
       restartPolicy: Never
       containers:
       - name: cleanup
-        image: {{ include "epi.kubectlImage" . | quote }}
-        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
+        image: {{ include "epi.imageKubectl" . | quote }}
+        imagePullPolicy: {{ .Values.imageKubectl.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
           - -c
@@ -124,22 +116,17 @@ spec:
             echo "1. Deleting Init Job ..."
             kubectl delete job {{ include "epi.fullname" . }}-init --ignore-not-found=true
 
-            backupname="{{ include "epi.configMapSeedsBackupName" . }}-${IMAGE_TAG}-final-backup-$(date +%s)"
-            echo "2. Backing up Configmap {{ include "epi.configMapSeedsBackupName" . }} to $backupname ..."
-            kubectl patch cm {{ include "epi.configMapSeedsBackupName" . }} -p "{\"metadata\":{ \"name\":\"$backupname\"}}" --dry-run=client -o yaml | kubectl create -f -
-
-            echo "3. Deleting Configmap {{ include "epi.configMapSeedsBackupName" . }} ..."
-            kubectl delete cm {{ include "epi.configMapSeedsBackupName" . }} --ignore-not-found=true
-
             {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
-            echo "4. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
+            echo "2. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
             kubectl delete pvc {{ include "epi.fullname" . }} --ignore-not-found=true
             {{- else }}
-            echo "4. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
+            echo "2. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
             {{- end }}
-        env:
-          - name: IMAGE_TAG
-            value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+
+            {{- if .Values.serviceAccount.create -}}
+            echo "3. Deleting ServiceAccount {{ include "epi.serviceAccountName" . }} ..."
+            kubectl delete serviceaccount {{ include "epi.serviceAccountName" . }} --ignore-not-found=true
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -61,34 +61,8 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-
 {{/*
-The Name of the ConfigMap for the Seeds Data
-*/}}
-{{- define "epi.configMapSeedsBackupName" -}}
-{{- printf "%s-%s" (include "epi.fullname" .) "seedsbackup" }}
-{{- end }}
-
-{{/*
-Lookup potentially existing seedsBackup data
-*/}}
-{{- define "epi.seedsBackupData" -}}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "epi.configMapSeedsBackupName" .) -}}
-{{- if $configMap -}}
-{{/*
-    Reusing existing data
-*/}}
-seedsBackup: {{ $configMap.data.seedsBackup | default "" | quote }}
-{{- else -}}
-{{/*
-    Use new data
-*/}}
-seedsBackup: ""
-{{- end -}}
-{{- end -}}
-
-{{/*
-    The full image repository:tag[@sha256:sha]
+    The full image repository:tag[@sha256:sha] for the runner
 */}}
 {{- define "epi.image" -}}
 {{- if .Values.image.sha -}}
@@ -98,15 +72,25 @@ seedsBackup: ""
 {{- end -}}
 {{- end -}}
 
+{{/*
+    The full image repository:tag[@sha256:sha] for the builder
+*/}}
+{{- define "epi.imageBuilder" -}}
+{{- if .Values.imageBuilder.sha -}}
+{{ .Values.imageBuilder.repository }}:{{ .Values.imageBuilder.tag }}@sha256:{{ .Values.imageBuilder.sha }}
+{{- else -}}
+{{ .Values.imageBuilder.repository }}:{{ .Values.imageBuilder.tag }}
+{{- end -}}
+{{- end -}}
 
 {{/*
-    The full image of kubectl repository:tag[@sha256:sha]
+    The full image repository:tag[@sha256:sha] for kubectl
 */}}
-{{- define "epi.kubectlImage" -}}
-{{- if .Values.kubectl.image.sha -}}
-{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
+{{- define "epi.imageKubectl" -}}
+{{- if .Values.imageKubectl.sha -}}
+{{ .Values.imageKubectl.repository }}:{{ .Values.imageKubectl.tag }}@sha256:{{ .Values.imageKubectl.sha }}
 {{- else -}}
-{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
+{{ .Values.imageKubectl.repository }}:{{ .Values.imageKubectl.tag }}
 {{- end -}}
 {{- end -}}
 

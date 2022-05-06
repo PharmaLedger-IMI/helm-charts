@@ -6,23 +6,26 @@
 replicaCount: 1
 
 image:
-  # -- The repository of the container image
-  repository: public.ecr.aws/n4q1q0z2/pharmaledger-epi
-  # -- Image Pull Policy
-  pullPolicy: IfNotPresent
+  # -- The repository of the container image for the runner
+  repository: ""
+  # -- Image Pull Policy for the runner
+  pullPolicy: Always
   # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:"
   sha: ""
 
-# image:
-#   # -- The repository of the container image
-#   repository: 535161841476.dkr.ecr.eu-central-1.amazonaws.com/torsten-pharmaledger-epi
-#   # -- Image Pull Policy
-#   pullPolicy: Always # IfNotPresent
-#   # -- Overrides the image tag whose default is the chart appVersion.
-#   tag: "v1.0.2-builder"
+imageBuilder:
+  # -- The repository of the container image for the builder.
+  repository: ""
+  # -- Image Pull Policy for the builder.
+  pullPolicy: Always
+  # -- Image tag for the builder.
+  tag: ""
+  # -- sha256 digest of the image for the builder.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
 # -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
 # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
@@ -40,7 +43,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  # -- Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created which is used by builder and runner.
   create: false
   # -- Annotations to add to the service account
   annotations: {}
@@ -83,22 +86,20 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# Settings for Container with kubectl installed used by Init and Cleanup Job.
-# <!-- pragma: allowlist secret -->
-kubectl:
-  image:
-    # -- The repository of the container image containing kubectl
-    repository: bitnami/kubectl
-    # -- Image Pull Policy
-    pullPolicy: IfNotPresent
-    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "1.21.8"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # <br/>
-    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
-    # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+# Settings for Container with kubectl installed used by Cleanup Job.
+imageKubectl:
+  # -- The repository of the container image containing kubectl
+  repository: bitnami/kubectl
+  # -- Image Pull Policy
+  pullPolicy: IfNotPresent
+  # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
+  tag: "1.21.8"
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  # <br/>
+  # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+  # <!-- # pragma: allowlist secret -->
+  sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590" # pragma: allowlist secret
 
 # Enable persistence using Persistent Volume Claims.
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
