@@ -391,6 +391,10 @@ livenessProbe:
   httpGet:
     path: /
     port: http
+    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
+    httpHeaders:
+      - name: Host
+        value: localhost
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 1
@@ -400,11 +404,15 @@ livenessProbe:
 # -- Readiness probe.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 readinessProbe:
-  exec:
-    command:
-    - cat
-    - /ePI-workspace/apihub-root/ready
-  initialDelaySeconds: 30
-  periodSeconds: 5
+  httpGet:
+    path: /
+    port: http
+    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
+    httpHeaders:
+      - name: Host
+        value: localhost
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 1
   successThreshold: 1
-  failureThreshold: 60
+  failureThreshold: 3
