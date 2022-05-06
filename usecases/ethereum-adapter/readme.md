@@ -67,7 +67,7 @@ config:
    1. _ethereum-adapter.plugin.json_ file that will contain all the downloaded information, like ABI, smart contract address. The json file will be used by the helm charts.
    
 ```shell
-helm pl-plugin --ethereumAdapter -i ./eth-adapter-values.yaml -o .
+helm pl-plugin --ethAdapter -i ./eth-adapter-values.yaml -o .
 ```
 
 2. Install the helm chart

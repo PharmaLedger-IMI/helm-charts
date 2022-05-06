@@ -64,7 +64,7 @@ git_shared_configuration:
    1. _update-partners-info.plugin.json_ file that will contain all the generated information, like the list of all validators and enode connections. The json file will be used by the helm charts.
    
 ```shell
-helm pl-plugin --update-partners-info -i ./values.yaml -o .
+helm pl-plugin --updatePartnersInfo -i ./my-values.yaml -o .
 ```
 
 2. Install the helm chart 
