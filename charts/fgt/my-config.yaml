@@ -1,4 +1,0 @@
-# Example my-config.yaml for local testing setup with port forwarding
-# config:
-#   # -- The URL of the FGT API including port
-#   fgtApi: "http://localhost:8091/traceability"

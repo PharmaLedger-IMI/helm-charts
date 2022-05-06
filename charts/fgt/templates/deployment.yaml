@@ -144,10 +144,12 @@ spec:
             mountPath: /fgt-workspace/env.json
             subPath: env.json
             readOnly: true
+{{- if .Values.config.isTraceability }}
           - name: fgt-domains-volume
             mountPath: /fgt-workspace/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
             readOnly: true
+{{- end }}
           - name: fgt-domains-volume
             mountPath: /fgt-workspace/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
