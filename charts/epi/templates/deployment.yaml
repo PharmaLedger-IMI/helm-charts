@@ -70,34 +70,9 @@ spec:
           - sh
           - -c
         args:
-            #
-            # NOT WORKING: As of Feb-23 2022 the build process must run on every startup as
-            # it also write files into ephemeral container disk space, e.g. /ePI-workspace/apihub-root/demiurge-wallet/loader/environment.js
-            #
-            # echo "=======> Starting server only - do not run build as apps are already built here..."
-            # npm run server
-            #
-            # Additionally mounting seedsBackup not working (Feb-23 2022) as mounted files are readonly 
-            # and the build process overwrites it even if no changes occur.
-            #
           - |
-            cd /ePI-workspace
-            echo "=======> Starting application in background process ..."
-            npm run server &
-            server_pid=$!
-            echo "=======> Application running in background with PID=$server_pid"
-            echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
-            sleep {{ .Values.config.sleepTime }}
-            echo "=======> Starting build process ..."
-            npm run build-all
-            rc=$?
-            echo "=======> Build process done - rc=$rc"
-            if [ $rc -eq 0 ]
-            then 
-              echo "=======> Build process successful - Writing file that application is ready ..."
-              touch /ePI-workspace/apihub-root/ready
-              tail -f /dev/null
-            fi
+            echo "=======> Starting server only - do not run build as apps are already built here..."
+            npm run server
         volumeMounts:
           - name: epi-external-volume
             mountPath: /ePI-workspace/apihub-root/external-volume

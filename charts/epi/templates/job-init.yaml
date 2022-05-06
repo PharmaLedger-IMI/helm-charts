@@ -82,20 +82,15 @@ spec:
             echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
             sleep {{ .Values.config.sleepTime }}
             echo "=======> Starting build process ..."
-            npm run build-all
+            node ./node_modules/octopus/scripts/setEnv --file=../../../env.json "node ./bin/octopusRun.js epi-ssapps-and-wallets-build"
             rc=$?
             echo "=======> Build process done - rc=$rc"
-            if [ $rc -eq 0 ]
+            if [ $rc -ne 0 ]
             then
-              echo "=======> Copying seedsBackup to container-shared-data ..."
-              cp /ePI-workspace/apihub-root/seedsBackup /container-shared-data
-              ls -las /container-shared-data
-            else
               echo "=======> ERROR during build process - Exiting with rc=$rc ..."
-              exit $rc
             fi
             echo "=======> Exiting ..."
-            exit 0
+            exit $rc
         volumeMounts:
           - name: epi-external-volume
             mountPath: /ePI-workspace/apihub-root/external-volume
@@ -139,10 +134,6 @@ spec:
             mountPath: /ePI-workspace/trust-loader-config/leaflet-wallet/loader/environment.js
             subPath: leaflet-environment.js
             readOnly: true
-            # We mount a temporary volume in order to hand over data from init to main container
-          - name: container-shared-data
-            mountPath: /container-shared-data
-            readOnly: false
       volumes:
         - name: epi-config-volume
           configMap:
