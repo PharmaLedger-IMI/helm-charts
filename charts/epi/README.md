@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: poc.1.6](https://img.shields.io/badge/AppVersion-poc.1.6-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: poc.1.6](https://img.shields.io/badge/AppVersion-poc.1.6-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -71,64 +71,37 @@ sequenceDiagram
 
 ## Init Job
 
-The Init Job is an important step and will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
-Its pod consists of three containers, two init containers and one main container.
+The Init Job is required to run the build process and to store the SeedsBackup in a ConfigMap.
 
-```mermaid
-flowchart LR
-A(Init Container 1:<br/>Check necessity for build process) -->B(Init Container 2:<br/>Run build process if necessary)
-B --> C(Main Container:<br/>Write/Update ConfigMap Seedsbackup)
-```
+- The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
+- It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
+- Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
 
 ### Init Job Details
 
-1. On `helm install` and `helm upgrade`, helm will deploy a Kubernete Job named *job-init* which schedules a pod consisting of two Init Containers and one Main Container.
+The pod consists an init containers and a main container.
 
-```mermaid
-flowchart LR
-A(Helm pre-install/pre-upgrade hook) -->|deploys| B(Init Job)
-B -->|schedules| C(Init Pod)
-```
-
-2. The first Init Container runs `kubectl` command to check existance of ConfigMap `build-info` which contains information about latest successful build process.
-   1. If ConfigMap `build-info` does not exist or latest build process does not match current epi application container image, then a *signal* file will be written to a shared volume between containers.
-   2. Otherwise the build process has already been executed for current application container image.
-
-```mermaid
-flowchart LR
-D(Init Container<br/>Kubectl) --> E{ConfigMap build-info<br/>exists and<br/>matches current<br/>container image?}
-E -->|not exists| F[Write signal file to shared data volume]
-F --> G[Exit Init Container<br/>Kubectl]
-E -->|exists| G
-```
-
-3. The second Init Container uses the container image of the epi application and checks existance of *Signal* file from first Init Container.
-4. If it does not exists, then no build process shall run and the container exists.
-5. If the *Signal* file exists, then
+1. The Init Container uses the container image of the epi application and
    1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
    2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
 
-```mermaid
-flowchart LR
-D(Init Container<br/>application) --> E{Signal file exists?}
-E -->|yes, exists| F[start apihub server]
-F --> G[sleep short time]
-G --> H[build process]
-H --> I[write SeedsBackup file to shared data with main container]
-I --> J
-E -->|no, does not exist| J[Exit Init Container<br/>application]
-```
+    ```mermaid
+    flowchart LR
+    A(Init Container<br/>application) --> B[start apihub server]
+    B --> C[sleep short time]
+    C --> D[build process]
+    D --> E[write SeedsBackup file to shared data with main container]
+    E --> F[Exit Init Container<br/>application]
+    ```
 
-6. The Main Container has kubectl installed and checks if SeedsBackup file was handed over by Init Container.
+2. The Main Container has `kubectl` installed and checks if SeedsBackup file was handed over by Init Container.
 
-```mermaid
-flowchart LR
-L(Main Container) --> M{SeedsBackup file exists?}
-M -->|exists| N[Create ConfigMap SeedsBackup for current Image]
-N --> O[Update ConfigMap SeedsBackup]
-O --> P
-M -->|not exists| P[Exit Pod]
-```
+    ```mermaid
+    flowchart LR
+    G(Main Container) --> H[Create ConfigMap SeedsBackup for current Image]
+    H --> I[Update ConfigMap SeedsBackup]
+    I --> J[Exit Pod]
+    ```
 
 After completion of the *Init Job* the application container will be deployed/restarted with the current *ConfigMap SeedsBackup*.
 
@@ -140,6 +113,8 @@ These resources are:
 1. Init Job - The Init Job was created on pre-install/pre-upgrade and will remain after its execution.
 2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
 3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `epi-seedsbackup-poc.1.6-final-backup-1646063552`
+
+## Installation
 
 ### Quick install with internal service of type ClusterIP
 
@@ -164,7 +139,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -205,7 +180,7 @@ service:
 # further config
 ```
 
-### AWS Load Balancer Controler: Expose Service via Ingress
+### AWS Load Balancer Controller: Expose Service via Ingress
 
 Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.
 
@@ -255,7 +230,7 @@ config:
   # ... config section keys and values ...
 ```
 
-### Additional helm options
+## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
 
@@ -264,7 +239,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -275,13 +250,13 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.3.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
     ```
 
-### Potential issues
+## Potential issues
 
 1. `Error: admission webhook "vingress.elbv2.k8s.aws" denied the request: invalid ingress class: IngressClass.networking.k8s.io "alb" not found`
 
@@ -307,49 +282,55 @@ Tests can be found in [tests](./tests)
 
 ## Values
 
+*Note:* Please scroll horizontally to show more columns (e.g. description)!
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| config | object | `{"apihub":"{\n    \"storage\": \"../apihub-root\",\n    \"port\": 8080,\n    \"preventRateLimit\": true,\n    \"activeComponents\": [\n        \"virtualMQ\",\n        \"messaging\",\n        \"notifications\",\n        \"filesManager\",\n        \"bdns\",\n        \"bricksLedger\",\n        \"bricksFabric\",\n        \"bricking\",\n        \"anchoring\",\n        \"dsu-wizard\",\n        \"gtin-dsu-wizard\",\n        \"epi-mapping-engine\",\n        \"epi-mapping-engine-results\",\n        \"acdc-reporting\",\n        \"debugLogger\",\n        \"mq\",\n        \"secrets\",\n        \"staticServer\"\n    ],\n    \"componentsConfig\": {\n        \"epi-mapping-engine\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineForAPIHUB\"\n        },\n        \"epi-mapping-engine-results\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineMessageResults\"\n        },\n        \"acdc-reporting\": {\n            \"module\": \"./../../reporting-service/middleware\",\n            \"function\": \"Init\"\n        },\n        \"gtin-dsu-wizard\": {\n            \"module\": \"./../../gtin-dsu-wizard\"\n        },\n        \"staticServer\": {\n            \"excludedFiles\": [\n                \".*.secret\"\n            ]\n        },\n        \"bricking\": {},\n        \"anchoring\": {}\n    },\n    \"responseHeaders\": {\n        \"X-Frame-Options\": \"SAMEORIGIN\",\n        \"X-XSS-Protection\": \"1; mode=block\"\n    },\n    \"enableRequestLogger\": true,\n    \"enableJWTAuthorisation\": false,\n    \"enableOAuth\": false,\n    \"oauthJWKSEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/discovery/v2.0/keys\",\n    \"enableLocalhostAuthorization\": false,\n    \"skipOAuth\": [\n        \"/assets\",\n        \"/bdns\",\n        \"/bundles\",\n        \"/getAuthorization\",\n        \"/external-volume/config/oauthConfig.js\"\n    ],\n    \"oauthConfig\": {\n        \"issuer\": {\n            \"issuer\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/\",\n            \"authorizationEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/authorize\",\n            \"tokenEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/token\"\n        },\n        \"client\": {\n            \"clientId\": \"<TODO_CLIENT_ID>\",\n            \"scope\": \"email offline_access openid api://<TODO_CLIENT_ID>/access_as_user\",\n            \"redirectPath\": \"https://<TODO_DNS_NAME>/?root=true\",\n            \"clientSecret\": \"<TODO_CLIENT_SECRET>\",\n            \"logoutUrl\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/logout\",\n            \"postLogoutRedirectUrl\": \"https://<TODO_DNS_NAME>/?logout=true\"\n        },\n        \"sessionTimeout\": 1800000,\n        \"keyTTL\": 3600000,\n        \"debugLogEnabled\": false\n    },\n    \"serverAuthentication\": false\n}","bdnsHosts":"{\n  \"epipoc\": {\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.my-company\": {\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.other\": {\n      \"brickStorages\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"anchoringServices\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"notifications\": [\n          \"https://epipoc.other-company.com\"\n      ]\n  },\n  \"vault.my-company\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  }\n}","demiurgeMode":"dev-secure","domain":"epipoc","dsuFabricMode":"dev-secure","ethadapterUrl":"http://ethadapter.ethadapter:3000","sleepTime":"10s","subDomain":"epipoc.my-company","vaultDomain":"vault.my-company"}` | Configuration. Will be put in ConfigMaps. |
-| config.apihub | string | `"{\n    \"storage\": \"../apihub-root\",\n    \"port\": 8080,\n    \"preventRateLimit\": true,\n    \"activeComponents\": [\n        \"virtualMQ\",\n        \"messaging\",\n        \"notifications\",\n        \"filesManager\",\n        \"bdns\",\n        \"bricksLedger\",\n        \"bricksFabric\",\n        \"bricking\",\n        \"anchoring\",\n        \"dsu-wizard\",\n        \"gtin-dsu-wizard\",\n        \"epi-mapping-engine\",\n        \"epi-mapping-engine-results\",\n        \"acdc-reporting\",\n        \"debugLogger\",\n        \"mq\",\n        \"secrets\",\n        \"staticServer\"\n    ],\n    \"componentsConfig\": {\n        \"epi-mapping-engine\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineForAPIHUB\"\n        },\n        \"epi-mapping-engine-results\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineMessageResults\"\n        },\n        \"acdc-reporting\": {\n            \"module\": \"./../../reporting-service/middleware\",\n            \"function\": \"Init\"\n        },\n        \"gtin-dsu-wizard\": {\n            \"module\": \"./../../gtin-dsu-wizard\"\n        },\n        \"staticServer\": {\n            \"excludedFiles\": [\n                \".*.secret\"\n            ]\n        },\n        \"bricking\": {},\n        \"anchoring\": {}\n    },\n    \"responseHeaders\": {\n        \"X-Frame-Options\": \"SAMEORIGIN\",\n        \"X-XSS-Protection\": \"1; mode=block\"\n    },\n    \"enableRequestLogger\": true,\n    \"enableJWTAuthorisation\": false,\n    \"enableOAuth\": false,\n    \"oauthJWKSEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/discovery/v2.0/keys\",\n    \"enableLocalhostAuthorization\": false,\n    \"skipOAuth\": [\n        \"/assets\",\n        \"/bdns\",\n        \"/bundles\",\n        \"/getAuthorization\",\n        \"/external-volume/config/oauthConfig.js\"\n    ],\n    \"oauthConfig\": {\n        \"issuer\": {\n            \"issuer\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/\",\n            \"authorizationEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/authorize\",\n            \"tokenEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/token\"\n        },\n        \"client\": {\n            \"clientId\": \"<TODO_CLIENT_ID>\",\n            \"scope\": \"email offline_access openid api://<TODO_CLIENT_ID>/access_as_user\",\n            \"redirectPath\": \"https://<TODO_DNS_NAME>/?root=true\",\n            \"clientSecret\": \"<TODO_CLIENT_SECRET>\",\n            \"logoutUrl\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/logout\",\n            \"postLogoutRedirectUrl\": \"https://<TODO_DNS_NAME>/?logout=true\"\n        },\n        \"sessionTimeout\": 1800000,\n        \"keyTTL\": 3600000,\n        \"debugLogEnabled\": false\n    },\n    \"serverAuthentication\": false\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" For SSO (not enabled by default!): 1. "enableOAuth": true 2. "serverAuthentication": true 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
+| config.apihub | string | `"{\n    \"storage\": \"../apihub-root\",\n    \"port\": 8080,\n    \"preventRateLimit\": true,\n    \"activeComponents\": [\n        \"virtualMQ\",\n        \"messaging\",\n        \"notifications\",\n        \"filesManager\",\n        \"bdns\",\n        \"bricksLedger\",\n        \"bricksFabric\",\n        \"bricking\",\n        \"anchoring\",\n        \"dsu-wizard\",\n        \"gtin-dsu-wizard\",\n        \"epi-mapping-engine\",\n        \"epi-mapping-engine-results\",\n        \"acdc-reporting\",\n        \"debugLogger\",\n        \"mq\",\n        \"secrets\",\n        \"staticServer\"\n    ],\n    \"componentsConfig\": {\n        \"epi-mapping-engine\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineForAPIHUB\"\n        },\n        \"epi-mapping-engine-results\": {\n            \"module\": \"./../../gtin-resolver\",\n            \"function\": \"getEPIMappingEngineMessageResults\"\n        },\n        \"acdc-reporting\": {\n            \"module\": \"./../../reporting-service/middleware\",\n            \"function\": \"Init\"\n        },\n        \"gtin-dsu-wizard\": {\n            \"module\": \"./../../gtin-dsu-wizard\"\n        },\n        \"staticServer\": {\n            \"excludedFiles\": [\n                \".*.secret\"\n            ]\n        },\n        \"bricking\": {},\n        \"anchoring\": {}\n    },\n    \"responseHeaders\": {\n        \"X-Frame-Options\": \"SAMEORIGIN\",\n        \"X-XSS-Protection\": \"1; mode=block\"\n    },\n    \"enableRequestLogger\": true,\n    \"enableJWTAuthorisation\": false,\n    \"enableOAuth\": false,\n    \"oauthJWKSEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/discovery/v2.0/keys\",\n    \"enableLocalhostAuthorization\": false,\n    \"skipOAuth\": [\n        \"/assets\",\n        \"/bdns\",\n        \"/bundles\",\n        \"/getAuthorization\",\n        \"/external-volume/config/oauthConfig.js\"\n    ],\n    \"oauthConfig\": {\n        \"issuer\": {\n            \"issuer\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/\",\n            \"authorizationEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/authorize\",\n            \"tokenEndpoint\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/token\"\n        },\n        \"client\": {\n            \"clientId\": \"<TODO_CLIENT_ID>\",\n            \"scope\": \"email offline_access openid api://<TODO_CLIENT_ID>/access_as_user\",\n            \"redirectPath\": \"https://<TODO_DNS_NAME>/?root=true\",\n            \"clientSecret\": \"<TODO_CLIENT_SECRET>\",\n            \"logoutUrl\": \"https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/logout\",\n            \"postLogoutRedirectUrl\": \"https://<TODO_DNS_NAME>/?logout=true\"\n        },\n        \"sessionTimeout\": 1800000,\n        \"keyTTL\": 3600000,\n        \"debugLogEnabled\": false\n    },\n    \"serverAuthentication\": false\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
 | config.bdnsHosts | string | `"{\n  \"epipoc\": {\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.my-company\": {\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.other\": {\n      \"brickStorages\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"anchoringServices\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"notifications\": [\n          \"https://epipoc.other-company.com\"\n      ]\n  },\n  \"vault.my-company\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
+| config.demiurgeMode | string | `"dev-secure"` |  |
 | config.domain | string | `"epipoc"` | The Domain, e.g. "epipoc" |
+| config.dsuFabricMode | string | `"dev-secure"` |  |
 | config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
+| config.sleepTime | string | `"10s"` |  |
 | config.subDomain | string | `"epipoc.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
-| deploymentStrategy.type | string | `"Recreate"` |  |
+| deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
 | image.repository | string | `"public.ecr.aws/n4q1q0z2/pharmaledger-epi"` | The repository of the container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
-| ingress.annotations | object | `{}` | Ingress annotations. For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
-| ingress.className | string | `""` | The className specifies the IngressClass object which is responsible for that class. Note for Kubernetes >= 1.18 it is required to have an existing IngressClass object. If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead. For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'. See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class |
-| ingress.enabled | bool | `false` | Whether to create ingress or not. Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration |
+| ingress.annotations | object | `{}` | Ingress annotations. <br/> For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) <br/> For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) <br/> For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) <br/> For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
+| ingress.className | string | `""` | The className specifies the IngressClass object which is responsible for that class. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class) <br/> For Kubernetes >= 1.18 it is required to have an existing IngressClass object. If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead. <br/> For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'. |
+| ingress.enabled | bool | `false` | Whether to create ingress or not. <br/> Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration |
 | ingress.hosts | list | `[{"host":"epi.some-pharma-company.com","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | A list of hostnames and path(s) to listen at the Ingress Controller |
 | ingress.hosts[0].host | string | `"epi.some-pharma-company.com"` | The FQDN/hostname |
-| ingress.hosts[0].paths[0].path | string | `"/"` | The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples) Note: For Ingress Controllers like AWS LB Controller see their specific documentation. |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | The type of path. This value is required since Kubernetes 1.18. For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/) |
+| ingress.hosts[0].paths[0].path | string | `"/"` | The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples) <br/> Note: For Ingress Controllers like AWS LB Controller see their specific documentation. |
+| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | The type of path. This value is required since Kubernetes 1.18. <br/> For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/) |
 | ingress.tls | list | `[]` |  |
-| kubectl | object | `{"image":{"pullPolicy":"IfNotPresent","repository":"bitnami/kubectl","sha":"f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590","tag":"1.21.8"}}` | Settings for Container with kubectl installed used by Init and Cleanup Job <!-- pragma: allowlist secret --> |
 | kubectl.image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
 | kubectl.image.repository | string | `"bitnami/kubectl"` | The repository of the container image containing kubectl |
-| kubectl.image.sha | string | `"f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"` | sha256 digest of the image. Do not add the prefix "@sha256:" Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
+| kubectl.image.sha | string | `"f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
 | kubectl.image.tag | string | `"1.21.8"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
 | livenessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Liveness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | nameOverride | string | `""` | nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| persistence | object | `{"accessModes":["ReadWriteOnce"],"deletePvcOnUninstall":true,"finalizers":["kubernetes.io/pvc-protection"],"size":"20Gi","storageClassName":""}` | Enable persistence using Persistent Volume Claims See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/) |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
+| persistence.dataSource | object | `{}` | DataSource option for cloning an existing volume or creating from a snapshot. See [values.yaml](values.yaml) for more details. |
 | persistence.deletePvcOnUninstall | bool | `true` | Boolean flag whether to delete the persistent volume on uninstall or not. |
-| persistence.size | string | `"20Gi"` | Size of the volume |
-| persistence.storageClassName | string | `""` | Name of the storage class. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
+| persistence.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for the PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
+| persistence.selectorLabels | object | `{}` | Selector Labels for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
+| persistence.size | string | `"20Gi"` | Size of the volume. |
+| persistence.storageClassName | string | `""` | Name of the storage class for the PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
-| podSecurityContext | object | `{}` | Security Context for the pod. IMPORTANT: Take a look at README.md for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser! |
+| podSecurityContext | object | `{}` | Security Context for the pod. IMPORTANT: Take a look at README.md for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) <br/> For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser! |
 | readinessProbe | object | `{"exec":{"command":["cat","/ePI-workspace/apihub-root/ready"]},"failureThreshold":60,"initialDelaySeconds":30,"periodSeconds":5,"successThreshold":1}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | replicaCount | int | `1` | The number of replicas if autoscaling is false |
 | resources | object | `{}` | Resource constraints for the container |
-| securityContext | object | `{}` | Security Context for the application container IMPORTANT: Take a look at README.md file for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) For running as non-root with uid 1000, remove {} from next line and uncomment next lines! |
+| securityContext | object | `{}` | Security Context for the application container IMPORTANT: Take a look at README.md file for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) <br/> For running as non-root with uid 1000, remove {} from next line and uncomment next lines! |
 | service.annotations | object | `{}` | Annotations for the service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.port | int | `80` | Port where the service will be exposed |
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
