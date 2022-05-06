@@ -19,8 +19,4 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
-  {{- if .Values.image.sha }}
-  lastBuiltImage: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
-  {{- else }}
-  lastBuiltImage: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-  {{- end }}
+  lastBuiltImage: {{ include "epi.image" . | quote }}
