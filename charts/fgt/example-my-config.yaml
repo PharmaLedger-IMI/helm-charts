@@ -1,0 +1,113 @@
+# Example my-config.yaml for local testing setup with port forwarding
+# config:
+#   # -- The URL of the FGT API including port
+#   fgtApi: "http://localhost:8091/traceability"
+#
+#
+# Example my-config.yaml for AWS EKS deployment at Bayer
+# config:
+#   # -- The role the FGT API Hub takes
+#   role: "mah"
+#   # -- The URL of the FGT API including port
+#   fgtApi: "http://fgt-mah-api-frankfurt-dev.535161841476.cloud.bayer.com/traceability"
+#   # -- The Domain, e.g. "fgt"
+#   domain: "traceability"
+#   # -- The Subdomain, should be domain.company, e.g. fgt.my-company
+#   subDomain: "traceability.my-company"
+#   # -- The Vault domain, should be vault.company, e.g. vault.my-company
+#   vaultDomain: "vault.my-company"
+#   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
+#   ethadapterUrl: ""
+# ingress:
+#   app:
+#     # -- Whether to create ingress or not.
+#     enabled: true
+#     # -- The className specifies the IngressClass object which is responsible for that class.
+#     className: alb
+#     # -- Ingress annotations.
+#     annotations:
+#       # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+#       alb.ingress.kubernetes.io/group.name: default
+#       # Specifies the HTTP path when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-path: /
+#       # Specifies the port used when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+#       # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+#       alb.ingress.kubernetes.io/success-codes: "200"
+#       # Listen on HTTPS protocol at port 443 at the ALB
+#       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+#       # Use target type IP which is the case if the service type is ClusterIP
+#       alb.ingress.kubernetes.io/target-type: ip   
+#     # -- A list of hostnames and path(s) to listen at the Ingress Controller
+#     hosts:
+#       -
+#         # -- The FQDN/hostname
+#         host: fgt-mah-app-frankfurt-dev.xxx.cloud.bayer.com
+#         paths:
+#           -
+#             # -- The Ingress Path.
+#             path: /*
+#             # -- The type of path. This value is required since Kubernetes 1.18.
+#             pathType: ImplementationSpecific
+
+#   api:
+#     # -- Whether to create ingress or not.
+#     enabled: true
+#     # -- The className specifies the IngressClass object which is responsible for that class.
+#     className: alb
+#     # -- Ingress annotations.
+#     annotations:
+#       # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+#       alb.ingress.kubernetes.io/group.name: default
+#       # Specifies the HTTP path when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-path: /
+#       # Specifies the port used when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+#       # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+#       alb.ingress.kubernetes.io/success-codes: "200"
+#       # Listen on HTTPS protocol at port 443 at the ALB
+#       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+#       # Use target type IP which is the case if the service type is ClusterIP
+#       alb.ingress.kubernetes.io/target-type: ip   
+#     # -- A list of hostnames and path(s) to listen at the Ingress Controller
+#     hosts:
+#       -
+#         # -- The FQDN/hostname
+#         host: fgt-mah-api-frankfurt-dev.xxx.cloud.bayer.com
+#         paths:
+#           -
+#             # -- The Ingress Path.
+#             path: /*
+#             # -- The type of path. This value is required since Kubernetes 1.18.
+#             pathType: ImplementationSpecific
+
+#   swagger:
+#     # -- Whether to create ingress or not.
+#     enabled: true
+#     # -- The className specifies the IngressClass object which is responsible for that class.
+#     className: alb
+#     # -- Ingress annotations.
+#     annotations:
+#       # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+#       alb.ingress.kubernetes.io/group.name: default
+#       # Specifies the HTTP path when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-path: /
+#       # Specifies the port used when performing health check on targets.
+#       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+#       # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+#       alb.ingress.kubernetes.io/success-codes: "200"
+#       # Listen on HTTPS protocol at port 443 at the ALB
+#       alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+#       # Use target type IP which is the case if the service type is ClusterIP
+#       alb.ingress.kubernetes.io/target-type: ip   
+#     # -- A list of hostnames and path(s) to listen at the Ingress Controller
+#     hosts:
+#       -
+#         # -- The FQDN/hostname
+#         host: fgt-mah-swagger-frankfurt-dev.xxx.cloud.bayer.com
+#         paths:
+#           -
+#             # -- The Ingress Path.
+#             path: /*
+#             # -- The type of path. This value is required since Kubernetes 1.18.
+#             pathType: ImplementationSpecific
