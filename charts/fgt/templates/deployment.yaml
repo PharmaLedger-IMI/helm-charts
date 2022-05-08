@@ -186,6 +186,14 @@ spec:
             mountPath: /fgt-workspace/fgt-api/config/fgt-mah-wallet/credentials.json
             subPath: credentials.json
             readOnly: true
+          - name: fgt-cred-volume
+            mountPath: /fgt-workspace/fgt-api/config/fgt-wholesaler-wallet/credentials.json
+            subPath: credentials.json
+            readOnly: true
+          - name: fgt-cred-volume
+            mountPath: /fgt-workspace/fgt-api/config/fgt-pharmacy-wallet/credentials.json
+            subPath: credentials.json
+            readOnly: true
       restartPolicy: Always
       volumes:
         - name: fgt-config-volume
