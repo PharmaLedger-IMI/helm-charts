@@ -44,9 +44,19 @@ spec:
           - name: app
             containerPort: 8080
             protocol: TCP
+          {{- if eq .Values.config.role "whs" }}
+          - name: api
+            containerPort: 3001
+            protocol: TCP
+          {{- else if eq .Values.config.role "pha" }}
+          - name: api
+            containerPort: 3002
+            protocol: TCP
+          {{- else }}
           - name: api
             containerPort: 8081
             protocol: TCP
+          {{- end }}
           - name: swagger
             containerPort: 3009
             protocol: TCP
