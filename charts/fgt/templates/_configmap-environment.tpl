@@ -33,25 +33,6 @@ data:
         "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) stage:(development, release) sw:(true, false) pwa:(true, false)"
     }
 
-  dsu-fabric-environment.js: |-
-    export default {
-      "appName": "DSU_Fabric",
-      "vault": "server",
-      "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
-      "mode":  "sso-direct",
-      "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "epiDomain":  {{ required "config.domain must be set" .Values.config.domain | quote}},
-      "epiSubdomain":  {{ required "config.subDomain must be set" .Values.config.subDomain | quote}},
-      "enclaveType": "WalletDBEnclave",
-      "sw": false,
-      "pwa": false,
-      "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
-    }
-
   fgt-mah-wallet-environment.js: |-
     export default {
         "appName": "fgt-mah-ssapp",
@@ -61,9 +42,9 @@ data:
         "system": "any",
         "browser": "any",
         "mode": "dev-secure",
-        "vaultDomain":  "traceability",
-        "didDomain":  "traceability",
-        "domain": "traceability",
+        "vaultDomain":  "{{- .Values.config.vaultDomain }}",
+        "didDomain":  "{{- .Values.config.domain }}",
+        "domain": "{{- .Values.config.subDomain }}",
         "enclaveType":"WalletDBEnclave",
         "sw": true,
         "pwa": true,
@@ -82,10 +63,10 @@ data:
         "system": "any",
         "browser": "any",
         "mode": "dev-secure",
-        "vaultDomain":  "traceability",
-        "didDomain":  "traceability",
+        "vaultDomain":  "{{- .Values.config.vaultDomain }}",
+        "didDomain":  "{{- .Values.config.domain }}",
+        "domain": "{{- .Values.config.subDomain }}",
         "enclaveType":"WalletDBEnclave",
-        "domain": "traceability",
         "sw": true,
         "pwa": true,
         "basePath": "/fgt-pharmacy-wallet/loader/",
@@ -103,10 +84,10 @@ data:
         "system": "any",
         "browser": "any",
         "mode": "dev-secure",
-        "vaultDomain":  "traceability",
-        "didDomain":  "traceability",
+        "vaultDomain":  "{{- .Values.config.vaultDomain }}",
+        "didDomain":  "{{- .Values.config.domain }}",
+        "domain": "{{- .Values.config.subDomain }}",
         "enclaveType":"WalletDBEnclave",
-        "domain": "traceability",
         "sw": true,
         "pwa": true,
         "basePath": "/fgt-wholesaler-wallet/loader/",
