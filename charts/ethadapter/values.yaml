@@ -82,6 +82,16 @@ service:
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
 
+# the location of the smart contract info uploaded when the smart contract was deployed
+smart_contract_shared_configuration:
+  # -- github access token
+  read_write_token: ""
+  # -- username/shared-repository
+  repository_name: ""
+  # -- name of the network, eg. ePI, csc, iot, etc.
+  network_name: ""
+  smartContractInfoName: "anchoring.json"
+
 config:
   # -- URL of the Quorum node
   rpcAddress: "http://quorum-validator1.quorum:8545"

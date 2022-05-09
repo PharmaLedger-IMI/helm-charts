@@ -45,8 +45,14 @@ The file contains parametrization for different sets of values:
 Example :
 ```yaml
 # the location of the smart contract info uploaded when the smart contract was deployed
-# https://raw.githubusercontent.com/username/shared-repository/master/networks/network_name/anchoring.json
-smartContractInfoLocation: ""
+smart_contract_shared_configuration:
+   # -- github access token
+   read_write_token: ""
+   # -- username/shared-repository
+   repository_name: ""
+   # -- name of the network, eg. ePI, csc, iot, etc.
+   network_name: ""
+   smartContractInfoName: "anchoring.json"
 
 service:
    # -- Either ClusterIP, NodePort or LoadBalancer.
@@ -72,7 +78,7 @@ helm pl-plugin --ethAdapter -i ./eth-adapter-values.yaml -o .
 
 2. Install the helm chart
 ```shell
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter -f ./eth-adapter-values.yaml --set-file config.smartContractInfo=../eth-adapter.plugin.json,secrets.orgAccountJson=../smart-contract/orgAccount.json
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter -f ./eth-adapter-values.yaml --set-file config.smartContractInfo=./eth-adapter.plugin.json,secrets.orgAccountJson=../smart-contract/orgAccount.json
 ```
 
 #### Step 5: Backup your installation and private information
