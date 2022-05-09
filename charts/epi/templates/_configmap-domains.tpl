@@ -25,6 +25,7 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
+  # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
     {
       "anchoring": {
@@ -37,6 +38,7 @@ data:
       "enable": ["mq", "enclave"]
     }
 
+  # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
     {
       "anchoring": {
@@ -48,6 +50,7 @@ data:
       "enable": ["mq", "enclave"]
     }
 
+  # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
     {
       "anchoring": {
