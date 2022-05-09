@@ -1,5 +1,12 @@
 {{- /*
-Template for Configmap. Arguments to be passed are $ . suffix and an dictionary for annotations used for defining helm hooks.
+Template for Configmap.
+
+Arguments to be passed are 
+- $ (index 0)
+- . (index 1)
+- suffix (index 2)
+- dictionary (index 3) for annotations used for defining helm hooks.
+
 See https://blog.flant.com/advanced-helm-templating/
 */}}
 {{- define "epi.configmap-domains" -}}

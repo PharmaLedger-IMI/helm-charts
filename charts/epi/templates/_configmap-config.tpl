@@ -1,5 +1,12 @@
 {{- /*
-Template for Configmap. Arguments to be passed are $ . suffix and an dictionary for annotations used for defining helm hooks.
+Template for Configmap.
+
+Arguments to be passed are 
+- $ (index 0)
+- . (index 1)
+- suffix (index 2)
+- dictionary (index 3) for annotations used for defining helm hooks.
+
 See https://blog.flant.com/advanced-helm-templating/
 */}}
 {{- define "epi.configmap-config" -}}
@@ -18,6 +25,7 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
+  # See https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/env.json
   env.json: |
     {
       "PSK_TMP_WORKING_DIR": "tmp",
@@ -27,6 +35,7 @@ data:
       "BUILD_SECRET_KEY": "nosecretfordevelopers"
     }
 
+  # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/apihub-root/external-volume/config/apihub.json
   apihub.json: |-
 {{ required "config.apihub must be set" .Values.config.apihub | indent 4 }}
 
