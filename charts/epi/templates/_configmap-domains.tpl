@@ -26,6 +26,7 @@ metadata:
     {{- include "epi.labels" . | nindent 4 }}
 data:
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
+  # e.g. 'epipoc.json'
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
     {
       "anchoring": {
@@ -34,11 +35,19 @@ data:
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
       },
-      "messagesEndpoint": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
+{{- /*
+     "messagesEndpoint": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
+*/}}
+      "mappingEnginResultURLs": [{
+        "endPointId": "{{ required "config.domain must be set" .Values.config.domain }}_{{ required "config.subDomain must be set" .Values.config.subDomain }}",
+        "endPointURL": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult"
+      }],
+      "mappingEnginResultURL": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
       "enable": ["mq", "enclave"]
     }
 
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
+  # e.g. 'companyname.json'
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
     {
       "anchoring": {
@@ -51,6 +60,7 @@ data:
     }
 
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
+  # e.g. 'vault.companyname.json'
   {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
     {
       "anchoring": {
