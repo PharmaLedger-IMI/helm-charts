@@ -3,6 +3,7 @@ repos:
   rev: v1.8.1
   hooks:
     - id: helm-docs
+      files: ^charts\/(ethadapter|epi|fgt|quorum-node)\/.+$
       args:
         # Make the tool search for charts under the `charts` directory
         - --chart-search-root=charts
