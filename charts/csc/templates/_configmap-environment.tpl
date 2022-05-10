@@ -18,71 +18,95 @@ metadata:
   labels:
     {{- include "csc.labels" . | nindent 4 }}
 data:
-  demiurge-environment.js: |-
+  cmo-environment.js: |-
     export default {
-      "appName": "Demiurge",
-      "vault": "server",
-      "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
-      "mode": {{ .Values.config.demiurgeMode | quote }},
-      "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote }},
-      "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote }},
-      "enclaveType":"WalletDBEnclave",
-      "sw": false,
-      "pwa": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
-    }
-  dsu-explorer-environment.js: |-
-    export default {
-      "appName": "DSU Explorer",
-      "vault": "server",
-      "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
-      "mode":  "dev-autologin",
-      "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "enclaveType": "WalletDBEnclave",
-      "sw": true,
-      "pwa": false,
-      "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) stage:(development, release) sw:(true, false) pwa:(true, false)"
-    }
-  dsu-fabric-environment.js: |-
-    export default {
-      "appName": "DSU_Fabric",
-      "vault": "server",
-      "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
-      "mode": {{ .Values.config.dsuFabricMode | quote }},
-      "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "epiDomain":  {{ required "config.domain must be set" .Values.config.domain | quote}},
-      "epiSubdomain":  {{ required "config.subDomain must be set" .Values.config.subDomain | quote}},
-      "enclaveType": "WalletDBEnclave",
-      "sw": false,
-      "pwa": false,
-      "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
+      appName: 'Cmo App',
+      appVersion: '0.1.1',
+      vault: 'server',
+      agent: 'browser',
+      system: 'any',
+      browser: 'any',
+      mode: 'dev-secure',
+      domain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+      didDomain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+      vaultDomain: {{ required "config.domain must be set" .Values.config.vaultDomain | quote}},
+      enclaveType:"WalletDBEnclave",
+      sw: false,
+      pwa: false,
+      'legenda for properties':
+        ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }
 
-  leaflet-environment.js: |-
-    export default  {
-      "appName": "eLeaflet",
-      "vault": "server",
-      "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
-      "mode":  "autologin",
-      "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "enclaveType": "WalletDBEnclave",
-      "sw": false,
-      "pwa": false,
-      "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(development, release) sw:(true, false) pwa:(true, false)"
+  courier-environment.js: |-
+    export default {
+          appName: 'Courier App',
+          appVersion: '0.1.1',
+          vault: 'server',
+          agent: 'browser',
+          system: 'any',
+          browser: 'any',
+          mode: {{ .Values.config.demiurgeMode | quote }},
+          didDomain:{{ required "config.domain must be set" .Values.config.domain | quote}},
+          domain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+          vaultDomain: {{ required "config.domain must be set" .Values.config.vaultDomain | quote}},
+          enclaveType:"WalletDBEnclave",
+          sw: false,
+          pwa: false,
+          'legenda for properties':
+            ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
+    }
+
+  site-environment.js: |-
+    export default {
+          appName: 'Site App',
+          appVersion: '0.1.1',
+          vault: 'server',
+          agent: 'browser',
+          system: 'any',
+          browser: 'any',
+          mode: {{ .Values.config.demiurgeMode | quote }},
+          domain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+          vaultDomain: {{ required "config.domain must be set" .Values.config.vaultDomain | quote}},
+          didDomain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+          enclaveType:"WalletDBEnclave",
+          sw: false,
+          pwa: false,
+          'legenda for properties':
+            ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
+    }
+
+  sponsor-environment.js: |-
+    export default {
+          appName: 'Sponsor App',
+          appVersion: '0.1.1',
+          vault: 'server',
+          agent: 'browser',
+          system: 'any',
+          browser: 'any',
+          mode: {{ .Values.config.demiurgeMode | quote }},
+          domain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+          vaultDomain: {{ required "config.domain must be set" .Values.config.vaultDomain | quote}},
+          didDomain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+          enclaveType:"WalletDBEnclave",
+          sw: false,
+          pwa: false,
+          'legenda for properties':
+            ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
+    }
+
+  dsu-explorer-environment.js: |-
+    export default {
+          "appName": "DSU Explorer",
+          "appVersion": "0.1.1",
+          "vault": "server",
+          "agent": "browser",
+          "system":   "any",
+          "browser":  "any",
+          "mode":  "dev-autologin",
+          "domain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
+          "sw": true,
+          "pwa": false,
+          "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) stage:(development, release) sw:(true, false) pwa:(true, false)"
     }
 
 {{- end }}
