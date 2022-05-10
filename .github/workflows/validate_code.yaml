@@ -36,8 +36,6 @@ jobs:
 
       - uses: pre-commit/action@9b88afc9cd57fd75b655d5c71bd38146d07135fe # v2.0.3
         name: Run pre-commit
-        with:
-          extra_args: helm-docs --files charts/epi/** charts/ethadapter/** charts/fgt/** charts/quorum-node/**
 
   checkov:
     runs-on: ubuntu-latest
