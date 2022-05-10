@@ -275,6 +275,16 @@ entries:
   fgt:
   - apiVersion: v2
     appVersion: 0.9.4
+    created: "2022-05-10T06:49:16.684236357Z"
+    description: A Helm chart for a FGT deployment on Kubernetes
+    digest: a740cf2db37f14472beaf54bdce182a80b3ae44211a89593fc6c33e6b131f67e
+    name: fgt
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/fgt-0.1.5/fgt-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 0.9.4
     created: "2022-05-06T13:46:33.017856736Z"
     description: A Helm chart for a FGT deployment on Kubernetes
     digest: b6c700436de4d7043acfbd9502dee82e5da52dd4747d4cf69e10106f275a7ce9
@@ -415,4 +425,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-10T06:24:07.784296293Z"
+generated: "2022-05-10T06:49:16.68435046Z"
