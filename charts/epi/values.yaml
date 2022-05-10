@@ -163,6 +163,9 @@ config:
   demiurgeMode: "dev-secure"
   # For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
+  # -- Boolean flag whether to enforce running the Builder even if it is not required.
+  # Useful for testing purpose.
+  forceRunBuilder: false
 
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-

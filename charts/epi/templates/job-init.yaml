@@ -1,7 +1,7 @@
 {{- /*
 Please note: The Init Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
 */}}
-{{- if or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.image" .)) -}}
+{{- if or .Values.config.forceRunBuilder (or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.image" .))) -}}
 
 {{- /*
 1. Create Configmaps required for hook from template
@@ -118,6 +118,9 @@ spec:
             mountPath: /ePI-workspace/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             readOnly: true
+            #
+            # Mounts for environment configs to trust-loader
+            #
           - name: epi-env-volume
             mountPath: /ePI-workspace/trust-loader-config/demiurge-wallet/loader/environment.js
             subPath: demiurge-environment.js
@@ -134,6 +137,46 @@ spec:
             mountPath: /ePI-workspace/trust-loader-config/leaflet-wallet/loader/environment.js
             subPath: leaflet-environment.js
             readOnly: true
+            #
+            # Mounts for environment configs to wallets itself
+            #
+          - name: epi-env-volume
+            mountPath: /ePI-workspace/apihub-root/demiurge-wallet/loader/environment.js
+            subPath: demiurge-environment.js
+            readOnly: true
+          - name: epi-env-volume
+            mountPath: /ePI-workspace/apihub-root/dsu-explorer/loader/environment.js
+            subPath: dsu-explorer-environment.js
+            readOnly: true
+          - name: epi-env-volume
+            mountPath: /ePI-workspace/apihub-root/dsu-fabric-wallet/loader/environment.js
+            subPath: dsu-fabric-environment.js
+            readOnly: true
+          - name: epi-env-volume
+            mountPath: /ePI-workspace/apihub-root/leaflet-wallet/loader/environment.js
+            subPath: leaflet-environment.js
+            readOnly: true
+
+          # # 
+          # # TODO: Remove with v1.3.1 - https://github.com/PharmaLedger-IMI/epi-workspace/tree/master/apihub-root/external-volume/wallets
+          # #
+          # - name: epi-env-volume
+          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/environment.json
+          #   subPath: leaflet-wallet_wallet-patch_environment.json
+          #   readOnly: true
+          # - name: epi-env-volume
+          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/security.policies
+          #   subPath: leaflet-wallet_wallet-patch_security.policies
+          #   readOnly: true
+          # - name: epi-env-volume
+          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createEnclave.json
+          #   subPath: demiurge-wallet_wallet-patch_messages_createEnclave.json
+          #   readOnly: true
+          # - name: epi-env-volume
+          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createGroup.json
+          #   subPath: demiurge-wallet_wallet-patch_messages_createGroup.json
+          #   readOnly: true
+
       volumes:
         - name: epi-config-volume
           configMap:
