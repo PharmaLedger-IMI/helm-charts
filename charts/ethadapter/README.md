@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.7.2](https://img.shields.io/badge/Version-0.7.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -75,7 +75,7 @@ This is to prevent exposing the service to the internet by accident!**
 Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract Info from pre-existing ConfigMap created by helm chart *smartcontract*.
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.1 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.2 \
   --install \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
   --wait \
@@ -100,7 +100,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.1 \
 2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.1 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.2 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -111,7 +111,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.1 \
 3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.1 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.2 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -304,23 +304,23 @@ rm -rf ./testresults/*
 # https://github.com/helm/helm/issues/5618
 echo ""
 echo "Default values and secret passed as String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.2 --values ./tests/data/default.yaml --set-string secrets.orgAccountJson="\{ \"key\": \"value\" \}" > ./tests/results/result_default2.yaml
 
 echo ""
 echo "Default values and secret passed as base64 encoded String"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.2 --values ./tests/data/default.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_default_base64.yaml
 
 echo ""
 echo "LoadBalancer"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.2 --values ./tests/data/loadbalancer.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer.yaml
 
 echo ""
 echo "LoadBalancer and annotations"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.2 --values ./tests/data/loadbalancer_annotations.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_loadbalancer_annotations.yaml
 
 echo ""
 echo "Ingress via AWS LB Controller"
-helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
+helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.2 --values ./tests/data/aws_lb_controller_ingress.yaml --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9" > ./tests/results/result_aws_lb_controller_ingress.yaml
 ```
 
 ## Maintainers
@@ -380,6 +380,11 @@ helm template test-ethadapter pharmaledger-imi/ethadapter --version=0.7.1 --valu
 | serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created. Must be true if secretProviderClass.enabled is true |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| smart_contract_shared_configuration | object | `{"network_name":"","read_write_token":"","repository_name":"","smartContractInfoName":"anchoring.json"}` | The location of the smart contract info uploaded when the smart contract was deployed |
+| smart_contract_shared_configuration.network_name | string | `""` | name of the network, eg. ePI, csc, iot, etc. |
+| smart_contract_shared_configuration.read_write_token | string | `""` | github access token |
+| smart_contract_shared_configuration.repository_name | string | `""` | username/shared-repository |
+| smart_contract_shared_configuration.smartContractInfoName | string | `"anchoring.json"` | smart contract file name |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 
 ----------------------------------------------
