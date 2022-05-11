@@ -16,16 +16,23 @@ image:
   # Do not add the prefix "@sha256:"
   sha: ""
 
-imageBuilder:
-  # -- The repository of the container image for the builder.
-  repository: ""
-  # -- Image Pull Policy for the builder.
-  pullPolicy: Always
-  # -- Image tag for the builder.
-  tag: ""
-  # -- sha256 digest of the image for the builder.
-  # Do not add the prefix "@sha256:"
-  sha: ""
+builder:
+  # -- Boolean flag whether to enforce running the Builder even if it is not required.
+  # Useful for testing purpose.
+  forceRun: false
+  # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
+  sleepTime: "10s"
+
+  image:
+    # -- The repository of the container image for the builder.
+    repository: ""
+    # -- Image Pull Policy for the builder.
+    pullPolicy: Always
+    # -- Image tag for the builder.
+    tag: ""
+    # -- sha256 digest of the image for the builder.
+    # Do not add the prefix "@sha256:"
+    sha: ""
 
 # -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
 # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
@@ -147,10 +154,8 @@ service:
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
 
-# Configuration. Will be put in ConfigMaps.
+# Application Configuration. Will be put in ConfigMaps/Secrets
 config:
-  # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
-  sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
   domain: "epipoc"
   # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
@@ -163,10 +168,6 @@ config:
   demiurgeMode: "dev-secure"
   # For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
-  # -- Boolean flag whether to enforce running the Builder even if it is not required.
-  # Useful for testing purpose.
-  forceRunBuilder: false
-
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {

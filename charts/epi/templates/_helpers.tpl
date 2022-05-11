@@ -83,10 +83,10 @@ Create the name of the service account to use
     The full image repository:tag[@sha256:sha] for the builder
 */}}
 {{- define "epi.imageBuilder" -}}
-{{- if .Values.imageBuilder.sha -}}
-{{ .Values.imageBuilder.repository }}:{{ .Values.imageBuilder.tag }}@sha256:{{ .Values.imageBuilder.sha }}
+{{- if .Values.builder.image.sha -}}
+{{ .Values.builder.image.repository }}:{{ .Values.builder.image.tag }}@sha256:{{ .Values.builder.image.sha }}
 {{- else -}}
-{{ .Values.imageBuilder.repository }}:{{ .Values.imageBuilder.tag }}
+{{ .Values.builder.image.repository }}:{{ .Values.builder.image.tag }}
 {{- end -}}
 {{- end -}}
 
