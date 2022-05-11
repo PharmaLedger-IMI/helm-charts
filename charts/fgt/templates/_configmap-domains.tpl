@@ -30,7 +30,7 @@ data:
         }
       }
     }
-
+{{- if .Values.config.isTraceability }}
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
 {{- if .Values.config.ethadapterUrl }}
     {
@@ -64,6 +64,7 @@ data:
         "/bricking/traceability/get-brick"
       ]
     }
+{{- end }}
 {{- end }}
 
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-

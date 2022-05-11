@@ -92,6 +92,8 @@ persistence:
 config:
   # -- The role the FGT API Hub takes
   role: "mah"
+  # -- If instance hosts its own traceability functionality
+  isTraceability: true
   # -- The URL of the FGT API including port
   fgtApi: "http://fgt-api.some-pharma-company.com/traceability"
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
