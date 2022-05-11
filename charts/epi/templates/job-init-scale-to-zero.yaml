@@ -1,6 +1,6 @@
 {{- /*
 
-Description: This Job scales down existing deployment pods to zero. It runs BEFORE the Init Job which builds the applications.
+Description: This Job prepares everything before the Builder Jobs runs.
 Hook-Weight: -100
 
 */}}
@@ -12,9 +12,8 @@ Hook-Weight: -100
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
   annotations:
-    "description": "Role for Init Scaling Job set number of replicas on deployment to zero and to wait for pods to be deleted"
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-100"
@@ -22,7 +21,7 @@ rules:
 # Delete Init Job
   - apiGroups: ["batch"]
     resources: ["jobs"]
-    resourceNames: ["{{ include "epi.fullname" . }}-init"]
+    resourceNames: ["{{ include "epi.fullname" . }}-builder"]
     verbs: ["delete"]
 # Scale deployment to zero
   - apiGroups: ["apps"]
@@ -44,7 +43,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
   annotations:
     "description": "RoleBinding for Init Scaling Job"
     "helm.sh/hook": pre-upgrade
@@ -53,15 +52,15 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
 subjects:
 - kind: ServiceAccount
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
   labels:
     {{- include "epi.labels" . | nindent 4 }}
   annotations:
@@ -77,7 +76,7 @@ metadata:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  name: {{ include "epi.fullname" . }}-pre-builder
   annotations:
     "description": "Scaling down to zero"
     "helm.sh/hook": pre-upgrade
@@ -91,7 +90,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "epi.fullname" . }}-init-scale-to-zero
+      serviceAccountName: {{ include "epi.fullname" . }}-pre-builder
       automountServiceAccountToken: true
       {{- with .Values.kubectl.podSecurityContext }}
       securityContext:
@@ -114,8 +113,8 @@ spec:
           - |
             # Exit on error
             #set -e
-            echo "1. Deleting Init Job (if already running)..."
-            kubectl delete job {{ include "epi.fullname" . }}-init --ignore-not-found=true --timeout=5m
+            echo "1. Deleting Builder Job (if already/still running)... Note: This does not wait for pods to terminate and get deleted!"
+            kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true --timeout=5m
 
             echo "2. Scaling down deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
             kubectl scale --replicas=0 --timeout=5m deployment/{{ include "epi.fullname" . }}

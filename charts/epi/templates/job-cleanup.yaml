@@ -11,11 +11,12 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
 rules:
-# Delete Init Job
+# Delete (Pre-)Builder Job
 - apiGroups:
   - "batch"
   resourceNames:
-  - "{{ include "epi.fullname" . }}-init"
+  - "{{ include "epi.fullname" . }}-builder"
+  - "{{ include "epi.fullname" . }}-pre-builder"
   resources:
   - jobs
   verbs:
@@ -113,18 +114,20 @@ spec:
             set -e
             echo "Cleanup Job started"
 
-            echo "1. Deleting Init Job ..."
-            kubectl delete job {{ include "epi.fullname" . }}-init --ignore-not-found=true
+            echo "1. Deleting Pre-Builder Job ..."
+            kubectl delete job {{ include "epi.fullname" . }}-pre-builder --ignore-not-found=true
+            echo "2. Deleting Init Job ..."
+            kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true
 
             {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
-            echo "2. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
+            echo "3. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
             kubectl delete pvc {{ include "epi.fullname" . }} --ignore-not-found=true
             {{- else }}
-            echo "2. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
+            echo "3. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
             {{- end }}
 
             {{- if .Values.serviceAccount.create -}}
-            echo "3. Deleting ServiceAccount {{ include "epi.serviceAccountName" . }} ..."
+            echo "4. Deleting ServiceAccount {{ include "epi.serviceAccountName" . }} ..."
             kubectl delete serviceaccount {{ include "epi.serviceAccountName" . }} --ignore-not-found=true
             {{- end }}
       {{- with .Values.nodeSelector }}

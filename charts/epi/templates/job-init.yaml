@@ -1,5 +1,5 @@
 {{- /*
-Please note: The Init Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
+Please note: The Builder Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
 */}}
 {{- if or .Values.builder.forceRun (or .Release.IsInstall (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .))) -}}
 
@@ -7,13 +7,13 @@ Please note: The Init Job only will only be deployed by helm a) on fresh install
 1. Create Configmaps required for hook from template
 */}}
 
-{{- include "epi.configmap-bdns" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- include "epi.configmap-bdns" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
-{{- include "epi.configmap-config" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- include "epi.configmap-config" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
-{{- include "epi.configmap-domains" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- include "epi.configmap-domains" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
-{{- include "epi.configmap-environment" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- include "epi.configmap-environment" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
 
 {{- /*
@@ -32,9 +32,8 @@ A dedicated ServiceAccount with write permissions to the ConfigMap containing th
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "epi.fullname" . }}-init
+  name: {{ include "epi.fullname" . }}-builder
   annotations:
-    "description": "Init Job for running the builder image"
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "0"
@@ -180,16 +179,16 @@ spec:
       volumes:
         - name: epi-config-volume
           configMap:
-            name: {{ include "epi.fullname" . }}-config-init
+            name: {{ include "epi.fullname" . }}-config-builder
         - name: epi-bdns-config-volume
           configMap:
-            name: {{ include "epi.fullname" . }}-bdns-init
+            name: {{ include "epi.fullname" . }}-bdns-builder
         - name: epi-domains-volume
           configMap:
-            name: {{ include "epi.fullname" . }}-domains-init
+            name: {{ include "epi.fullname" . }}-domains-builder
         - name: epi-env-volume
           configMap:
-            name: {{ include "epi.fullname" . }}-environment-init
+            name: {{ include "epi.fullname" . }}-environment-builder
         - name: epi-external-volume
           persistentVolumeClaim:
             claimName: {{ include "epi.fullname" . }}
