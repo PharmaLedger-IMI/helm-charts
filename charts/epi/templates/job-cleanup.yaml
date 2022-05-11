@@ -103,7 +103,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: cleanup
-        image: {{ include "epi.imageKubectl" . | quote }}
+        image: {{ include "epi.kubectl.image" . | quote }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
         command:
           - sh

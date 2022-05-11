@@ -82,7 +82,7 @@ Create the name of the service account to use
 {{/*
     The full image repository:tag[@sha256:sha] for the builder
 */}}
-{{- define "epi.imageBuilder" -}}
+{{- define "epi.builder.image" -}}
 {{- if .Values.builder.image.sha -}}
 {{ .Values.builder.image.repository }}:{{ .Values.builder.image.tag }}@sha256:{{ .Values.builder.image.sha }}
 {{- else -}}
@@ -93,7 +93,7 @@ Create the name of the service account to use
 {{/*
     The full image repository:tag[@sha256:sha] for kubectl
 */}}
-{{- define "epi.imageKubectl" -}}
+{{- define "epi.kubectl.image" -}}
 {{- if .Values.kubectl.image.sha -}}
 {{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
 {{- else -}}

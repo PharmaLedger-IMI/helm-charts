@@ -59,7 +59,7 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: {{ include "epi.imageBuilder" . | quote }}
+        image: {{ include "epi.builder.image" . | quote }}
         imagePullPolicy: {{ .Values.builder.image.pullPolicy | default "IfNotPresent" }}
         {{- with .Values.resources }}
         resources:
