@@ -40,6 +40,9 @@ metadata:
 spec:
   backoffLimit: 1
   template:
+    metadata:
+      labels:
+        {{- include "epi.builderSelectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

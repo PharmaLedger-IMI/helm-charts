@@ -43,7 +43,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
-Selector labels
+Selector labels for runner
 */}}
 {{- define "epi.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "epi.name" . }}
@@ -51,10 +51,25 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Selector labels for kubectl --selector=key1=value1,key2=value2
+Selector labels for runner used by kubectl --selector=key1=value1,key2=value2
 */}}
 {{- define "epi.selectorLabelsKubectl" -}}
 app.kubernetes.io/name={{ include "epi.name" . }},app.kubernetes.io/instance={{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels for builder
+*/}}
+{{- define "epi.builderSelectorLabels" -}}
+app.kubernetes.io/name: {{ include "epi.name" . }}-builder
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels for builder used by kubectl --selector=key1=value1,key2=value2
+*/}}
+{{- define "epi.builderSelectorLabelsKubectl" -}}
+app.kubernetes.io/name={{ include "epi.name" . }}-builder,app.kubernetes.io/instance={{ .Release.Name }}
 {{- end }}
 
 {{/*

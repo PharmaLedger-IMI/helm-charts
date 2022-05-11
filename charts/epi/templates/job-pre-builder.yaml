@@ -113,23 +113,29 @@ spec:
           - |
             # Exit on error
             #set -e
-            echo "1. Deleting Builder Job (if already/still running)... Note: This does not wait for pods to terminate and get deleted!"
+            echo "1. Builder Job"
+            echo "   Deleting builder job (if already/still running)... Note: This does not wait for pods to terminate and get deleted!"
             kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true --timeout=5m
+            echo "     rc=$?"
 
-            echo "2. Scaling down deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
+            echo "   Waiting for builder pods to be deleted ..."
+            kubectl wait --for=delete pod --selector={{ include "epi.builderSelectorLabelsKubectl" . | quote }} --timeout=5m
+            echo "     rc=$?"
+
+            echo ""
+            echo "2. Runner Deployment"
+            echo "   Scaling down runner deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
             kubectl scale --replicas=0 --timeout=5m deployment/{{ include "epi.fullname" . }}
-            echo "rc=$?"
+            echo "     rc=$?"
             
-            echo "3. Waiting for Pods to be deleted ..."
+            echo "   Waiting for runner pods to be deleted ..."
             kubectl wait --for=delete pod --selector={{ include "epi.selectorLabelsKubectl" . | quote }} --timeout=5m
-            echo "rc=$?"
+            echo "     rc=$?"
 
-            echo "4. Exit with rc=0"
+            echo ""
+            echo "3. DONE"
+            echo "   Exiting with rc=0 ..."
             exit 0
-
-            #kubectl scale --replicas=1 --timeout=5m deployment/{{ include "epi.fullname" . }}
-            # This waits until pod is up and running
-            #kubectl rollout status deployment/{{ include "epi.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
