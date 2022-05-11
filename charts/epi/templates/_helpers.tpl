@@ -51,6 +51,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Selector labels for kubectl --selector=key1=value1,key2=value2
+*/}}
+{{- define "epi.selectorLabelsKubectl" -}}
+app.kubernetes.io/name={{ include "epi.name" . }},app.kubernetes.io/instance={{ .Release.Name }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "epi.serviceAccountName" -}}

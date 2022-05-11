@@ -1,0 +1,133 @@
+{{- /*
+
+Description: This Job scales down existing deployment pods to zero. It runs BEFORE the Init Job which builds the applications.
+Hook-Weight: -100
+
+*/}}
+{{- if and .Release.IsUpgrade (or .Values.config.forceRunBuilder (or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.image" .)))) -}}
+
+{{- /*
+1. Role, RoleBinding and ServiceAccount
+*/}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  annotations:
+    "description": "Role for Init Scaling Job set number of replicas on deployment to zero and to wait for pods to be deleted"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    resourceNames: [{{ include "epi.fullname" . | quote}}]
+    verbs: ["patch", "get"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: [{{ include "epi.fullname" . | quote}}]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list","watch"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get","list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  annotations:
+    "description": "RoleBinding for Init Scaling Job"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+subjects:
+- kind: ServiceAccount
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  labels:
+    {{- include "epi.labels" . | nindent 4 }}
+  annotations:
+    "description": "ServiceAccount for Init Scaling Job"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+---
+
+{{- /*
+2. This Job scales the number of replicas of the runner instances to zero.
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "epi.fullname" . }}-init-scale-to-zero
+  annotations:
+    "description": "Scaling down to zero"
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "-100"
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # Use the ServiceAccount which has permissions scale
+      serviceAccountName: {{ include "epi.fullname" . }}-init-scale-to-zero
+      automountServiceAccountToken: true
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: write-configmap
+        image: {{ include "epi.imageKubectl" . | quote }}
+        imagePullPolicy: {{ .Values.imageKubectl.pullPolicy | default "IfNotPresent" }}
+        command:
+          - sh
+          - -c
+        args:
+          - |
+            # Exit on error
+            #set -e
+            echo "1. Scaling down deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
+            kubectl scale --replicas=0 --timeout=5m deployment/{{ include "epi.fullname" . }}
+            echo "rc=$?"
+            
+            echo "2. Waiting for Pods to be deleted ..."
+            kubectl wait --for=delete pod --selector={{ include "epi.selectorLabelsKubectl" . | quote }} --timeout=5m
+            echo "rc=$?"
+
+            echo "3. Exit with rc=0"
+            exit 0
+
+            #kubectl scale --replicas=1 --timeout=5m deployment/{{ include "epi.fullname" . }}
+            # This waits until pod is up and running
+            #kubectl rollout status deployment/{{ include "epi.fullname" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- end -}}
