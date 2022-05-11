@@ -93,20 +93,21 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# Settings for Container with kubectl installed used by Cleanup Job.
-imageKubectl:
-  # -- The repository of the container image containing kubectl
-  repository: bitnami/kubectl
-  # -- Image Pull Policy
-  pullPolicy: IfNotPresent
-  # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-  tag: "1.21.8"
-  # -- sha256 digest of the image.
-  # Do not add the prefix "@sha256:"
-  # <br/>
-  # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
-  # <!-- # pragma: allowlist secret -->
-  sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+# Settings for Containers with kubectl installed used by Cleanup and Init Jobs.
+kubectl:
+  image:
+    # -- The repository of the container image containing kubectl
+    repository: bitnami/kubectl
+    # -- Image Pull Policy
+    pullPolicy: IfNotPresent
+    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
+    tag: "1.21.8"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # <br/>
+    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # <!-- # pragma: allowlist secret -->
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
 # Enable persistence using Persistent Volume Claims.
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)

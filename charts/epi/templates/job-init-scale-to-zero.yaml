@@ -95,7 +95,7 @@ spec:
       containers:
       - name: write-configmap
         image: {{ include "epi.imageKubectl" . | quote }}
-        imagePullPolicy: {{ .Values.imageKubectl.pullPolicy | default "IfNotPresent" }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
         command:
           - sh
           - -c

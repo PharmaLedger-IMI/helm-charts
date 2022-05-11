@@ -94,10 +94,10 @@ Create the name of the service account to use
     The full image repository:tag[@sha256:sha] for kubectl
 */}}
 {{- define "epi.imageKubectl" -}}
-{{- if .Values.imageKubectl.sha -}}
-{{ .Values.imageKubectl.repository }}:{{ .Values.imageKubectl.tag }}@sha256:{{ .Values.imageKubectl.sha }}
+{{- if .Values.kubectl.image.sha -}}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
 {{- else -}}
-{{ .Values.imageKubectl.repository }}:{{ .Values.imageKubectl.tag }}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
 {{- end -}}
 {{- end -}}
 

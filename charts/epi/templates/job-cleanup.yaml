@@ -104,7 +104,7 @@ spec:
       containers:
       - name: cleanup
         image: {{ include "epi.imageKubectl" . | quote }}
-        imagePullPolicy: {{ .Values.imageKubectl.pullPolicy | default "IfNotPresent" }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
         command:
           - sh
           - -c
