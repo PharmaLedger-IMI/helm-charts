@@ -109,7 +109,7 @@ persistence:
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
   # -- Size of the volume.
-  size: "20Gi"
+  size: "5Gi"
   # -- Boolean flag whether to delete the persistent volume on uninstall or not.
   deletePvcOnUninstall: true
   # -- Finalizers for the PVC.
@@ -140,7 +140,7 @@ persistence:
 service:
   # -- Either ClusterIP, NodePort or LoadBalancer.
   # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
-  type: ClusterIP
+  type: NodePort
   # -- Port where the service will be exposed
   port: 80
   # -- Annotations for the service.
