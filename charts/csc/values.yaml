@@ -256,7 +256,7 @@ config:
       "enableRequestLogger": true,
       "enableJWTAuthorisation": false,
       "enableLocalhostAuthorization": false,
-      "serverAuthentication": false
+      "serverAuthentication": false,
       "skipJWTAuthorisation": [
         "/assets",
         "/leaflet-wallet",
