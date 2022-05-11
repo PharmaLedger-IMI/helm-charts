@@ -37,7 +37,7 @@ builder:
     # -- sha256 digest of the image for the builder.
     # Do not add the prefix "@sha256:"
     # Default to v1.3.1
-    sha: "b1eb6ac3b5e0f9d63f0c7c987910d8941ef3e832750c8c7f4398b587a98b392e"
+    sha: "ac1e3dbe3bf9ec68dd38af22fb221f6be6dfab368e3eaa7710c01e428a9f46cf"
 
 # -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
 # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
