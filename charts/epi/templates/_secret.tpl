@@ -30,7 +30,12 @@ data:
   env.json: |- {{ include "epi.envJson" . | b64enc |nindent 4 }}
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/apihub-root/external-volume/config/apihub.json
-  apihub.json: |- {{ required "config.apihub must be set" .Values.config.apihub | b64enc | nindent 4 }}
+  apihub.json: |-
+{{- if .Values.config.overrides.apihubJson }}
+{{ .Values.config.overrides.apihubJson | b64enc | indent 4 }}
+{{- else }}
+{{ include "epi.apihubJson" . | b64enc | indent 4 }}
+{{- end }}
 
 {{- end }}
 {{- end }}

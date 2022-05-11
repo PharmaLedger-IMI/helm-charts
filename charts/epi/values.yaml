@@ -221,6 +221,10 @@ config:
     # Note: Usually not required
     vaultDomainConfigJson: ""
 
+    # -- Option to explitly set the apihub.json instead of using the default from [https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json).
+    # Note: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault.
+    apihubJson: ""
+
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {

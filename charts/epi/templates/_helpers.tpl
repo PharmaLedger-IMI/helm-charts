@@ -142,6 +142,102 @@ Configuration env.json
 {{- end }}
 
 {{/*
+Configuration apihub.json.
+Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json
+*/}}
+{{- define "epi.apihubJson" -}}
+{
+  "storage": "../apihub-root",
+  "port": 8080,
+  "preventRateLimit": true,
+  "activeComponents": [
+    "virtualMQ",
+    "messaging",
+    "notifications",
+    "filesManager",
+    "bdns",
+    "bricksLedger",
+    "bricksFabric",
+    "bricking",
+    "anchoring",
+    "dsu-wizard",
+    "gtin-dsu-wizard",
+    "epi-mapping-engine",
+    "epi-mapping-engine-results",
+    "leaflet-web-api",
+    "acdc-reporting",
+    "debugLogger",
+    "mq",
+    "secrets",
+    "staticServer"
+  ],
+  "componentsConfig": {
+    "epi-mapping-engine": {
+      "module": "./../../gtin-resolver",
+      "function": "getEPIMappingEngineForAPIHUB"
+    },
+    "epi-mapping-engine-results": {
+      "module": "./../../gtin-resolver",
+      "function": "getEPIMappingEngineMessageResults"
+    },
+    "leaflet-web-api": {
+      "module": "./../../gtin-resolver",
+      "function": "getWebLeaflet"
+    },
+    "acdc-reporting": {
+      "module": "./../../reporting-service/middleware",
+      "function": "Init"
+    },
+    "gtin-dsu-wizard": {
+      "module": "./../../gtin-dsu-wizard"
+    },
+    "staticServer": {
+      "excludedFiles": [
+        ".*.secret"
+      ]
+    },
+    "bricking": {},
+    "anchoring": {}
+  },
+  "responseHeaders": {
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-XSS-Protection": "1; mode=block"
+  },
+  "enableRequestLogger": true,
+  "enableJWTAuthorisation": false,
+  "enableOAuth": false,
+  "oauthJWKSEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/discovery/v2.0/keys",
+  "enableLocalhostAuthorization": false,
+  "skipOAuth": [
+    "/assets",
+    "/bdns",
+    "/bundles",
+    "/getAuthorization",
+    "/external-volume/config/oauthConfig.js"
+  ],
+  "oauthConfig": {
+    "issuer": {
+      "issuer": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/",
+      "authorizationEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/authorize",
+      "tokenEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/token"
+    },
+    "client": {
+      "clientId": "5daf11d0-dc28-4d09-b8c7-2eec6f16eb78",
+      "scope": "email offline_access openid api://5daf11d0-dc28-4d09-b8c7-2eec6f16eb78/access_as_user",
+      "redirectPath": "http://localhost:8080/?root=true",
+      "clientSecret": "yLQ7Q~rA2nUKeUPvMXbSNO9s33KGKfSbJPOwP",
+      "logoutUrl": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/logout",
+      "postLogoutRedirectUrl": "http://localhost:8080/?logout=true"
+    },
+    "sessionTimeout": 1800000,
+    "keyTTL": 3600000,
+    "debugLogEnabled": false
+  },
+  "serverAuthentication": false
+}
+{{- end }}
+
+{{/*
 The Name of the ConfigMap for the Build Info Data
 */}}
 {{- define "epi.configMapBuildInfoName" -}}
