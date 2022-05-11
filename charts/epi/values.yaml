@@ -192,8 +192,18 @@ config:
   demiurgeMode: "dev-secure"
   # -- For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
-  # --Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
+  # -- Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
   buildSecretKey: ""  # "nosecretfordevelopers"
+
+  overrides:
+    # -- Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template
+    demiurgeEnvironmentJs: ""  # |-
+    # -- Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template
+    dsuExplorerEnvironmentJs: ""  # |-
+    # -- Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template
+    dsuFabricEnvironmentJs: ""  # |-
+    # -- Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template
+    leafletEnvironmentJs: ""  # |-
 
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-

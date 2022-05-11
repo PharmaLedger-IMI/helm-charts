@@ -27,6 +27,9 @@ metadata:
 data:
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/demiurge-wallet/loader/environment.js
   demiurge-environment.js: |-
+{{- if .Values.config.overrides.demiurgeEnvironmentJs }}
+{{ .Values.config.overrides.demiurgeEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "Demiurge",
       "vault": "server",
@@ -40,9 +43,13 @@ data:
       "sw": false,
       "pwa": false
     }
+{{- end }}
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/dsu-explorer/loader/environment.js
   dsu-explorer-environment.js: |-
+{{- if .Values.config.overrides.dsuExplorerEnvironmentJs }}
+{{ .Values.config.overrides.dsuExplorerEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "DSU Explorer",
       "vault": "server",
@@ -57,9 +64,13 @@ data:
       "pwa": false,
       "allowPinLogin": false
     }
+{{- end }}
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/dsu-fabric-wallet/loader/environment.js
   dsu-fabric-environment.js: |-
+{{- if .Values.config.overrides.dsuFabricEnvironmentJs }}
+{{ .Values.config.overrides.dsuFabricEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "DSU_Fabric",
       "vault": "server",
@@ -80,9 +91,13 @@ data:
       "lockFeatures": false,
       "epiProtocolVersion": 1
     }
+{{- end }}
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/leaflet-wallet/loader/environment.js
   leaflet-environment.js: |-
+{{- if .Values.config.overrides.leafletEnvironmentJs }}
+{{ .Values.config.overrides.leafletEnvironmentJs | indent 4 }}
+{{- else }}
     export default  {
       "appName": "eLeaflet",
       "vault": "server",
@@ -100,6 +115,7 @@ data:
       "disabledFeatures": "",
       "epiProtocolVersion": 1
     }
+{{- end }}
 
   # # 
   # # TODO: Remove with v1.3.1 - https://github.com/PharmaLedger-IMI/epi-workspace/tree/master/apihub-root/external-volume/wallets
