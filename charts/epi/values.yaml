@@ -196,14 +196,28 @@ config:
   buildSecretKey: ""  # "nosecretfordevelopers"
 
   overrides:
-    # -- Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template
-    demiurgeEnvironmentJs: ""  # |-
-    # -- Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template
-    dsuExplorerEnvironmentJs: ""  # |-
-    # -- Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template
-    dsuFabricEnvironmentJs: ""  # |-
-    # -- Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template
-    leafletEnvironmentJs: ""  # |-
+    # -- Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template.
+    # Note: Usually not required
+    demiurgeEnvironmentJs: ""
+    # -- Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template.
+    # Note: Usually not required
+    dsuExplorerEnvironmentJs: ""
+    # -- Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template.
+    # Note: Usually not required
+    dsuFabricEnvironmentJs: ""
+    # -- Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template.
+    # Note: Usually not required
+    leafletEnvironmentJs: ""
+
+    # -- Option to explictly override the config.json used for the domain instead of using the predefined template.
+    # Note: Usually not required
+    domainConfigJson: ""
+    # -- Option to explictly override the config.json used for the subDomain instead of using the predefined template.
+    # Note: Usually not required
+    subDomainConfigJson: ""
+    # -- Option to explictly override the config.json used for the vaultDomain instead of using the predefined template.
+    # Note: Usually not required
+    vaultDomainConfigJson: ""
 
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-

@@ -28,6 +28,9 @@ data:
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   # e.g. 'epipoc.json'
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
+{{- if .Values.config.overrides.domainConfigJson }}
+{{ .Values.config.overrides.domainConfigJson | indent 4 }}
+{{- else }}
     {
       "anchoring": {
         "type": "ETH",
@@ -45,10 +48,14 @@ data:
       "mappingEnginResultURL": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
       "enable": ["mq", "enclave"]
     }
+{{- end }}
 
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   # e.g. 'companyname.json'
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
+{{- if .Values.config.overrides.subDomainConfigJson }}
+{{ .Values.config.overrides.subDomainConfigJson | indent 4 }}
+{{- else }}
     {
       "anchoring": {
         "type": "ETH",
@@ -58,10 +65,14 @@ data:
       },
       "enable": ["mq", "enclave"]
     }
+{{- end }}
 
   # Mapped to https://github.com/PharmaLedger-IMI/epi-workspace/tree/v1.3.0/apihub-root/external-volume/config/domains
   # e.g. 'vault.companyname.json'
   {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
+{{- if .Values.config.overrides.vaultDomainConfigJson }}
+{{ .Values.config.overrides.vaultDomainConfigJson | indent 4 }}
+{{- else }}
     {
       "anchoring": {
         "type": "FS",
@@ -71,6 +82,7 @@ data:
       },
       "enable": ["mq", "enclave"]
     }
+{{- end }}
 
 {{- end }}
 {{- end }}
