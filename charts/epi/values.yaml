@@ -73,33 +73,28 @@ serviceAccount:
 podAnnotations: {}
 
 # -- Security Context for the pod.
-# IMPORTANT: Take a look at README.md for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-# <br/>
-# For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
-podSecurityContext: {}
-  # fsGroup: 1000
-  # runAsUser: 1000
-
-  # # -- The SecComp configuration [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-  # seccompProfile:
-  #   type: RuntimeDefault
-
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  # -- The SecComp configuration.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  seccompProfile:
+    type: RuntimeDefault
 
 # -- Security Context for the application container
-# IMPORTANT: Take a look at README.md file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-# <br/>
-# For running as non-root with uid 1000, remove {} from next line and uncomment next lines!
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # # -- Running as readonly filesystem is currently (Feb 2022) not possible.
-  # readOnlyRootFilesystem: false
-  # allowPrivilegeEscalation: false
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
 
 # Settings for Containers with kubectl installed used by Jobs "scale-to-zero" and "cleanup"
 kubectl:
