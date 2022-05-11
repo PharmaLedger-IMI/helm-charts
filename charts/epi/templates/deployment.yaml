@@ -54,8 +54,8 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: {{ include "epi.image" . | quote }}
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        image: {{ include "epi.runner.image" . | quote }}
+        imagePullPolicy: {{ .Values.runner.image.pullPolicy | default "Always" }}
         ports:
           - name: http
             containerPort: 8080

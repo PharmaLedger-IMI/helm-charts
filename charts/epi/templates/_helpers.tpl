@@ -71,11 +71,11 @@ Create the name of the service account to use
 {{/*
     The full image repository:tag[@sha256:sha] for the runner
 */}}
-{{- define "epi.image" -}}
-{{- if .Values.image.sha -}}
-{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}
+{{- define "epi.runner.image" -}}
+{{- if .Values.runner.image.sha -}}
+{{ .Values.runner.image.repository }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.runner.image.sha }}
 {{- else -}}
-{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+{{ .Values.runner.image.repository }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 {{- end -}}
 

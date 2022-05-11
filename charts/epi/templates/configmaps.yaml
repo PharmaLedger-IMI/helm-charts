@@ -19,4 +19,4 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
-  lastBuiltImage: {{ include "epi.image" . | quote }}
+  lastBuiltImage: {{ include "epi.runner.image" . | quote }}

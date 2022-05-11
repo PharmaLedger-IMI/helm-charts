@@ -5,16 +5,17 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-image:
-  # -- The repository of the container image for the runner
-  repository: ""
-  # -- Image Pull Policy for the runner
-  pullPolicy: Always
-  # -- Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-  # -- sha256 digest of the image.
-  # Do not add the prefix "@sha256:"
-  sha: ""
+runner:
+  image:
+    # -- The repository of the container image for the runner
+    repository: ""
+    # -- Image Pull Policy for the runner
+    pullPolicy: Always
+    # -- Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    sha: ""
 
 builder:
   # -- Boolean flag whether to enforce running the Builder even if it is not required.
