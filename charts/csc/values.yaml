@@ -109,7 +109,7 @@ persistence:
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
   # -- Size of the volume.
-  size: "5Gi"
+  size: "6Gi"
   # -- Boolean flag whether to delete the persistent volume on uninstall or not.
   deletePvcOnUninstall: true
   # -- Finalizers for the PVC.

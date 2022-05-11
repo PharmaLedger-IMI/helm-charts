@@ -1,7 +1,6 @@
 # csc
 
-
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: csc.0.0.3](https://img.shields.io/badge/AppVersion-csc.0.0.3-informational?style=flat-square) 
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: csc.0.0.3](https://img.shields.io/badge/AppVersion-csc.0.0.3-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger csc application
 
@@ -19,8 +18,6 @@ A Helm chart for Pharma Ledger csc application
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-
-
 
 ## Helm Lifecycle and Kubernetes Resources Lifetime
 
@@ -62,7 +59,6 @@ The Init Job is required to run the build process and to store the SeedsBackup i
 - The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
 - It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
 - Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
-
 
 ### Init Job Details
 
@@ -126,7 +122,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.0 \
         --install \
         --values my-config.yaml \
     ```
@@ -226,7 +222,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.0 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -237,7 +233,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.0 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -261,14 +257,11 @@ Run `helm upgrade --helm` for full list of options.
 [helm-unittest](https://github.com/quintush/helm-unittest) is being used for testing the output of the helm chart.
 Tests can be found in [tests](./tests)
 
-
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
 | tgip-work |  | <https://github.com/tgip-work> |
-
-
 
 ## Values
 
@@ -314,7 +307,7 @@ Tests can be found in [tests](./tests)
 | persistence.deletePvcOnUninstall | bool | `true` | Boolean flag whether to delete the persistent volume on uninstall or not. |
 | persistence.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for the PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
 | persistence.selectorLabels | object | `{}` | Selector Labels for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
-| persistence.size | string | `"5Gi"` | Size of the volume. |
+| persistence.size | string | `"6Gi"` | Size of the volume. |
 | persistence.storageClassName | string | `""` | Name of the storage class for the PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. IMPORTANT: Take a look at README.md for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) <br/> For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser! |
@@ -330,7 +323,6 @@ Tests can be found in [tests](./tests)
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
-
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
