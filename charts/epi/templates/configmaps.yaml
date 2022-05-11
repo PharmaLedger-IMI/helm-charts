@@ -15,8 +15,8 @@ kind: ConfigMap
 metadata:
   name: {{ include "epi.fullname" . }}-build-info
   annotations:
-    "description": "Info about which image has been successfully built latest"
+    "description": "Info about which builder image was used at last"
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
-  lastBuiltImage: {{ include "epi.runner.image" . | quote }}
+  lastBuilderImage: {{ include "epi.builder.image" . | quote }}

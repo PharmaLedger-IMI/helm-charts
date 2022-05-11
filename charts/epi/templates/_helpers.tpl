@@ -109,12 +109,12 @@ The Name of the ConfigMap for the Build Info Data
 {{- end }}
 
 {{/*
-The image that was built at last. Return an empty string if not yet exists.
+The builder image that was built at last. Return an empty string if not yet exists.
 */}}
-{{- define "epi.lastBuiltImage" -}}
+{{- define "epi.lastBuilderImage" -}}
 {{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "epi.configMapBuildInfoName" .) -}}
 {{- if $configMap -}}
-{{ $configMap.data.lastBuiltImage | default "" }}
+{{ $configMap.data.lastBuilderImage | default "" }}
 {{- end -}}
 {{- end -}}
 

@@ -4,7 +4,7 @@ Description: This Job scales down existing deployment pods to zero. It runs BEFO
 Hook-Weight: -100
 
 */}}
-{{- if and .Release.IsUpgrade (or .Values.builder.forceRun (or .Release.IsInstall (ne (include "epi.lastBuiltImage" .) (include "epi.runner.image" .)))) -}}
+{{- if and .Release.IsUpgrade (or .Values.builder.forceRun (or .Release.IsInstall (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .)))) -}}
 
 {{- /*
 1. Role, RoleBinding and ServiceAccount
