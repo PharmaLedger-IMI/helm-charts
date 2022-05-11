@@ -300,6 +300,13 @@ Tests can be found in [tests](./tests)
 | config.domain | string | `"epipoc"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` | For SSO, set to "sso-direct" |
 | config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
+| config.overrides.demiurgeEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.domainConfigJson | string | `""` | Option to explictly override the config.json used for the domain instead of using the predefined template. Note: Usually not required |
+| config.overrides.dsuExplorerEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.dsuFabricEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.leafletEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.subDomainConfigJson | string | `""` | Option to explictly override the config.json used for the subDomain instead of using the predefined template. Note: Usually not required |
+| config.overrides.vaultDomainConfigJson | string | `""` | Option to explictly override the config.json used for the vaultDomain instead of using the predefined template. Note: Usually not required |
 | config.subDomain | string | `"epipoc.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
 | deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
