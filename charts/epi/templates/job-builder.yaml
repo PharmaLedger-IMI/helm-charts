@@ -4,16 +4,20 @@ Please note: The Builder Job only will only be deployed by helm a) on fresh inst
 {{- if or .Values.builder.forceRun (or .Release.IsInstall (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .))) -}}
 
 {{- /*
-1. Create Configmaps required for hook from template
+1. Create Configmaps/Secrets required for hook from template
 */}}
 
 {{- include "epi.configmap-bdns" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
-{{- include "epi.configmap-config" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
----
 {{- include "epi.configmap-domains" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
 ---
 {{- include "epi.configmap-environment" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+---
+{{- if not .Values.secretProviderClass.enabled }}
+{{- include "epi.secret" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- else }}
+{{- include "epi.secretProviderClass" (list $ . "-builder" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+{{- end }}
 ---
 
 {{- /*
@@ -96,7 +100,7 @@ spec:
         volumeMounts:
           - name: epi-external-volume
             mountPath: /ePI-workspace/apihub-root/external-volume
-          - name: epi-config-volume
+          - name: epi-secret-volume
             mountPath: /ePI-workspace/apihub-root/external-volume/config/apihub.json
             subPath: apihub.json
             readOnly: true
@@ -104,7 +108,7 @@ spec:
             mountPath: /ePI-workspace/apihub-root/external-volume/config/bdns.hosts
             subPath: bdns.hosts
             readOnly: true
-          - name: epi-config-volume
+          - name: epi-secret-volume
             mountPath: /ePI-workspace/env.json
             subPath: env.json
             readOnly: true
@@ -180,9 +184,21 @@ spec:
           #   readOnly: true
 
       volumes:
-        - name: epi-config-volume
-          configMap:
-            name: {{ include "epi.fullname" . }}-config-builder
+        - name: epi-secret-volume
+        {{- if .Values.secretProviderClass.enabled }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "epi.fullname" . }}-builder
+        {{- else }}
+          secret:
+            secretName: {{ include "epi.fullname" . }}-builder
+            defaultMode: 0400
+        {{- end }}
+        # - name: epi-config-volume
+        #   configMap:
+        #     name: {{ include "epi.fullname" . }}-config-builder
         - name: epi-bdns-config-volume
           configMap:
             name: {{ include "epi.fullname" . }}-bdns-builder

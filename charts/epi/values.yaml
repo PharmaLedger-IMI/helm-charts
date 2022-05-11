@@ -49,6 +49,9 @@ nameOverride: ""
 # -- fullnameOverride completely replaces the generated name.
 # From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
 fullnameOverride: ""
+# -- Override the deployment namespace.
+# Very useful for multi-namespace deployments in combined charts
+namespaceOverride: ""
 
 serviceAccount:
   # -- Specifies whether a service account should be created which is used by builder and runner.
@@ -367,6 +370,24 @@ config:
         },
         "serverAuthentication": false
     }
+
+secretProviderClass:
+  # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
+  # NOTE: DO ENABLE, NOT TESTED YET!
+  enabled: false
+  # -- API Version of the SecretProviderClass
+  apiVersion: "secrets-store.csi.x-k8s.io/v1"
+  # -- Spec for the SecretProviderClass.
+  # Note: The orgAccountJson must be mounted as objectAlias orgAccountJson
+  spec: {}
+    ## Sample for AWS:
+    # provider: aws
+    # parameters:
+    #   objects: |
+    #     - objectName: "TODO: ARN or Name of Secret"
+    #       objectType: "secretsmanager"
+    #       objectAlias: "orgAccountJson"
+
 
 ingress:
   # -- Whether to create ingress or not.

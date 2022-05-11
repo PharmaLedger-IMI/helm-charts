@@ -27,6 +27,7 @@ spec:
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmaps.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -82,7 +83,7 @@ spec:
         volumeMounts:
           - name: epi-external-volume
             mountPath: /ePI-workspace/apihub-root/external-volume
-          - name: epi-config-volume
+          - name: epi-secret-volume
             mountPath: /ePI-workspace/apihub-root/external-volume/config/apihub.json
             subPath: apihub.json
             readOnly: true
@@ -90,7 +91,7 @@ spec:
             mountPath: /ePI-workspace/apihub-root/external-volume/config/bdns.hosts
             subPath: bdns.hosts
             readOnly: true
-          - name: epi-config-volume
+          - name: epi-secret-volume
             mountPath: /ePI-workspace/env.json
             subPath: env.json
             readOnly: true
@@ -167,9 +168,22 @@ spec:
 
       restartPolicy: Always
       volumes:
-        - name: epi-config-volume
-          configMap:
-            name: {{ include "epi.fullname" . }}-config
+        - name: epi-secret-volume
+        {{- if .Values.secretProviderClass.enabled }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "epi.fullname" . }}
+        {{- else }}
+          secret:
+            secretName: {{ include "epi.fullname" . }}
+            defaultMode: 0400
+        {{- end }}
+
+        # - name: epi-config-volume
+        #   configMap:
+        #     name: {{ include "epi.fullname" . }}-config
         - name: epi-bdns-config-volume
           configMap:
             name: {{ include "epi.fullname" . }}-bdns

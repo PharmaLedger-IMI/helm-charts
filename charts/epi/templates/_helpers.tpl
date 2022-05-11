@@ -31,6 +31,18 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Allow the release namespace to be overridden for multi-namespace deployments in combined charts
+*/}}
+{{- define "epi.namespace" -}}
+  {{- if .Values.namespaceOverride -}}
+    {{- .Values.namespaceOverride -}}
+  {{- else -}}
+    {{- .Release.Namespace -}}
+  {{- end -}}
+{{- end -}}
+
+
+{{/*
 Common labels
 */}}
 {{- define "epi.labels" -}}
@@ -115,6 +127,19 @@ Create the name of the service account to use
 {{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Configuration env.json
+*/}}
+{{- define "epi.envJson" -}}
+{
+  "PSK_TMP_WORKING_DIR": "tmp",
+  "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
+  "DEV": false,
+  "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
+  "BUILD_SECRET_KEY": {{ required "config.buildSecretKey must be set" .Values.config.buildSecretKey | quote}}
+}
+{{- end }}
 
 {{/*
 The Name of the ConfigMap for the Build Info Data
