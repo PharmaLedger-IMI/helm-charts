@@ -32,7 +32,7 @@ data:
       "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
       "DEV": false,
       "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-      "BUILD_SECRET_KEY": "nosecretfordevelopers"
+      "BUILD_SECRET_KEY": {{ required "config.buildSecretKey must be set" .Values.config.buildSecretKey | quote}}
     }
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/apihub-root/external-volume/config/apihub.json

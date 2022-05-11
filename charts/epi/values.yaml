@@ -187,10 +187,13 @@ config:
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
   ethadapterUrl: "http://ethadapter.ethadapter:3000"
-  # For SSO, set to "sso-pin"
+  # -- For SSO, set to "sso-pin"
   demiurgeMode: "dev-secure"
-  # For SSO, set to "sso-direct"
+  # -- For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
+  # --Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
+  buildSecretKey: "" # "nosecretfordevelopers"
+
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {
