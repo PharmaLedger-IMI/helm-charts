@@ -193,7 +193,7 @@ config:
   # -- For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
   # --Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
-  buildSecretKey: "" # "nosecretfordevelopers"
+  buildSecretKey: ""  # "nosecretfordevelopers"
 
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
