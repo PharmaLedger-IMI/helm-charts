@@ -4,7 +4,7 @@ Description: This Job scales down existing deployment pods to zero. It runs BEFO
 Hook-Weight: -100
 
 */}}
-{{- if and .Release.IsUpgrade (or .Values.builder.forceRun (or .Release.IsInstall (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .)))) -}}
+{{- if and .Release.IsUpgrade (or .Values.builder.forceRun (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .))) -}}
 
 {{- /*
 1. Role, RoleBinding and ServiceAccount
@@ -19,6 +19,12 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-100"
 rules:
+# Delete Init Job
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    resourceNames: ["{{ include "epi.fullname" . }}-init"]
+    verbs: ["delete"]
+# Scale deployment to zero
   - apiGroups: ["apps"]
     resources: ["deployments/scale"]
     resourceNames: [{{ include "epi.fullname" . | quote}}]
@@ -27,6 +33,7 @@ rules:
     resources: ["deployments"]
     resourceNames: [{{ include "epi.fullname" . | quote}}]
     verbs: ["get"]
+# Wait for pod(s) to be deleted
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["list","watch"]
@@ -107,15 +114,18 @@ spec:
           - |
             # Exit on error
             #set -e
-            echo "1. Scaling down deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
+            echo "1. Deleting Init Job (if already running)..."
+            kubectl delete job {{ include "epi.fullname" . }}-init --ignore-not-found=true --timeout=5m
+
+            echo "2. Scaling down deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
             kubectl scale --replicas=0 --timeout=5m deployment/{{ include "epi.fullname" . }}
             echo "rc=$?"
             
-            echo "2. Waiting for Pods to be deleted ..."
+            echo "3. Waiting for Pods to be deleted ..."
             kubectl wait --for=delete pod --selector={{ include "epi.selectorLabelsKubectl" . | quote }} --timeout=5m
             echo "rc=$?"
 
-            echo "3. Exit with rc=0"
+            echo "4. Exit with rc=0"
             exit 0
 
             #kubectl scale --replicas=1 --timeout=5m deployment/{{ include "epi.fullname" . }}
