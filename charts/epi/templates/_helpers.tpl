@@ -206,7 +206,7 @@ Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
   "enableOAuth": false,
-  "oauthJWKSEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/discovery/v2.0/keys",
+  "oauthJWKSEndpoint": "https://login.microsoftonline.com/<TODO_TENANT_ID>/discovery/v2.0/keys",
   "enableLocalhostAuthorization": false,
   "skipOAuth": [
     "/assets",
@@ -217,17 +217,17 @@ Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-
   ],
   "oauthConfig": {
     "issuer": {
-      "issuer": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/",
-      "authorizationEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/authorize",
-      "tokenEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/token"
+      "issuer": "https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/",
+      "authorizationEndpoint": "https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/authorize",
+      "tokenEndpoint": "https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/v2.0/token"
     },
     "client": {
-      "clientId": "5daf11d0-dc28-4d09-b8c7-2eec6f16eb78",
-      "scope": "email offline_access openid api://5daf11d0-dc28-4d09-b8c7-2eec6f16eb78/access_as_user",
-      "redirectPath": "http://localhost:8080/?root=true",
-      "clientSecret": "yLQ7Q~rA2nUKeUPvMXbSNO9s33KGKfSbJPOwP",
-      "logoutUrl": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/logout",
-      "postLogoutRedirectUrl": "http://localhost:8080/?logout=true"
+      "clientId": "<TODO_CLIENT_ID>",
+      "scope": "email offline_access openid api://<TODO_CLIENT_ID>/access_as_user",
+      "redirectPath": "https://<TODO_DNS_NAME>/?root=true",
+      "clientSecret": "<TODO_CLIENT_SECRET>",
+      "logoutUrl": "https://login.microsoftonline.com/<TODO_TENANT_ID>/oauth2/logout",
+      "postLogoutRedirectUrl": "https://<TODO_DNS_NAME>/?logout=true"
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
