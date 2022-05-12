@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "csc.fullname" . }}
+  name: {{ include "eco.fullname" . }}
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "eco.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "csc.selectorLabels" . | nindent 4 }}
+    {{- include "eco.selectorLabels" . | nindent 4 }}
