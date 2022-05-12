@@ -147,7 +147,7 @@ persistence:
   # -- Size of the volume for the new PVC
   size: "20Gi"
   # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
-  deletePvcOnUninstall: true
+  deleteOnUninstall: true
   # -- Finalizers for the new PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
   finalizers:

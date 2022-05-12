@@ -22,7 +22,8 @@ A Helm chart for Pharma Ledger epi (electronic product information) application
 
 ## Changelog
 
-- From 0.3.x to 0.4.x - Removed Seedsbackup and compatible to epi v1.3.1
+- From 0.3.x to 0.4.x - Defaults to use epi v1.3.1
+  - Removed Seedsbackup (required for epi <= 1.2.0)
   - Increased security by design: Run as non-root user, do not allow privilegeEscalation, remove all capabilites from container
   - Sensitive configuration data is stored in Kubernetes Secrets instead of ConfigMaps. Note: Support for secret injection via *CSI Secrets Driver* is in progress.
   - Option to use an existing PersistentVolumeClaim instead of creating a new one.
@@ -46,8 +47,8 @@ A Helm chart for Pharma Ledger epi (electronic product information) application
 
 The application consists of two docker images: A Builder image and a Runner Image.
 
-- The *Builder Image* is being used to build the SSApps and prepare the external volume. The builder image does not expose any http ports to the outside and does not service traffic. It will be executed by a Kubernetes Job (aka *Builder Job*) and is run once and on upgrades if there is a new Builder image version.
-- The *Runner Image* is being used to serve http traffic to the clients.
+- The *Builder Image* builds the SSApps and prepares the external volume. The builder image does not expose any http ports to the outside and does not service traffic. It will be executed by a Kubernetes Job (aka *Builder Job*) and is run once and on upgrades.
+- The *Runner Image* contains the ApiHub and serves http traffic to the clients.
 - In addition a docker image containing *kubectl* is required by the *Pre-Builder* and *Cleanup* jobs.
 
 ## Helm Lifecycle and Kubernetes Resources Lifetime
@@ -89,7 +90,7 @@ sequenceDiagram
 
 A Persistent Volume is mounted to the Builder and Runner Pod.
 Therefore a PersistentVolumeClaim (PVC) is deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`).
-The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
+The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deleteOnUninstall: true` (default).
 
 If you want to reuse an existing PVC instead of creating a new one, set `persistent.existingClaim`.
 
@@ -123,7 +124,7 @@ These resources are:
 
 1. Pre-Builder Job - The *Pre-Builder Job* was created on pre-upgrade and will remain after its execution.
 2. Builder Job - The *Builder Job* was created on pre-install/pre-upgrade and will remain after its execution.
-3. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
+3. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deleteOnUninstall` to `false`.
 4. ServiceAccount - ServiceAccount is required by *Builder Job* and Runner in case secrets or mounted via CSI Secrets Driver.
 
 ## Installation
@@ -346,7 +347,7 @@ Tests can be found in [tests](./tests)
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | persistence.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.dataSource | object | `{}` | DataSource option for cloning an existing volume or creating from a snapshot for a new PVC. See [values.yaml](values.yaml) for more details. |
-| persistence.deletePvcOnUninstall | bool | `true` | Boolean flag whether to delete the (new) PVC on uninstall or not. |
+| persistence.deleteOnUninstall | bool | `true` | Boolean flag whether to delete the (new) PVC on uninstall or not. |
 | persistence.existingClaim | string | `""` | The name of an existing PVC to use instead of creating a new one. |
 | persistence.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
 | persistence.selectorLabels | object | `{}` | Selector Labels for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
