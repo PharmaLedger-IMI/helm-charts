@@ -144,7 +144,7 @@ spec:
             npm run server &
             server_pid=$!
             echo "=======> Application running in background with PID=$server_pid"
-            echo "=======> Slecscng for {{ .Values.config.sleepTime }} ..."
+            echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
             sleep {{ .Values.config.sleepTime }}
             echo "=======> Starting build process ..."
             npm run build-all
