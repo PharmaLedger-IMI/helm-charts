@@ -1,15 +1,22 @@
-# Example my-config.yaml for local testing setup with port forwarding
+# image:
+#   # -- The repository of the container image
+#   repository: xxxx.dkr.ecr.eu-central-1.amazonaws.com/your-repo-name
+#   # -- Image Pull Policy
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: "xxxxx"
+
+# # Example my-config.yaml for local testing setup with port forwarding
 # config:
 #   # -- The URL of the FGT API including port
 #   fgtApi: "http://localhost:8091/traceability"
-#
-#
-# Example my-config.yaml for AWS EKS deployment at Bayer
+
+# # Example my-config.yaml for AWS EKS deployment
 # config:
 #   # -- The role the FGT API Hub takes
 #   role: "mah"
 #   # -- The URL of the FGT API including port
-#   fgtApi: "http://fgt-mah-api-frankfurt-dev.535161841476.cloud.bayer.com/traceability"
+#   fgtApi: "http://fgt-mah-api.pharma-company.com/traceability"
 #   # -- The Domain, e.g. "fgt"
 #   domain: "traceability"
 #   # -- The Subdomain, should be domain.company, e.g. fgt.my-company
@@ -18,6 +25,27 @@
 #   vaultDomain: "vault.my-company"
 #   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
 #   ethadapterUrl: ""
+#   # -- The credentials file used as the secret seed to all data
+#   credentials: |-
+#     {
+#       "id": {
+#         "secret": "MAH123",
+#         "public": true
+#       },
+#       "name": {
+#         "secret": "Company Inc.",
+#         "public": true
+#       },
+#       "email": {
+#         "secret": "pharmaledger@company.com",
+#         "public": true
+#       },
+#       "pass": {
+#         "secret": "This1sSuchAS3curePassw0rd"
+#       }
+#     }
+
+
 # ingress:
 #   app:
 #     # -- Whether to create ingress or not.
@@ -42,7 +70,7 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-app-frankfurt-dev.xxx.cloud.bayer.com
+#         host: fgt-mah-app.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
@@ -73,7 +101,7 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-api-frankfurt-dev.xxx.cloud.bayer.com
+#         host: fgt-mah-api.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
@@ -104,10 +132,24 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-swagger-frankfurt-dev.xxx.cloud.bayer.com
+#         host: fgt-mah-swagger.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
 #             path: /*
 #             # -- The type of path. This value is required since Kubernetes 1.18.
 #             pathType: ImplementationSpecific
+
+
+# # For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
+# podSecurityContext:
+#   fsGroup: 1000
+
+# securityContext:
+#   capabilities:
+#     drop:
+#     - ALL
+#   readOnlyRootFilesystem: false
+#   runAsNonRoot: true
+#   runAsUser: 1000
+#   allowPrivilegeEscalation: false
