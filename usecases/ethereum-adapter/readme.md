@@ -78,7 +78,7 @@ helm pl-plugin --ethAdapter -i ./eth-adapter-values.yaml -o .
 
 2. Install the helm chart
 ```shell
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter -f ./eth-adapter-values.yaml --set-file config.smartContractInfo=./eth-adapter.plugin.json,secrets.orgAccountJson=../smart-contract/orgAccount.json
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter -f ./eth-adapter-values.yaml --set-file config.smartContractInfo=./eth-adapter.plugin.json,secrets.orgAccountJson=./orgAccount.json
 ```
 
 #### Step 5: Backup your installation and private information
