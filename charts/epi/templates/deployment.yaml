@@ -1,12 +1,3 @@
-#
-# The Deployment of the epi application.
-# Note:
-# 1. As of Feb-23 2022 the build process needs to run on every container startup as some files are added to ephemeral container disk space.
-#    Without these files, the wallet application won't startup.
-#    That is also the reason why the container cannot be made readonly currently.
-# 2. As of Feb-23 2022 the seedBackup file is injected into the container but not to its desired destination 
-#    as the build process is overwriting it.
-#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,8 +37,9 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      restartPolicy: Always
       containers:
-      - name: epi
+      - name: main
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -143,27 +135,6 @@ spec:
             subPath: leaflet-environment.js
             readOnly: true
 
-          # # 
-          # # TODO: Remove with v1.3.1 - https://github.com/PharmaLedger-IMI/epi-workspace/tree/master/apihub-root/external-volume/wallets
-          # #
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/environment.json
-          #   subPath: leaflet-wallet_wallet-patch_environment.json
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/security.policies
-          #   subPath: leaflet-wallet_wallet-patch_security.policies
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createEnclave.json
-          #   subPath: demiurge-wallet_wallet-patch_messages_createEnclave.json
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createGroup.json
-          #   subPath: demiurge-wallet_wallet-patch_messages_createGroup.json
-          #   readOnly: true
-
-      restartPolicy: Always
       volumes:
         - name: epi-secret-volume
         {{- if .Values.secretProviderClass.enabled }}
@@ -177,10 +148,6 @@ spec:
             secretName: {{ include "epi.fullname" . }}
             defaultMode: 0400
         {{- end }}
-
-        # - name: epi-config-volume
-        #   configMap:
-        #     name: {{ include "epi.fullname" . }}-config
         - name: epi-bdns-config-volume
           configMap:
             name: {{ include "epi.fullname" . }}-bdns
@@ -192,7 +159,7 @@ spec:
             name: {{ include "epi.fullname" . }}-environment
         - name: epi-external-volume
           persistentVolumeClaim:
-            claimName:  {{ include "epi.pvc" . }}
+            claimName: {{ include "epi.pvc" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

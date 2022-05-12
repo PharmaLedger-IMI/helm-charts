@@ -61,7 +61,7 @@ spec:
       {{- end }}
       restartPolicy: Never
       containers:
-      - name: builder
+      - name: main
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -165,26 +165,6 @@ spec:
             subPath: leaflet-environment.js
             readOnly: true
 
-          # # 
-          # # TODO: Remove with v1.3.1 - https://github.com/PharmaLedger-IMI/epi-workspace/tree/master/apihub-root/external-volume/wallets
-          # #
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/environment.json
-          #   subPath: leaflet-wallet_wallet-patch_environment.json
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/leaflet-wallet/wallet-patch/security.policies
-          #   subPath: leaflet-wallet_wallet-patch_security.policies
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createEnclave.json
-          #   subPath: demiurge-wallet_wallet-patch_messages_createEnclave.json
-          #   readOnly: true
-          # - name: epi-env-volume
-          #   mountPath: /ePI-workspace/apihub-root/external-volume/wallets/demiurge-wallet/wallet-patch/messages/createGroup.json
-          #   subPath: demiurge-wallet_wallet-patch_messages_createGroup.json
-          #   readOnly: true
-
       volumes:
         - name: epi-secret-volume
         {{- if .Values.secretProviderClass.enabled }}
@@ -198,9 +178,6 @@ spec:
             secretName: {{ include "epi.fullname" . }}-builder
             defaultMode: 0400
         {{- end }}
-        # - name: epi-config-volume
-        #   configMap:
-        #     name: {{ include "epi.fullname" . }}-config-builder
         - name: epi-bdns-config-volume
           configMap:
             name: {{ include "epi.fullname" . }}-bdns-builder
