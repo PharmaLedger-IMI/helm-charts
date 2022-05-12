@@ -5,57 +5,38 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
-    "description": "Role for Cleanup Job"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
 rules:
-# Delete Init Job
-- apiGroups:
-  - "batch"
-  resourceNames:
-  - "{{ include "epi.fullname" . }}-init"
-  resources:
-  - jobs
-  verbs:
-  - delete
-# Get SeedsBackup, create backup from it and delete SeedsBackup
-- apiGroups:
-  - ""
-  resourceNames:
-  - {{ include "epi.configMapSeedsBackupName" . | quote }}
-  resources:
-  - configmaps
-  verbs:
-  - get
-  # - patch
-  - delete
-# Required to create a backup of SeedsBackup
-# We cannot restrict create verb to a resourceName - See https://github.com/kubernetes/kubernetes/issues/80295
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - create
-{{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
-- apiGroups:
-  - ""
-  resourceNames:
-  - {{ include "epi.fullname" . | quote }}
-  resources:
-  - persistentvolumeclaims 
-  verbs:
-  - delete
-{{- end }}
+  # Delete Pre-Builder and Builder Job
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    resourceNames: ["{{ include "epi.fullname" . }}-builder", "{{ include "epi.fullname" . }}-pre-builder"]
+    verbs: ["delete"]
+  {{- if eq (toString .Values.persistence.deleteOnUninstall) "true" }}
+  # Delete PVC
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    resourceNames: [{{ include "epi.fullname" . | quote }}]
+    verbs: ["delete"]
+  {{- end }}
+  {{- if .Values.serviceAccount.create -}}
+  # Delete ServiceAccount
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    resourceNames: [{{ include "epi.serviceAccountName" . | quote }}]
+    verbs: ["delete"]
+  {{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
-    "description": "RoleBinding for Cleanup Job"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
@@ -71,28 +52,28 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   labels:
     {{- include "epi.labels" . | nindent 4 }}
   annotations:
-    "description": "ServiceAccount for Cleanup Job"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
 ---
 
 {{- /*
-3. This Job cleans up resources created on init/upgrade hook
-
+2. This Job cleans up resources created on init/upgrade hook
 */}}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
-    "description": "Cleanup Job running after deletion of helm managed resource"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "0"
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
 spec:
   backoffLimit: 1
   template:
@@ -101,18 +82,25 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # Use the cleanup ServiceAccount which has permissions to cleanup
       serviceAccountName: {{ include "epi.fullname" . }}-cleanup
       automountServiceAccountToken: true
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.kubectl.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       restartPolicy: Never
       containers:
-      - name: cleanup
-        image: {{ include "epi.kubectlImage" . | quote }}
-        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
+      - name: main
+        {{- with .Values.kubectl.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.kubectl.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: {{ include "epi.kubectl.image" . | quote }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
         command:
           - sh
           - -c
@@ -121,25 +109,24 @@ spec:
             set -e
             echo "Cleanup Job started"
 
-            echo "1. Deleting Init Job ..."
-            kubectl delete job {{ include "epi.fullname" . }}-init --ignore-not-found=true
+            echo "1. Deleting Pre-Builder Job ..."
+            kubectl delete job {{ include "epi.fullname" . }}-pre-builder --ignore-not-found=true
+            echo "2. Deleting Builder Job ..."
+            kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true
 
-            backupname="{{ include "epi.configMapSeedsBackupName" . }}-${IMAGE_TAG}-final-backup-$(date +%s)"
-            echo "2. Backing up Configmap {{ include "epi.configMapSeedsBackupName" . }} to $backupname ..."
-            kubectl patch cm {{ include "epi.configMapSeedsBackupName" . }} -p "{\"metadata\":{ \"name\":\"$backupname\"}}" --dry-run=client -o yaml | kubectl create -f -
-
-            echo "3. Deleting Configmap {{ include "epi.configMapSeedsBackupName" . }} ..."
-            kubectl delete cm {{ include "epi.configMapSeedsBackupName" . }} --ignore-not-found=true
-
-            {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
-            echo "4. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
+            {{- if not .Values.persistence.existingClaim }}
+            {{- if eq (toString .Values.persistence.deleteOnUninstall) "true" }}
+            echo "3. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
             kubectl delete pvc {{ include "epi.fullname" . }} --ignore-not-found=true
             {{- else }}
-            echo "4. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
+            echo "3. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
             {{- end }}
-        env:
-          - name: IMAGE_TAG
-            value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+            {{- end }}
+
+            {{- if .Values.serviceAccount.create -}}
+            echo "4. Deleting ServiceAccount {{ include "epi.serviceAccountName" . }} ..."
+            kubectl delete serviceaccount {{ include "epi.serviceAccountName" . }} --ignore-not-found=true
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
