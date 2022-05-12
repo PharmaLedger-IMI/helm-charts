@@ -18,6 +18,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "epi.fullname" . }}-environment{{ $suffix | default "" }}
+  namespace: {{ template "epi.namespace" . }}
   {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

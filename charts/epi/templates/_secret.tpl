@@ -18,6 +18,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ include "epi.fullname" . }}{{ $suffix | default "" }}
+  namespace: {{ template "epi.namespace" . }}
   {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
