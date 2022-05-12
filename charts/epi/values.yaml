@@ -17,7 +17,8 @@ runner:
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
     # Default to v1.3.1
-    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"
+    # <!-- # pragma: allowlist secret -->
+    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"  # pragma: allowlist secret
 
 builder:
   # -- Boolean flag whether to enforce running the Builder even if it is not required.
@@ -37,7 +38,8 @@ builder:
     # -- sha256 digest of the image for the builder.
     # Do not add the prefix "@sha256:"
     # Default to v1.3.1
-    sha: "7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"
+    # <!-- # pragma: allowlist secret -->
+    sha: "7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"  # pragma: allowlist secret
 
 # -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
 # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
