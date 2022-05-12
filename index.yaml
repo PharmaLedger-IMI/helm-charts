@@ -71,6 +71,20 @@ entries:
   eco:
   - apiVersion: v2
     appVersion: eco.0.0.1
+    created: "2022-05-12T15:43:55.189982154Z"
+    description: A Helm chart for Pharma Ledger eco applications
+    digest: c4ffb2e55429ba831a24a077d4ec8388b9dd09a898849a9bdf12031edb301195
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: eco
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/eco-0.0.2/eco-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: eco.0.0.1
     created: "2022-05-12T13:33:35.705194027Z"
     description: A Helm chart for Pharma Ledger eco applications
     digest: 2997d4f08fc66bc1658566c813ba4583864585c4468f20d1458f7af6ba350471
@@ -567,4 +581,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-12T14:47:39.168511563Z"
+generated: "2022-05-12T15:43:55.190200367Z"
