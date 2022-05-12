@@ -89,6 +89,7 @@ spec:
             sleep {{ .Values.builder.sleepTime }}
             echo "=======> Starting build process ..."
             node ./node_modules/octopus/scripts/setEnv --file=../../../env.json "node ./bin/octopusRun.js epi-ssapps-and-wallets-build"
+            node ./node_modules/octopus/scripts/setEnv --file=../../../env.json "node ./node_modules/octopus/scripts/run patch"
             rc=$?
             echo "=======> Build process done - rc=$rc"
             if [ $rc -ne 0 ]
