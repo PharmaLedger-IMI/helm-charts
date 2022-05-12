@@ -87,8 +87,6 @@ spec:
             #
           - |
             cd /fgt-workspace
-
-            npm config set strict-ssl false
             
             echo "=======> Starting APIHub in background process ..."
             npm run server &
