@@ -74,8 +74,9 @@ Some helm charts for inspiration:
 
     # -- Description for 'sha'.
     # Additional line of description.
+    # IMPORTANT: There must be two space characters between end of the value and the '#' character that starts the comment.
     # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590" # pragma: allowlist secret
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
 
     ```

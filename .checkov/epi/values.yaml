@@ -1,5 +1,9 @@
-image:
-  sha: "somedigest"
+config:
+  buildSecretKey: "nosecretfordevelopers"  # pragma: allowlist secret
+  bdnsHosts: "somebdns"
+
+# Set namespace via values
+namespaceOverride: "epi"
 
 resources:
   limits:
