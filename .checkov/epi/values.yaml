@@ -1,5 +1,5 @@
 config:
-  buildSecretKey: "nosecretfordevelopers"
+  buildSecretKey: "nosecretfordevelopers"  # pragma: allowlist secret
   bdnsHosts: "somebdns"
 
 resources:
