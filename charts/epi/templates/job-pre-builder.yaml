@@ -79,6 +79,7 @@ metadata:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "-100"
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
 spec:
   backoffLimit: 1
   template:
@@ -98,6 +99,10 @@ spec:
       - name: main
         {{- with .Values.kubectl.securityContext }}
         securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.kubectl.resources }}
+        resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         image: {{ include "epi.kubectl.image" . | quote }}

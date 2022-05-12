@@ -104,7 +104,7 @@ kubectl:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl
     # -- Image Pull Policy
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
     tag: "1.21.8"
     # -- sha256 digest of the image.
@@ -113,6 +113,15 @@ kubectl:
     # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
     sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+
+  # -- Resource constraints for the pre-builder and cleanup job
+  resources: 
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 
   # -- Security Context for the pod running kubectl.
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
@@ -443,7 +452,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- Resource constraints for the container
+# -- Resource constraints for the builder and runner
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little

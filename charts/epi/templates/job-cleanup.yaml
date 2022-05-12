@@ -49,7 +49,6 @@ kind: RoleBinding
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
   annotations:
-    "description": "RoleBinding for Cleanup Job"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
@@ -68,7 +67,6 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
   annotations:
-    "description": "ServiceAccount for Cleanup Job"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-1"
@@ -82,10 +80,10 @@ kind: Job
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
   annotations:
-    "description": "Cleanup Job running after deletion of helm managed resource"
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "0"
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
 spec:
   backoffLimit: 1
   template:
@@ -94,16 +92,23 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # Use the cleanup ServiceAccount which has permissions to cleanup
       serviceAccountName: {{ include "epi.fullname" . }}-cleanup
       automountServiceAccountToken: true
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.kubectl.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       restartPolicy: Never
       containers:
-      - name: cleanup
+      - name: main
+        {{- with .Values.kubectl.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.kubectl.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         image: {{ include "epi.kubectl.image" . | quote }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
         command:
