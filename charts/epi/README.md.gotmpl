@@ -86,7 +86,11 @@ sequenceDiagram
 
 ## PersistentVolumeClaim
 
-A Persistent Volume is mounted to the Builder and Runner Pod. Therefore a PersistentVolumeClaim (PVC) is being deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`). The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
+A Persistent Volume is mounted to the Builder and Runner Pod. 
+Therefore a PersistentVolumeClaim (PVC) is deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`). 
+The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
+
+If you want to reuse an existing PVC instead of creating a new one, set `persistent.existingClaim`.
 
 ## ServiceAccount
 

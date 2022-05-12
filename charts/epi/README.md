@@ -86,7 +86,11 @@ sequenceDiagram
 
 ## PersistentVolumeClaim
 
-A Persistent Volume is mounted to the Builder and Runner Pod. Therefore a PersistentVolumeClaim (PVC) is being deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`). The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
+A Persistent Volume is mounted to the Builder and Runner Pod.
+Therefore a PersistentVolumeClaim (PVC) is deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`).
+The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
+
+If you want to reuse an existing PVC instead of creating a new one, set `persistent.existingClaim`.
 
 ## ServiceAccount
 
@@ -339,13 +343,14 @@ Tests can be found in [tests](./tests)
 | nameOverride | string | `""` | nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | namespaceOverride | string | `""` | Override the deployment namespace. Very useful for multi-namespace deployments in combined charts |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| persistence.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
-| persistence.dataSource | object | `{}` | DataSource option for cloning an existing volume or creating from a snapshot. See [values.yaml](values.yaml) for more details. |
-| persistence.deletePvcOnUninstall | bool | `true` | Boolean flag whether to delete the persistent volume on uninstall or not. |
-| persistence.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for the PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
-| persistence.selectorLabels | object | `{}` | Selector Labels for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
-| persistence.size | string | `"20Gi"` | Size of the volume. |
-| persistence.storageClassName | string | `""` | Name of the storage class for the PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
+| persistence.dataSource | object | `{}` | DataSource option for cloning an existing volume or creating from a snapshot for a new PVC. See [values.yaml](values.yaml) for more details. |
+| persistence.deletePvcOnUninstall | bool | `true` | Boolean flag whether to delete the (new) PVC on uninstall or not. |
+| persistence.existingClaim | string | `""` | The name of an existing PVC to use instead of creating a new one. |
+| persistence.finalizers | list | `["kubernetes.io/pvc-protection"]` | Finalizers for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection) |
+| persistence.selectorLabels | object | `{}` | Selector Labels for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
+| persistence.size | string | `"20Gi"` | Size of the volume for the new PVC |
+| persistence.storageClassName | string | `""` | Name of the storage class for the new PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsUser":1000,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | The SecComp configuration. [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/) |
