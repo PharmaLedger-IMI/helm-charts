@@ -1,5 +1,12 @@
 {{- /*
-Template for Configmap. Arguments to be passed are $ . suffix and an dictionary for annotations used for defining helm hooks.
+Template for Configmap.
+
+Arguments to be passed are 
+- $ (index 0)
+- . (index 1)
+- suffix (index 2)
+- dictionary (index 3) for annotations used for defining helm hooks.
+
 See https://blog.flant.com/advanced-helm-templating/
 */}}
 {{- define "epi.configmap-environment" -}}
@@ -18,7 +25,11 @@ metadata:
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
+  # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/demiurge-wallet/loader/environment.js
   demiurge-environment.js: |-
+{{- if .Values.config.overrides.demiurgeEnvironmentJs }}
+{{ .Values.config.overrides.demiurgeEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "Demiurge",
       "vault": "server",
@@ -30,10 +41,15 @@ data:
       "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote }},
       "enclaveType":"WalletDBEnclave",
       "sw": false,
-      "pwa": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
+      "pwa": false
     }
+{{- end }}
+
+  # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/dsu-explorer/loader/environment.js
   dsu-explorer-environment.js: |-
+{{- if .Values.config.overrides.dsuExplorerEnvironmentJs }}
+{{ .Values.config.overrides.dsuExplorerEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "DSU Explorer",
       "vault": "server",
@@ -46,16 +62,21 @@ data:
       "enclaveType": "WalletDBEnclave",
       "sw": true,
       "pwa": false,
-      "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) stage:(development, release) sw:(true, false) pwa:(true, false)"
+      "allowPinLogin": false
     }
+{{- end }}
+
+  # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/dsu-fabric-wallet/loader/environment.js
   dsu-fabric-environment.js: |-
+{{- if .Values.config.overrides.dsuFabricEnvironmentJs }}
+{{ .Values.config.overrides.dsuFabricEnvironmentJs | indent 4 }}
+{{- else }}
     export default {
       "appName": "DSU_Fabric",
       "vault": "server",
       "agent": "browser",
-      "system":   "any",
-      "browser":  "any",
+      "system": "any",
+      "browser": "any",
       "mode": {{ .Values.config.dsuFabricMode | quote }},
       "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
       "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
@@ -65,10 +86,18 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
+      "companyName": "Company Inc",
+      "disabledFeatures": "",
+      "lockFeatures": false,
+      "epiProtocolVersion": 1
     }
+{{- end }}
 
+  # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/trust-loader-config/leaflet-wallet/loader/environment.js
   leaflet-environment.js: |-
+{{- if .Values.config.overrides.leafletEnvironmentJs }}
+{{ .Values.config.overrides.leafletEnvironmentJs | indent 4 }}
+{{- else }}
     export default  {
       "appName": "eLeaflet",
       "vault": "server",
@@ -82,8 +111,11 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(development, release) sw:(true, false) pwa:(true, false)"
+      "lockFeatures": false,
+      "disabledFeatures": "",
+      "epiProtocolVersion": 1
     }
+{{- end }}
 
 {{- end }}
 {{- end }}

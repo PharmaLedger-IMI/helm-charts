@@ -4,8 +4,6 @@ Create Configmaps from templates
 
 {{- include "epi.configmap-bdns" (list $ . "" (dict)) }}
 ---
-{{- include "epi.configmap-config" (list $ . "" (dict)) }}
----
 {{- include "epi.configmap-domains" (list $ . "" (dict)) }}
 ---
 {{- include "epi.configmap-environment" (list $ . "" (dict)) }}
@@ -15,8 +13,8 @@ kind: ConfigMap
 metadata:
   name: {{ include "epi.fullname" . }}-build-info
   annotations:
-    "description": "Info about which image has been successfully built latest"
+    "description": "Info about which builder image was used at last"
   labels:
     {{- include "epi.labels" . | nindent 4 }}
 data:
-  lastBuiltImage: {{ include "epi.image" . | quote }}
+  lastBuilderImage: {{ include "epi.builder.image" . | quote }}
