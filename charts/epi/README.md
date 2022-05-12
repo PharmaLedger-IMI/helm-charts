@@ -320,6 +320,7 @@ Tests can be found in [tests](./tests)
 | config.overrides.domainConfigJson | string | `""` | Option to explictly override the config.json used for the domain instead of using the predefined template. Note: Usually not required |
 | config.overrides.dsuExplorerEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template. Note: Usually not required |
 | config.overrides.dsuFabricEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.envJson | string | `""` | Option to explitly override the env.json for APIHub instead of using the predefined template. Note 1: Usually not required to override. Note 2: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault. |
 | config.overrides.leafletEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template. Note: Usually not required |
 | config.overrides.subDomainConfigJson | string | `""` | Option to explictly override the config.json used for the subDomain instead of using the predefined template. Note: Usually not required |
 | config.overrides.vaultDomainConfigJson | string | `""` | Option to explictly override the config.json used for the vaultDomain instead of using the predefined template. Note: Usually not required |
