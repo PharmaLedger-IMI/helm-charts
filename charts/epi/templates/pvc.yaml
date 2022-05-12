@@ -8,7 +8,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "epi.pvc" . }}
   annotations:
-    "description": "Persistent Storage for whole lifetime"
     "helm.sh/hook": pre-install
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "-1"
