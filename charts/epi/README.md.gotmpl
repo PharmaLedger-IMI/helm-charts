@@ -25,6 +25,7 @@
 - From 0.3.x to 0.4.x - Removed Seedsbackup and compatible to epi v1.3.1
   - Increased security by design: Run as non-root user, do not allow privilegeEscalation, remove all capabilites from container
   - Sensitive configuration data is stored in Kubernetes Secrets instead of ConfigMaps. Note: Support for secret injection via *CSI Secrets Driver* is in progress.
+  - Option to use an existing PersistentVolumeClaim instead of creating a new one.
 
 - From 0.2.x to 0.3.x - Default values for epi v1.2.0
   - For use with epi v1.1.2 or earlier, see comments at `config.apihub` in [values.yaml](values.yaml).
