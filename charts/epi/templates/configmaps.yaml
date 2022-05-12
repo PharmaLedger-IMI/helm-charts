@@ -12,6 +12,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "epi.fullname" . }}-build-info
+  namespace: {{ template "epi.namespace" . }}
   annotations:
     "description": "Info about which builder image was used at last"
   labels:

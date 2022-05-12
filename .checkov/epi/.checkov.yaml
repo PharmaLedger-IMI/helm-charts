@@ -7,8 +7,6 @@ external-modules-download-path: .external_modules
 framework:
 - helm
 quiet: true
-skip-check:
-- CKV_K8S_21 # do not use default namespace
 soft-fail: true
 var-file:
 - .checkov/epi/values.yaml

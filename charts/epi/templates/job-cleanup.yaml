@@ -5,6 +5,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
@@ -47,6 +48,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
@@ -63,6 +65,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   labels:
     {{- include "epi.labels" . | nindent 4 }}
   annotations:
@@ -78,6 +81,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "epi.fullname" . }}-cleanup
+  namespace: {{ template "epi.namespace" . }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded

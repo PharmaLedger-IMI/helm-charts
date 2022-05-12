@@ -2,6 +2,9 @@ config:
   buildSecretKey: "nosecretfordevelopers"  # pragma: allowlist secret
   bdnsHosts: "somebdns"
 
+# Set namespace via values
+namespaceOverride: "epi"
+
 resources:
   limits:
     cpu: 100m
