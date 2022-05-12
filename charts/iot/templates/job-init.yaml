@@ -1,0 +1,287 @@
+{{- /*
+Please note: The Init Job only will only be deployed by helm a) on fresh install or b) if the image differs from last build
+*/}}
+{{- if or .Release.IsInstall (ne (include "csc.lastBuiltImage" .) (include "csc.image" .)) -}}
+
+{{- /*
+1. Create Configmaps required for hook from template
+*/}}
+
+{{- include "csc.configmap-bdns" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+---
+{{- include "csc.configmap-config" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+---
+{{- include "csc.configmap-domains" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+---
+{{- include "csc.configmap-environment" (list $ . "-init" (dict "helm.sh/hook" "pre-install,pre-upgrade" "helm.sh/hook-delete-policy" "before-hook-creation,hook-succeeded,hook-failed" "helm.sh/hook-weight" "-1")) }}
+---
+
+{{- /*
+2. Role, RoleBinding and ServiceAccount for Init Job
+*/}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "csc.fullname" . }}-init
+  annotations:
+    "description": "Role for Init Job to create or update SeedsBackup ConfigMap"
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-1"
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - {{ include "csc.configMapSeedsBackupName" . | quote }}
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - patch
+  - update
+# We cannot restrict create verb to a resourceName - See https://github.com/kubernetes/kubernetes/issues/80295
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "csc.fullname" . }}-init
+  annotations:
+    "description": "RoleBinding for Init Job to create or update SeedsBackup ConfigMap"
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-1"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "csc.fullname" . }}-init
+subjects:
+- kind: ServiceAccount
+  name: {{ include "csc.fullname" . }}-init
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "csc.fullname" . }}-init
+  labels:
+    {{- include "csc.labels" . | nindent 4 }}
+  annotations:
+    "description": "ServiceAccount for Init Job to create or update SeedsBackup ConfigMap"
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-1"
+---
+
+{{- /*
+3. This Job starts the apihub, then starts the build process.
+   After build process completion the seedsBackup ConfigMap will updated.
+
+Details:
+The pod consists of an initContainer and a "main" container which share a temporary volume.
+A dedicated ServiceAccount with write permissions to the ConfigMap containing the seedsBackup is used by the pod.
+1. The apiHub/csc application runs in the initContainer as background process.
+   After a short delay (10s) the build process starts and writes the seedsBackup to the mounted temporary volume share with the "main" container.
+   Then the process exists and the init container stops.
+2. The "main" container starts and writes the content of the seedBackup file into a ConfigMap.
+   It has the permission doing so via the ServiceAccount
+
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "csc.fullname" . }}-init
+  annotations:
+    "description": "Init Job for creating or updating SeedsBackup ConfigMap"
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "0"
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # Use the init ServiceAccount which has permissions to write to configMap
+      serviceAccountName: {{ include "csc.fullname" . }}-init
+      automountServiceAccountToken: true
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      initContainers:
+      - name: init-csc
+        image: {{ include "csc.image" . | quote }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+          - sh
+          - -c
+        args:
+          - |
+            # Exit on error
+            set -e
+            # Start server in background, wait, run build and copy seedBackup to shared folder with main container.
+            cd /{{ .Values.apiHubWorkingFolder }}
+            echo "=======> Not build yet!"
+            echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
+            cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
+            echo "=======> Starting application in background process ..."
+            npm run server &
+            server_pid=$!
+            echo "=======> Application running in background with PID=$server_pid"
+            echo "=======> Slecscng for {{ .Values.config.sleepTime }} ..."
+            sleep {{ .Values.config.sleepTime }}
+            echo "=======> Starting build process ..."
+            npm run build-all
+            rc=$?
+            echo "=======> Build process done - rc=$rc"
+            if [ $rc -eq 0 ]
+            then
+              echo "=======> Copying seedsBackup to container-shared-data ..."
+              cp /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackup /container-shared-data
+              ls -las /container-shared-data
+            else
+              echo "=======> ERROR during build process - Exiting with rc=$rc ..."
+              exit $rc
+            fi
+            echo "=======> Exiting ..."
+            exit 0
+        env:
+          - name: IMAGE_TAG
+            value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+        volumeMounts:
+          # As of Feb-2022 we do NOT mount seedsBackup to its desired destination /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackup
+          # as the startup build process will write to that even if there are no changes.
+          # Thus, we mount it to different location and copy it to desired location where the file is writeable then.
+          - name: csc-seeds-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackupOnStartup
+            subPath: seedsBackup
+            readOnly: true
+          - name: csc-external-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume
+          - name: csc-config-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/apihub.json
+            subPath: apihub.json
+            readOnly: true
+          - name: csc-bdns-config-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/bdns.hosts
+            subPath: bdns.hosts
+            readOnly: true
+          - name: csc-config-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/env.json
+            subPath: env.json
+            readOnly: true
+          - name: csc-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
+            subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
+            readOnly: true
+          - name: csc-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
+            subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
+            readOnly: true
+          - name: csc-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
+            subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
+            readOnly: true
+          - name: csc-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/demiurge-wallet/loader/environment.js
+            subPath: demiurge-environment.js
+            readOnly: true
+          - name: csc-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js
+            subPath: dsu-explorer-environment.js
+            readOnly: true
+          - name: csc-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-fabric-wallet/loader/environment.js
+            subPath: dsu-fabric-environment.js
+            readOnly: true
+          - name: csc-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/leaflet-wallet/loader/environment.js
+            subPath: leaflet-environment.js
+            readOnly: true
+            # We mount a temporary volume in order to hand over data from init to main container
+          - name: container-shared-data
+            mountPath: /container-shared-data
+            readOnly: false
+      containers:
+      - name: write-configmap
+        image: {{ include "csc.kubectlImage" . | quote }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
+        command:
+          - sh
+          - -c
+        args:
+          - |
+            # Exit on error
+            set -e
+            # If seedsBackup file exists, apply Kubernetes ConfigMap.
+            if [ -f /container-shared-data/seedsBackup ]
+            then
+              backupname="{{ include "csc.configMapSeedsBackupName" . }}-${IMAGE_TAG}-$(date +%s)"
+              echo "=======> Writing Backup ConfigMap $backupname ..."
+              kubectl create configmap $backupname --from-file=seedsBackup=/container-shared-data/seedsBackup
+              echo "=======> Writing or updating ConfigMap {{ include "csc.configMapSeedsBackupName" . }} ..."
+              kubectl create configmap {{ include "csc.configMapSeedsBackupName" . }} --from-file=seedsBackup=/container-shared-data/seedsBackup --dry-run=client -o yaml | kubectl apply -f -
+            else
+              echo "=======> SeedsBackup file not present! Kubernetes ConfigMap was not created or updated!"
+            fi
+        env:
+          - name: IMAGE_TAG
+            value: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+        volumeMounts:
+          - name: container-shared-data
+            mountPath: /container-shared-data
+            readOnly: true
+      volumes:
+        - name: csc-seeds-volume
+          configMap:
+            name: {{ include "csc.configMapSeedsBackupName" . }}
+        - name: csc-config-volume
+          configMap:
+            name: {{ include "csc.fullname" . }}-config-init
+        - name: csc-bdns-config-volume
+          configMap:
+            name: {{ include "csc.fullname" . }}-bdns-init
+        - name: csc-domains-volume
+          configMap:
+            name: {{ include "csc.fullname" . }}-domains-init
+        - name: csc-env-volume
+          configMap:
+            name: {{ include "csc.fullname" . }}-environment-init
+        - name: csc-external-volume
+          persistentVolumeClaim:
+            claimName:  {{ include "csc.fullname" . }}
+          # Extra volume for passing data (seedsBackup) from initContainer to main container
+          # aka sharing data, see https://www.stratoscale.com/blog/kubernetes/kubernetes-how-to-share-disk-storage-between-containers-in-a-pod/
+        - name: container-shared-data
+          emptyDir:
+            sizeLimit: "10Mi"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- end -}}
