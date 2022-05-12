@@ -28,6 +28,54 @@ metadata:
 data:
   # See https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/apihub-root/external-volume/config/bdns.hosts
   bdns.hosts: |-
-{{ required "config.bdnsHosts must be set" .Values.config.bdnsHosts | indent 4 }}
+{{- if .Values.config.overrides.bdnsHosts }}
+{{ .Values.config.overrides.bdnsHosts | indent 4 }}
+{{- else }}
+    {
+      "epipoc": {
+          "anchoringServices": [
+              "$ORIGIN"
+          ],
+          "notifications": [
+              "$ORIGIN"
+          ]
+      },
+      "epipoc.my-company": {
+          "brickStorages": [
+              "$ORIGIN"
+          ],
+          "anchoringServices": [
+              "$ORIGIN"
+          ],
+          "notifications": [
+              "$ORIGIN"
+          ]
+      },
+      "epipoc.other": {
+          "brickStorages": [
+              "https://epipoc.other-company.com"
+          ],
+          "anchoringServices": [
+              "https://epipoc.other-company.com"
+          ],
+          "notifications": [
+              "https://epipoc.other-company.com"
+          ]
+      },
+      "vault.my-company": {
+          "replicas": [],
+          "brickStorages": [
+              "$ORIGIN"
+          ],
+          "anchoringServices": [
+              "$ORIGIN"
+          ],
+          "notifications": [
+              "$ORIGIN"
+          ]
+      }
+    }
+{{- end }}
+
 {{- end }}
 {{- end }}

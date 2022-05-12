@@ -142,13 +142,14 @@ It is recommended to put non-sensitive configuration values in an configuration 
 
     ```yaml
     config:
-      domain: "domain_value"
-      subDomain: "subDomain_value"
-      vaultDomain: "vaultDomain_value"
-      ethadapterUrl: "https://ethadapter.my-company.com:3000"
-      buildSecretKey: "SuperSecret"  # pragma: allowlist secret
-      bdnsHosts: |-
-        # ... content of the BDNS Hosts file ...
+      domain: "epipoc"
+      subDomain: "epipoc.companyname"
+      vaultDomain: "vault.companyname"
+      ethadapterUrl: "http://ethadapter.epi-poc-ethadapter:3000"
+      buildSecretKey: "SuperStrongPassword"  # pragma: allowlist secret
+      overrides:
+        bdnsHosts: |-
+          # ... content of the BDNS Hosts file ...
 
     ```
 

@@ -234,6 +234,11 @@ config:
     # Note: Usually not required
     vaultDomainConfigJson: ""
 
+    # -- Option to explitly override the env.json for APIHub instead of using the predefined template.
+    # Note 1: Usually not required to override.
+    # Note 2: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault.
+    envJson: ""
+
     # -- Option to explitly set the apihub.json instead of using the default from [https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json).
     # Note: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault.
     # <br/>
@@ -252,52 +257,10 @@ config:
     # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
     apihubJson: ""
 
-  # -- Centrally managed and provided BDNS Hosts Config
-  bdnsHosts: |-
-    {
-      "epipoc": {
-          "anchoringServices": [
-              "$ORIGIN"
-          ],
-          "notifications": [
-              "$ORIGIN"
-          ]
-      },
-      "epipoc.my-company": {
-          "brickStorages": [
-              "$ORIGIN"
-          ],
-          "anchoringServices": [
-              "$ORIGIN"
-          ],
-          "notifications": [
-              "$ORIGIN"
-          ]
-      },
-      "epipoc.other": {
-          "brickStorages": [
-              "https://epipoc.other-company.com"
-          ],
-          "anchoringServices": [
-              "https://epipoc.other-company.com"
-          ],
-          "notifications": [
-              "https://epipoc.other-company.com"
-          ]
-      },
-      "vault.my-company": {
-          "replicas": [],
-          "brickStorages": [
-              "$ORIGIN"
-          ],
-          "anchoringServices": [
-              "$ORIGIN"
-          ],
-          "notifications": [
-              "$ORIGIN"
-          ]
-      }
-    }
+    # -- Centrally managed and provided BDNS Hosts Config.
+    # You must set this value in a non-sandbox environment!
+    # See [templates/_configmap-bdns.tpl](templates/_configmap-bdns.tpl) for default value.
+    bdnsHosts: ""
 
 secretProviderClass:
   # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
