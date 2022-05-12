@@ -218,8 +218,7 @@ config:
       "mqEndpoints":[
          "http://localhost:8080"
       ]
-    },    
-    
+    }    
 
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
