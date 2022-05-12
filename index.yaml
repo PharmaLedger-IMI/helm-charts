@@ -68,6 +68,21 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/dummy-0.1.0/dummy-0.1.0.tgz
     version: 0.1.0
+  eco:
+  - apiVersion: v2
+    appVersion: eco.0.0.1
+    created: "2022-05-12T13:33:35.705194027Z"
+    description: A Helm chart for Pharma Ledger eco applications
+    digest: 2997d4f08fc66bc1658566c813ba4583864585c4468f20d1458f7af6ba350471
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: eco
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/eco-0.0.1/eco-0.0.1.tgz
+    version: 0.0.1
   epi:
   - apiVersion: v2
     appVersion: poc.1.6
@@ -507,4 +522,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-12T13:15:32.352214836Z"
+generated: "2022-05-12T13:33:35.705406627Z"
