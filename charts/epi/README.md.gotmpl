@@ -12,7 +12,8 @@
   - Sub Domain - The Sub Domain - e.g. `epipoc.my-company`
   - Vault Domain - The Vault Domain - e.g. `vault.my-company`
   - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000"
-  - bdnsHosts - The Centrally managed and provided BDNS Hosts Config - 
+  - bdnsHosts - The Centrally managed and provided BDNS Hosts Config
+  - buildSecretKey - A secret pass phrase for de/encrpytion of the initially generated private keys of the wallets.
 
 ## Usage
 
@@ -20,6 +21,10 @@
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
 
 ## Changelog
+
+- From 0.3.x to 0.4.x - Removed Seedsbackup and compatible to epi v1.3.1
+  - Increased security by design: Run as non-root user, do not allow privilegeEscalation, remove all capabilites from container
+  - Sensitive configuration data is stored in Kubernetes Secrets instead of ConfigMaps. Note: Support for secret injection via *CSI Secrets Driver* is in progress.
 
 - From 0.2.x to 0.3.x - Default values for epi v1.2.0
   - For use with epi v1.1.2 or earlier, see comments at `config.apihub` in [values.yaml](values.yaml).
@@ -36,6 +41,14 @@
   - Configuration has been prepared for running as non-root user (commented out yet, see [values.yaml `podSecurityContext` and `securityContext`](./values.yaml)).
   - Minor optimizations at Kubernetes resources, e.g. set sizeLimit of temporary shared volume, explictly set readOnly flags at volumeMounts.
 
+## Overall
+
+The application consists of two docker images: A Builder image and a Runner Image.
+
+- The *Builder Image* is being used to build the SSApps and prepare the external volume. The builder image does not expose any http ports to the outside and does not service traffic. It will be executed by a Kubernetes Job (aka *Builder Job*) and is run once and on upgrades if there is a new Builder image version.
+- The *Runner Image* is being used to serve http traffic to the clients.
+- In addition a docker image containing *kubectl* is required by the *Pre-Builder* and *Cleanup* jobs.
+
 ## Helm Lifecycle and Kubernetes Resources Lifetime
 
 This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in order to install, upgrade and manage the application and its resources.
@@ -47,73 +60,66 @@ sequenceDiagram
   participant I as install
   participant U as uninstall
   participant PUN as post-uninstall
-  Note over PIN,PUN: PersistentVolumeClaim
-  Note over PIN,PUN: ConfigMap SeedsBackup
-  Note over PIN:Init Job
-  Note over PIN:ConfigMaps Init
-  Note over PIN:ServiceAccount Init
-  Note over PIN:Role Init
-  Note over PIN:RoleBinding Init
-  note right of PIN: Note: The Init Job stores <br/>Seeds in Configmap SeedsBackup and <br/> is either executed by a) pre-install hook or<br/>b)pre-upgrade hook
-  Note over PUP,U:Deployment
-  Note over PUP,U:ConfigMap build-info
-  Note over PUP,U:Configmaps for application
-  Note over PUP,U:Service
-  Note over PUP,U:Ingress
-  Note over PUP,U:ServiceAccount
-  Note over PUP:Init Job<br/>and more<br/>(see pre-install)
+  note right of PUN: Note on resources marked with *:<br/>They are created on a helm hook<br/>and will not be deleted after execution<br/>but will be removed by Cleanup Job
+  Note over PIN,PUN: PersistentVolumeClaim for Builder and Runner (B and R)*
+  Note over PIN,PUN: ServiceAccount for B and R*
+  note right of PUP: Note on upgrades:<br/>Pre-Builder and Builder jobs run<br/>1. if 'builder.forceRun: true'<br/>2. if builder image has changed
+  Note over PUP:Pre-Builder Job*
+  Note over PUP:Pre-Builder ServiceAccount
+  Note over PUP:Pre-Builder Role
+  Note over PUP:Pre-Builder RoleBinding
+  Note over PIN,PUP:Builder Job*
+  Note over PIN,PUP:Builder ConfigMaps Builder
+  Note over PIN,PUP:Builder Secret (or SecretProviderClass)
+  Note over I,U:Runner Deployment
+  Note over I,U:Runner ConfigMaps
+  Note over I,U:Runner Service
+  Note over I,U:Runner Ingress
+  Note over I,U:Runner Secret (or SecretProviderClass)
+  Note over I,U:Build-Info ConfigMap
+  note right of PUN: Note: Cleanup job deletes <br/>1. Pre-Builder Job<br/>2. Builder Job<br/>3. ServiceAccount for B and R<br/>4. PersistentVolumeClaim for B and R (optional)
   Note over PUN:Cleanup Job
-  Note over PUN:ServiceAccount Cleanup
-  Note over PUN:Role Cleanup
-  Note over PUN:RoleBinding Cleanup
-  note right of PUN: Note: The Cleanup job<br/>1. deletes PersistentVolumeClaim (optional)<br/>2. creates final backup of ConfigMap SeedsBackup<br/>3. deletes ConfigMap SeedsBackup
+  Note over PUN:Cleanup ServiceAccount
+  Note over PUN:Cleanup Role
+  Note over PUN:Cleanup RoleBinding
 ```
 
-## Init Job
+## PersistentVolumeClaim
 
-The Init Job is required to run the build process and to store the SeedsBackup in a ConfigMap.
+A Persistent Volume is mounted to the Builder and Runner Pod. Therefore a PersistentVolumeClaim (PVC) is being deployed by the helm chart at hook `pre-install` with various configuration options (see [values.yaml](values.yaml) at section `persistence`). The PVC is being deleted by *Cleanup Job* on deletion of the helm chart if `persistence.deletePvcOnUninstall: true` (default).
 
-- The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`. 
-- It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
-- Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
+## ServiceAccount
 
+A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets. It is being deployed by the helm chart at hook `pre-install` and is being deleted by *Cleanup Job* on deletion of the helm chart.
 
-### Init Job Details
+## Pre-Builder Job
 
-The pod consists an init containers and a main container.
+The *Pre-Builder job* runs on upgrades (if necessary, see *Builder Job* what "necessary" means) before the *Builder job* is being started.
+It a) deletes all remaining *Builder Jobs*, its pods and waits for deletion completed and b) scales Runner deployment to zero and waits for all its pods have been deleted.
 
-1. The Init Container uses the container image of the epi application and
-   1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
-   2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
+Doing so prevents any potential data integrity loss as *Builder Pod* and *Runner Pod(s)* are using the same external volume.
 
-    ```mermaid
-    flowchart LR
-    A(Init Container<br/>application) --> B[start apihub server]
-    B --> C[sleep short time]
-    C --> D[build process]
-    D --> E[write SeedsBackup file to shared data with main container]
-    E --> F[Exit Init Container<br/>application]
-    ```
+Note: The Job is not being deleted after execution triggered by the helm hook. This allows taking a look at the logs after execution. The Job is deleted by the *Cleanup Job* on deletion of the helm chart.
 
-2. The Main Container has `kubectl` installed and checks if SeedsBackup file was handed over by Init Container.
+## Builder Job
 
-    ```mermaid
-    flowchart LR
-    G(Main Container) --> H[Create ConfigMap SeedsBackup for current Image]
-    H --> I[Update ConfigMap SeedsBackup]
-    I --> J[Exit Pod]
-    ```
+The *Builder Job* runs on initial installation and on upgrades if necessary.
+The term "necessary" means that it will only be executed if the builder image has changed (= new Software version) or if `builder.forceRun: true`.
 
-After completion of the *Init Job* the application container will be deployed/restarted with the current *ConfigMap SeedsBackup*.
+The *Builder Job* starts the apihub server (`npm run server`), waits for a short (configurable, see `builder.sleepTime`) period of time and then starts the build process which will prepare data on external volume.
+
+Note: The Job is not being deleted after execution triggered by the helm hook. This allows taking a look at the logs after execution. The Job is deleted by the *Cleanup Job* on deletion of the helm chart.
 
 ## Cleanup Job
 
-On deletion/uninstall of the helm chart a Kubernetes `cleanup` will be deployed in order to delete unmanaged helm resources created by helm hooks at `pre-install`.
+On deletion/uninstall of the helm chart a Kubernetes Job will be deployed to delete unmanaged helm resources created by helm hooks at `pre-install` and/or `pre-upgrade`.
+
 These resources are:
 
-1. Init Job - The Init Job was created on pre-install/pre-upgrade and will remain after its execution.
-2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
-3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `epi-seedsbackup-poc.1.6-final-backup-1646063552`
+1. Pre-Builder Job - The *Pre-Builder Job* was created on pre-upgrade and will remain after its execution.
+2. Builder Job - The *Builder Job* was created on pre-install/pre-upgrade and will remain after its execution.
+3. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
+4. ServiceAccount - ServiceAccount is required by *Builder Job* and Runner in case secrets or mounted via CSI Secrets Driver.
 
 ## Installation
 
@@ -132,6 +138,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
       subDomain: "subDomain_value"
       vaultDomain: "vaultDomain_value"
       ethadapterUrl: "https://ethadapter.my-company.com:3000"
+      buildSecretKey: "SuperSecret"
       bdnsHosts: |-
         # ... content of the BDNS Hosts file ...
 
@@ -274,7 +281,6 @@ Run `helm upgrade --helm` for full list of options.
 
 [helm-unittest](https://github.com/quintush/helm-unittest) is being used for testing the output of the helm chart.
 Tests can be found in [tests](./tests)
-
 
 {{ template "chart.maintainersSection" . }}
 
