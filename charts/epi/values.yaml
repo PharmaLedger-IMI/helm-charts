@@ -98,7 +98,7 @@ securityContext:
   runAsGroup: 1000
   allowPrivilegeEscalation: false
 
-# Settings for Containers with kubectl installed used by Jobs "scale-to-zero" and "cleanup"
+# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
 kubectl:
   image:
     # -- The repository of the container image containing kubectl
@@ -115,7 +115,7 @@ kubectl:
     sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
   # -- Resource constraints for the pre-builder and cleanup job
-  resources: 
+  resources:
     limits:
       cpu: 100m
       memory: 128Mi
