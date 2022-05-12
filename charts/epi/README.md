@@ -96,7 +96,9 @@ If you want to reuse an existing PVC instead of creating a new one, set `persist
 
 ## ServiceAccount
 
-A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets. It is being deployed by the helm chart at hook `pre-install` and is being deleted by *Cleanup Job* on deletion of the helm chart.
+A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets.
+It is being deployed by the helm chart at hook `pre-install` and is being deleted by *Cleanup Job* on deletion of the helm chart.
+In order to create the ServiceAccount, set `serviceAccount.create: true` (default is `false`).
 
 ## Pre-Builder Job
 
