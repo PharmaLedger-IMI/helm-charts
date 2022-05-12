@@ -1,5 +1,6 @@
-image:
-  sha: "somedigest"
+config:
+  buildSecretKey: "nosecretfordevelopers"
+  bdnsHosts: "somebdns"
 
 resources:
   limits:
