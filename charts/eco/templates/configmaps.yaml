@@ -2,21 +2,21 @@
 Create Configmaps from templates
 */}}
 
-{{- include "csc.configmap-bdns" (list $ . "" (dict)) }}
+{{- include "eco.configmap-bdns" (list $ . "" (dict)) }}
 ---
-{{- include "csc.configmap-config" (list $ . "" (dict)) }}
+{{- include "eco.configmap-config" (list $ . "" (dict)) }}
 ---
-{{- include "csc.configmap-domains" (list $ . "" (dict)) }}
+{{- include "eco.configmap-domains" (list $ . "" (dict)) }}
 ---
-{{- include "csc.configmap-environment" (list $ . "" (dict)) }}
+{{- include "eco.configmap-environment" (list $ . "" (dict)) }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "csc.fullname" . }}-build-info
+  name: {{ include "eco.fullname" . }}-build-info
   annotations:
     "description": "Info about which image has been successfully built latest"
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "eco.labels" . | nindent 4 }}
 data:
-  lastBuiltImage: {{ include "csc.image" . | quote }}
+  lastBuiltImage: {{ include "eco.image" . | quote }}

@@ -5,7 +5,7 @@ It will be deleted be job-cleanup.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "csc.fullname" . }}
+  name: {{ include "eco.fullname" . }}
   annotations:
     "description": "Persistent Storage for whole lifetime"
     "helm.sh/hook": pre-install
@@ -16,7 +16,7 @@ metadata:
     */}}
     "helm.sh/resource-policy": keep
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "eco.labels" . | nindent 4 }}
   {{- with .Values.persistence.finalizers  }}
   finalizers:
 {{ toYaml . | indent 4 }}
