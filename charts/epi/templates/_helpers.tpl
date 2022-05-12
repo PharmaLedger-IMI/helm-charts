@@ -128,6 +128,14 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
+{{- define "epi.pvc" -}}
+{{- if .Values.persistence.existingClaim }}
+{{- .Values.persistence.existingClaim }}
+{{- else }}
+{{- include "epi.fullname" . }}
+{{- end }}
+{{- end }}
+
 {{/*
 Configuration env.json
 */}}

@@ -119,11 +119,13 @@ spec:
             echo "2. Deleting Builder Job ..."
             kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true
 
+            {{- if not .Values.persistence.existingClaim }}
             {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
             echo "3. Deleting PersistentVolumeClaim {{ include "epi.fullname" . }} ..."
             kubectl delete pvc {{ include "epi.fullname" . }} --ignore-not-found=true
             {{- else }}
             echo "3. SKIPPED: Deleting PersistentVolumeClaim {{ include "epi.fullname" . }}."
+            {{- end }}
             {{- end }}
 
             {{- if .Values.serviceAccount.create -}}

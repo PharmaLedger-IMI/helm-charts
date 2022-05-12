@@ -137,25 +137,27 @@ kubectl:
 # Enable persistence using Persistent Volume Claims.
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
 persistence:
-  # -- Name of the storage class for the PVC.
+  # -- The name of an existing PVC to use instead of creating a new one.
+  existingClaim: ""
+  # -- Name of the storage class for the new PVC.
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
-  # -- Size of the volume.
+  # -- Size of the volume for the new PVC
   size: "20Gi"
-  # -- Boolean flag whether to delete the persistent volume on uninstall or not.
+  # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
   deletePvcOnUninstall: true
-  # -- Finalizers for the PVC.
+  # -- Finalizers for the new PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
   finalizers:
     - kubernetes.io/pvc-protection
-  # -- AccessModes for the PVC.
+  # -- AccessModes for the new PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
   accessModes:
     - ReadWriteOnce
-  # -- Selector Labels for the logs PVC.
+  # -- Selector Labels for the new PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
   selectorLabels: {}
-  # -- DataSource option for cloning an existing volume or creating from a snapshot.
+  # -- DataSource option for cloning an existing volume or creating from a snapshot for a new PVC.
   # See [values.yaml](values.yaml) for more details.
   dataSource: {}
     # # For cloning from an existing volume

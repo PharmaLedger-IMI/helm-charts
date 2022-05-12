@@ -211,7 +211,7 @@ spec:
             name: {{ include "epi.fullname" . }}-environment-builder
         - name: epi-external-volume
           persistentVolumeClaim:
-            claimName: {{ include "epi.fullname" . }}
+            claimName: {{ include "epi.pvc" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
