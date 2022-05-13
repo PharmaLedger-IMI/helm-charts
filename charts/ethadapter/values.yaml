@@ -15,7 +15,8 @@ image:
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:"
   # Default to image digest for version 1.0.2
-  sha: "e387f4b292fff25f6d7fa1792ec586bf46cab31265a84136561c469accd81b06"
+  # <!-- # pragma: allowlist secret -->
+  sha: "e387f4b292fff25f6d7fa1792ec586bf46cab31265a84136561c469accd81b06"  # pragma: allowlist secret
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
