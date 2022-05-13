@@ -148,6 +148,9 @@ runner:
       drop:
       - ALL
     # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
+    # Error:
+    # API-HUB] Preparing to register middleware from path ./components/mqManager
+    # Caught event type [uncaughtException]. Shutting down... uncaughtException Error: ENOENT: no such file or directory, mkdir '/ePI-workspace/apihub-root/messaging'
     readOnlyRootFilesystem: false
     runAsNonRoot: true
     runAsUser: 1000
