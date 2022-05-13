@@ -1,0 +1,20 @@
+{{- /*
+Create Configmaps from templates
+*/}}
+
+{{- include "iot-adapter.configmap-bdns" (list $ . "" (dict)) }}
+---
+{{- include "iot-adapter.configmap-config" (list $ . "" (dict)) }}
+---
+{{- include "iot-adapter.configmap-domains" (list $ . "" (dict)) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "iot-adapter.fullname" . }}-build-info
+  annotations:
+    "description": "Info about which image has been successfully built latest"
+  labels:
+    {{- include "iot-adapter.labels" . | nindent 4 }}
+data:
+  lastBuiltImage: {{ include "iot-adapter.image" . | quote }}
