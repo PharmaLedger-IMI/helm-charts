@@ -164,6 +164,8 @@ config:
   demiurgeMode: "dev-secure"
   # For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
+  # -- The public DNS of the IOT Adapter
+  iotAdaptorEndpointPublicDNS: "iot-adapter.dns"
 
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
