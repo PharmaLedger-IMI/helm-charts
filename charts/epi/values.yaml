@@ -137,9 +137,10 @@ runner:
     runAsGroup: 1000
     fsGroup: 1000
     # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
     # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    seccompProfile:
-      type: RuntimeDefault
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the runner container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -186,9 +187,10 @@ builder:
     runAsGroup: 1000
     fsGroup: 1000
     # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
     # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    seccompProfile:
-      type: RuntimeDefault
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the builder container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -228,15 +230,17 @@ kubectl:
       cpu: 100m
       memory: 128Mi
 
-  # -- Security Context for the pod running kubectl.
+  # -- Pod Security Context for the pod running kubectl.
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  # and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
   podSecurityContext:
     runAsUser: 65534
     runAsGroup: 65534
     fsGroup: 65534
-    seccompProfile:
-      type: RuntimeDefault
+    # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
+    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the container running kubectl
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
