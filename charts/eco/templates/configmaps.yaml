@@ -1,0 +1,22 @@
+{{- /*
+Create Configmaps from templates
+*/}}
+
+{{- include "eco.configmap-bdns" (list $ . "" (dict)) }}
+---
+{{- include "eco.configmap-config" (list $ . "" (dict)) }}
+---
+{{- include "eco.configmap-domains" (list $ . "" (dict)) }}
+---
+{{- include "eco.configmap-environment" (list $ . "" (dict)) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eco.fullname" . }}-build-info
+  annotations:
+    "description": "Info about which image has been successfully built latest"
+  labels:
+    {{- include "eco.labels" . | nindent 4 }}
+data:
+  lastBuiltImage: {{ include "eco.image" . | quote }}

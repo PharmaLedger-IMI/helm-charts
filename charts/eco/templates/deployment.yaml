@@ -1,5 +1,5 @@
 #
-# The Deployment of the csc application.
+# The Deployment of the eco application.
 # Note:
 # 1. As of Feb-23 2022 the build process needs to run on every container startup as some files are added to ephemeral container disk space.
 #    Without these files, the wallet application won't startup.
@@ -10,14 +10,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "csc.fullname" . }}
+  name: {{ include "eco.fullname" . }}
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "eco.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "csc.selectorLabels" . | nindent 6 }}
+      {{- include "eco.selectorLabels" . | nindent 6 }}
 {{- with .Values.deploymentStrategy }}
   strategy:
 {{ toYaml . | trim | indent 4 }}
@@ -30,29 +30,29 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "csc.selectorLabels" . | nindent 8 }}
+        {{- include "eco.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
-      serviceAccountName: {{ include "csc.serviceAccountName" . }}
+      serviceAccountName: {{ include "eco.serviceAccountName" . }}
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: csc
+      - name: eco
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: {{ include "csc.image" . | quote }}
+        image: {{ include "eco.image" . | quote }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         ports:
           - name: http
-            containerPort: 8080
+            containerPort: 8081
             protocol: TCP
         {{- with .Values.livenessProbe }}
         livenessProbe:
@@ -104,80 +104,80 @@ spec:
           # As of Feb-2023 we do NOT mount seedsBackup to its desired destination /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackup
           # as the startup build process will write to that even if there are no changes.
           # Thus, we mount it to different location and copy it to desired location where the file is writeable then.
-          - name: csc-seeds-volume
+          - name: eco-seeds-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackupOnStartup
             subPath: seedsBackup
             readOnly: true
-          - name: csc-external-volume
+          - name: eco-external-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume
-          - name: csc-config-volume
+          - name: eco-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/apihub.json
             subPath: apihub.json
             readOnly: true
-          - name: csc-bdns-config-volume
+          - name: eco-bdns-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/bdns.hosts
             subPath: bdns.hosts
             readOnly: true
-          - name: csc-config-volume
+          - name: eco-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/env.json
             subPath: env.json
             readOnly: true
-          - name: csc-domains-volume
+          - name: eco-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
             readOnly: true
-          - name: csc-domains-volume
+          - name: eco-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             readOnly: true
-          - name: csc-domains-volume
+          - name: eco-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             readOnly: true
-          - name: csc-domains-volume
+          - name: eco-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/iot.json
+            subPath: iot.json
+            readOnly: true
+          - name: eco-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/default.json
             subPath: default.json
             readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-cmo-wallet/loader/environment.js
-            subPath: cmo-environment.js
-            readOnly: true
-          - name: csc-env-volume
+          - name: eco-env-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js
             subPath: dsu-explorer-environment.js
             readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-courier-wallet/loader/environment.js
-            subPath: courier-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-site-wallet/loader/environment.js
-            subPath: site-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-sponsor-wallet/loader/environment.js
+          - name: eco-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/sponsor-wallet/loader/environment.js
             subPath: sponsor-environment.js
+            readOnly: true
+          - name: eco-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/hco-wallet/loader/environment.js
+            subPath: hco-environment.js
+            readOnly: true
+          - name: eco-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/trial-participant-wallet/loader/environment.js
+            subPath: trial-participant-environment.js
             readOnly: true
       restartPolicy: Always
       volumes:
-        - name: csc-seeds-volume
+        - name: eco-seeds-volume
           configMap:
-            name: {{ include "csc.configMapSeedsBackupName" . }}
-        - name: csc-config-volume
+            name: {{ include "eco.configMapSeedsBackupName" . }}
+        - name: eco-config-volume
           configMap:
-            name: {{ include "csc.fullname" . }}-config
-        - name: csc-bdns-config-volume
+            name: {{ include "eco.fullname" . }}-config
+        - name: eco-bdns-config-volume
           configMap:
-            name: {{ include "csc.fullname" . }}-bdns
-        - name: csc-domains-volume
+            name: {{ include "eco.fullname" . }}-bdns
+        - name: eco-domains-volume
           configMap:
-            name: {{ include "csc.fullname" . }}-domains
-        - name: csc-env-volume
+            name: {{ include "eco.fullname" . }}-domains
+        - name: eco-env-volume
           configMap:
-            name: {{ include "csc.fullname" . }}-environment
-        - name: csc-external-volume
+            name: {{ include "eco.fullname" . }}-environment
+        - name: eco-external-volume
           persistentVolumeClaim:
-            claimName:  {{ include "csc.fullname" . }}
+            claimName:  {{ include "eco.fullname" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

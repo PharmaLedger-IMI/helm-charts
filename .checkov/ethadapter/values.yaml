@@ -12,6 +12,11 @@ podSecurityContext:
 
 config:
   smartContractAddress: "someaddress"
+  smartContractInfo: |-
+    {
+      "address": "someaddress",
+      "abi": "someAbi"
+    }
 
 secrets:
   # -- Org Account in JSON format.

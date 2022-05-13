@@ -5,41 +5,26 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-runner:
-  image:
-    # -- The repository of the container image for the runner
-    repository: "pharmaledger/epi-runner"
-    # -- Image Pull Policy for the runner
-    pullPolicy: Always
-    # -- Overrides the image tag whose default is the chart appVersion.
-    # Default to v1.3.1
-    tag: "1.3.1"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # Default to v1.3.1
-    # <!-- # pragma: allowlist secret -->
-    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"  # pragma: allowlist secret
+apiHubWorkingFolder: "eco-workspace"
 
-builder:
-  # -- Boolean flag whether to enforce running the Builder even if it is not required.
-  # Useful for testing purpose.
-  forceRun: false
-  # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
-  sleepTime: "10s"
+image:
+  # -- The repository of the container image
+  repository: username/eco-docker-image
+  # -- Image Pull Policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: "0.0.1"
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  sha: ""
 
-  image:
-    # -- The repository of the container image for the builder.
-    repository: "pharmaledger/epi-builder"
-    # -- Image Pull Policy for the builder.
-    pullPolicy: Always
-    # -- Image tag for the builder.
-    # Default to v1.3.1
-    tag: "1.3.1"
-    # -- sha256 digest of the image for the builder.
-    # Do not add the prefix "@sha256:"
-    # Default to v1.3.1
-    # <!-- # pragma: allowlist secret -->
-    sha: "7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"  # pragma: allowlist secret
+# image:
+#   # -- The repository of the container image
+#   repository: 535161841476.dkr.ecr.eu-central-1.amazonaws.com/torsten-pharmaledger-epi
+#   # -- Image Pull Policy
+#   pullPolicy: Always # IfNotPresent
+#   # -- Overrides the image tag whose default is the chart appVersion.
+#   tag: "v1.0.2-builder"
 
 # -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
 # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
@@ -55,12 +40,9 @@ nameOverride: ""
 # -- fullnameOverride completely replaces the generated name.
 # From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
 fullnameOverride: ""
-# -- Override the deployment namespace.
-# Very useful for multi-namespace deployments in combined charts
-namespaceOverride: ""
 
 serviceAccount:
-  # -- Specifies whether a service account should be created which is used by builder and runner.
+  # -- Specifies whether a service account should be created
   create: false
   # -- Annotations to add to the service account
   annotations: {}
@@ -75,36 +57,42 @@ serviceAccount:
 podAnnotations: {}
 
 # -- Security Context for the pod.
+# IMPORTANT: Take a look at README.md for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-  # -- The SecComp configuration.
-  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-  seccompProfile:
-    type: RuntimeDefault
+# <br/>
+# For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
+podSecurityContext: {}
+  # fsGroup: 1000
+  # runAsUser: 1000
+
+  # # -- The SecComp configuration [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
+
 
 # -- Security Context for the application container
+# IMPORTANT: Take a look at README.md file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-securityContext:
-  capabilities:
-    drop:
-    - ALL
-  # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
-  readOnlyRootFilesystem: false
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  allowPrivilegeEscalation: false
+# <br/>
+# For running as non-root with uid 1000, remove {} from next line and uncomment next lines!
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # # -- Running as readonly filesystem is currently (Feb 2022) not possible.
+  # readOnlyRootFilesystem: false
+  # allowPrivilegeEscalation: false
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
-# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
+# Settings for Container with kubectl installed used by Init and Cleanup Job.
+# <!-- pragma: allowlist secret -->
 kubectl:
   image:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl
     # -- Image Pull Policy
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
     tag: "1.21.8"
     # -- sha256 digest of the image.
@@ -114,61 +102,28 @@ kubectl:
     # <!-- # pragma: allowlist secret -->
     sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
-  # -- Resource constraints for the pre-builder and cleanup job
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-
-  # -- Security Context for the pod running kubectl.
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  # and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-  podSecurityContext:
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
-    seccompProfile:
-      type: RuntimeDefault
-
-  # -- Security Context for the container running kubectl
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-  securityContext:
-    capabilities:
-      drop:
-      - ALL
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-
 # Enable persistence using Persistent Volume Claims.
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
 persistence:
-  # -- The name of an existing PVC to use instead of creating a new one.
-  existingClaim: ""
-  # -- Name of the storage class for the new PVC.
+  # -- Name of the storage class for the PVC.
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
-  # -- Size of the volume for the new PVC
-  size: "20Gi"
-  # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
-  deleteOnUninstall: true
-  # -- Finalizers for the new PVC.
+  # -- Size of the volume.
+  size: "6Gi"
+  # -- Boolean flag whether to delete the persistent volume on uninstall or not.
+  deletePvcOnUninstall: true
+  # -- Finalizers for the PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
   finalizers:
     - kubernetes.io/pvc-protection
-  # -- AccessModes for the new PVC.
+  # -- AccessModes for the PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
   accessModes:
     - ReadWriteOnce
-  # -- Selector Labels for the new PVC.
+  # -- Selector Labels for the logs PVC.
   # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
   selectorLabels: {}
-  # -- DataSource option for cloning an existing volume or creating from a snapshot for a new PVC.
+  # -- DataSource option for cloning an existing volume or creating from a snapshot.
   # See [values.yaml](values.yaml) for more details.
   dataSource: {}
     # # For cloning from an existing volume
@@ -185,7 +140,7 @@ persistence:
 service:
   # -- Either ClusterIP, NodePort or LoadBalancer.
   # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
-  type: ClusterIP
+  type: NodePort
   # -- Port where the service will be exposed
   port: 80
   # -- Annotations for the service.
@@ -193,91 +148,149 @@ service:
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
 
-# Application Configuration. Will be put in ConfigMaps/Secrets
+# Configuration. Will be put in ConfigMaps.
 config:
+  # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
+  sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
-  domain: "epipoc"
+  domain: "eco"
   # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
-  subDomain: "epipoc.my-company"
+  subDomain: "eco.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
   ethadapterUrl: "http://ethadapter.ethadapter:3000"
-  # -- For SSO, set to "sso-pin"
+  # For SSO, set to "sso-pin"
   demiurgeMode: "dev-secure"
-  # -- For SSO, set to "sso-direct"
+  # For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
-  # -- Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
-  buildSecretKey: ""  # "nosecretfordevelopers"
 
-  overrides:
-    # -- Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template.
-    # Note: Usually not required
-    demiurgeEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template.
-    # Note: Usually not required
-    dsuExplorerEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template.
-    # Note: Usually not required
-    dsuFabricEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template.
-    # Note: Usually not required
-    leafletEnvironmentJs: ""
+  # -- Centrally managed and provided BDNS Hosts Config
+  bdnsHosts: |-
+    {
+    "default": {
+      "replicas": [],
+      "brickStorages": [
+        "$ORIGIN"
+      ],
+      "anchoringServices": [
+        "$ORIGIN"
+      ]
+    },
+    "vault.my-company": {
+      "replicas": [],
+      "brickStorages": [
+        "$ORIGIN"
+      ],
+      "anchoringServices": [
+        "$ORIGIN"
+      ]
+    },
+    "eco.my-company":{
+        "replicas":[],
+        "brickStorages":[
+           "$ORIGIN"
+        ],
+        "anchoringServices":[
+           "$ORIGIN"
+        ]
+     },
+    "eco":{
+            "replicas":[],
+            "brickStorages":[
+               "$ORIGIN"
+            ],
+            "anchoringServices":[
+               "$ORIGIN"
+            ]
+         }
+    },
+    "iot":{
+      "replicas":[
 
-    # -- Option to explictly override the config.json used for the domain instead of using the predefined template.
-    # Note: Usually not required
-    domainConfigJson: ""
-    # -- Option to explictly override the config.json used for the subDomain instead of using the predefined template.
-    # Note: Usually not required
-    subDomainConfigJson: ""
-    # -- Option to explictly override the config.json used for the vaultDomain instead of using the predefined template.
-    # Note: Usually not required
-    vaultDomainConfigJson: ""
+      ],
+      "brickStorages":[
+         "http://localhost:8080"
+      ],
+      "anchoringServices":[
+         "http://localhost:8080"
+      ],
+      "mqEndpoints":[
+         "http://localhost:8080"
+      ]
+    }
 
-    # -- Option to explitly override the env.json for APIHub instead of using the predefined template.
-    # Note 1: Usually not required to override.
-    # Note 2: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault.
-    envJson: ""
-
-    # -- Option to explitly set the apihub.json instead of using the default from [https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json).
-    # Note: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault.
-    # <br/>
-    # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
-    # <br/>
-    # For SSO (not enabled by default):
-    # <br/>
-    # 1. "enableOAuth": true
-    # <br/>
-    # 2. "serverAuthentication": true
-    # <br/>
-    # 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.
-    #    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.
-    #    "redirectPath" must match the redirect URL configured at IdP
-    # <br/>
-    # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
-    apihubJson: ""
-
-    # -- Centrally managed and provided BDNS Hosts Config.
-    # You must set this value in a non-sandbox environment!
-    # See [templates/_configmap-bdns.tpl](templates/_configmap-bdns.tpl) for default value.
-    bdnsHosts: ""
-
-secretProviderClass:
-  # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
-  # NOTE: DO ENABLE, NOT TESTED YET!
-  enabled: false
-  # -- API Version of the SecretProviderClass
-  apiVersion: "secrets-store.csi.x-k8s.io/v1"
-  # -- Spec for the SecretProviderClass.
-  # Note: The orgAccountJson must be mounted as objectAlias orgAccountJson
-  spec: {}
-    ## Sample for AWS:
-    # provider: aws
-    # parameters:
-    #   objects: |
-    #     - objectName: "TODO: ARN or Name of Secret"
-    #       objectType: "secretsmanager"
-    #       objectAlias: "orgAccountJson"
+  # -- Configuration file apihub.json.
+  # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
+  # <br/>
+  # For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils"
+  # <br/>
+  # For SSO (not enabled by default!):
+  # <br/>
+  # 1. "enableOAuth": true
+  # <br/>
+  # 2. "serverAuthentication": true
+  # <br/>
+  # 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.
+  #    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.
+  #    "redirectPath" must match the redirect URL configured at IdP
+  # <br/>
+  # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
+  apihub: |-
+    {
+      "storage": "../apihub-root",
+      "port": 8081,
+      "preventRateLimit": true,
+      "activeComponents": [
+        "virtualMQ",
+        "messaging",
+        "notifications",
+        "filesManager",
+        "bdns",
+        "bricksLedger",
+        "bricksFabric",
+        "bricking",
+        "anchoring",
+        "debugLogger",
+        "mq",
+        "staticServer"
+      ],
+      "componentsConfig": {
+        "staticServer": {
+                       "excludedFiles": [
+                           ".*.secret"
+                       ]
+                   },
+        "bricking": {},
+        "anchoring": {}
+      },
+      "responseHeaders": {
+                 "X-Frame-Options": "SAMEORIGIN",
+                 "X-XSS-Protection": "1; mode=block"
+             },
+      "enableRequestLogger": true,
+      "enableJWTAuthorisation": false,
+      "enableLocalhostAuthorization": false,
+      "serverAuthentication": false,
+      "skipJWTAuthorisation": [
+        "/assets",
+        "/directory-summary",
+        "/resources",
+        "/bdns",
+        "/anchor/default",
+        "/anchor/vault",
+        "/bricking",
+        "/bricksFabric",
+        "/bricksledger",
+        "/create-channel",
+        "/forward-zeromq",
+        "/send-message",
+        "/receive-message",
+        "/files",
+        "/notifications",
+        "/mq"
+      ]
+    }
 
 ingress:
   # -- Whether to create ingress or not.
@@ -308,7 +321,7 @@ ingress:
   hosts:
     -
       # -- The FQDN/hostname
-      host: epi.some-pharma-company.com
+      host: eco.some-pharma-company.com
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
@@ -326,7 +339,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- Resource constraints for the builder and runner
+# -- Resource constraints for the container
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -357,10 +370,6 @@ livenessProbe:
   httpGet:
     path: /
     port: http
-    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
-    httpHeaders:
-      - name: Host
-        value: localhost
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 1
@@ -370,15 +379,11 @@ livenessProbe:
 # -- Readiness probe.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 readinessProbe:
-  httpGet:
-    path: /
-    port: http
-    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
-    httpHeaders:
-      - name: Host
-        value: localhost
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 1
+  exec:
+    command:
+    - cat
+    - /eco-workspace/apihub-root/ready
+  initialDelaySeconds: 30
+  periodSeconds: 5
   successThreshold: 1
-  failureThreshold: 3
+  failureThreshold: 60

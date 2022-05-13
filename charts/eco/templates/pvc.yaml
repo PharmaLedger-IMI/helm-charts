@@ -1,14 +1,13 @@
-{{- if not .Values.persistence.existingClaim }}
 {{- /*
 Persistent Storage for Bricks will be created on pre-install and will remain for the whole lifetime of the helm installation!
-It will be deleted by job-cleanup.
+It will be deleted be job-cleanup.
 */}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "epi.pvc" . }}
-  namespace: {{ template "epi.namespace" . }}
+  name: {{ include "eco.fullname" . }}
   annotations:
+    "description": "Persistent Storage for whole lifetime"
     "helm.sh/hook": pre-install
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook-weight": "-1"
@@ -17,7 +16,7 @@ metadata:
     */}}
     "helm.sh/resource-policy": keep
   labels:
-    {{- include "epi.labels" . | nindent 4 }}
+    {{- include "eco.labels" . | nindent 4 }}
   {{- with .Values.persistence.finalizers  }}
   finalizers:
 {{ toYaml . | indent 4 }}
@@ -40,4 +39,3 @@ spec:
   {{- with .Values.persistence.dataSource  }}
   dataSource: {{ toYaml . | nindent 4 }}
   {{- end }}
-{{- end }}

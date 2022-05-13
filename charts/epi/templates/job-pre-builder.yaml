@@ -1,0 +1,157 @@
+{{- /*
+
+Description: This Job prepares everything before the Builder Jobs runs.
+Hook-Weight: -100
+
+*/}}
+{{- if and .Release.IsUpgrade (or .Values.builder.forceRun (ne (include "epi.lastBuilderImage" .) (include "epi.builder.image" .))) -}}
+
+{{- /*
+1. Role, RoleBinding and ServiceAccount
+*/}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "epi.fullname" . }}-pre-builder
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+rules:
+# Delete Builder Job
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    resourceNames: ["{{ include "epi.fullname" . }}-builder"]
+    verbs: ["delete"]
+# Scale deployment to zero
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    resourceNames: [{{ include "epi.fullname" . | quote}}]
+    verbs: ["patch", "get"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: [{{ include "epi.fullname" . | quote}}]
+    verbs: ["get"]
+# Wait for pod(s) to be deleted
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list","watch"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get","list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "epi.fullname" . }}-pre-builder
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "epi.fullname" . }}-pre-builder
+subjects:
+- kind: ServiceAccount
+  name: {{ include "epi.fullname" . }}-pre-builder
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "epi.fullname" . }}-pre-builder
+  namespace: {{ template "epi.namespace" . }}
+  labels:
+    {{- include "epi.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-100"
+---
+
+{{- /*
+2. This Job prepares everything before Builder Job runs
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "epi.fullname" . }}-pre-builder
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "-100"
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "epi.fullname" . }}-pre-builder
+      automountServiceAccountToken: true
+      {{- with .Values.kubectl.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: main
+        {{- with .Values.kubectl.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.kubectl.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: {{ include "epi.kubectl.image" . | quote }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
+        command:
+          - sh
+          - -c
+        args:
+          - |
+            # Exit on error
+            #set -e
+            echo "1. Builder Job"
+            echo "   Deleting builder job (if already/still running)... Note: This does not wait for pods to terminate and get deleted!"
+            kubectl delete job {{ include "epi.fullname" . }}-builder --ignore-not-found=true --timeout=5m
+            echo "     rc=$?"
+
+            echo "   Waiting for builder pods to be deleted ..."
+            kubectl wait --for=delete pod --selector={{ include "epi.builderSelectorLabelsKubectl" . | quote }} --timeout=5m
+            echo "     rc=$?"
+
+            echo ""
+            echo "2. Runner Deployment"
+            echo "   Scaling down runner deployment to zero ... Note: This does not wait for pods to terminate and get deleted!"
+            kubectl scale --replicas=0 --timeout=5m deployment/{{ include "epi.fullname" . }}
+            echo "     rc=$?"
+            
+            echo "   Waiting for runner pods to be deleted ..."
+            kubectl wait --for=delete pod --selector={{ include "epi.selectorLabelsKubectl" . | quote }} --timeout=5m
+            echo "     rc=$?"
+
+            echo ""
+            echo "3. DONE"
+            echo "   Exiting with rc=0 ..."
+            exit 0
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- end -}}
