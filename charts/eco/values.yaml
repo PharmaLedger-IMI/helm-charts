@@ -203,7 +203,6 @@ config:
             "anchoringServices":[
                "$ORIGIN"
             ]
-         }
     },
     "iot":{
       "replicas":[
@@ -218,6 +217,7 @@ config:
       "mqEndpoints":[
          "http://localhost:8080"
       ]
+    }
     }
 
   # -- Configuration file apihub.json.
@@ -239,7 +239,7 @@ config:
   apihub: |-
     {
       "storage": "../apihub-root",
-      "port": 8081,
+      "port": 8080,
       "preventRateLimit": true,
       "activeComponents": [
         "virtualMQ",
