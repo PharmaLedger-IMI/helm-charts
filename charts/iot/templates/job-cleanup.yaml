@@ -4,7 +4,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
   annotations:
     "description": "Role for Cleanup Job"
     "helm.sh/hook": post-delete
@@ -15,7 +15,7 @@ rules:
 - apiGroups:
   - "batch"
   resourceNames:
-  - "{{ include "csc.fullname" . }}-init"
+  - "{{ include "iot.fullname" . }}-init"
   resources:
   - jobs
   verbs:
@@ -24,7 +24,7 @@ rules:
 - apiGroups:
   - ""
   resourceNames:
-  - {{ include "csc.configMapSeedsBackupName" . | quote }}
+  - {{ include "iot.configMapSeedsBackupName" . | quote }}
   resources:
   - configmaps
   verbs:
@@ -43,7 +43,7 @@ rules:
 - apiGroups:
   - ""
   resourceNames:
-  - {{ include "csc.fullname" . | quote }}
+  - {{ include "iot.fullname" . | quote }}
   resources:
   - persistentvolumeclaims
   verbs:
@@ -53,7 +53,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
   annotations:
     "description": "RoleBinding for Cleanup Job"
     "helm.sh/hook": post-delete
@@ -62,17 +62,17 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
 subjects:
 - kind: ServiceAccount
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "iot.labels" . | nindent 4 }}
   annotations:
     "description": "ServiceAccount for Cleanup Job"
     "helm.sh/hook": post-delete
@@ -87,7 +87,7 @@ metadata:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "csc.fullname" . }}-cleanup
+  name: {{ include "iot.fullname" . }}-cleanup
   annotations:
     "description": "Cleanup Job running after deletion of helm managed resource"
     "helm.sh/hook": post-delete
@@ -102,7 +102,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       # Use the cleanup ServiceAccount which has permissions to cleanup
-      serviceAccountName: {{ include "csc.fullname" . }}-cleanup
+      serviceAccountName: {{ include "iot.fullname" . }}-cleanup
       automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
@@ -111,7 +111,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: cleanup
-        image: {{ include "csc.kubectlImage" . | quote }}
+        image: {{ include "iot.kubectlImage" . | quote }}
         imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "IfNotPresent" }}
         command:
           - sh
@@ -122,20 +122,20 @@ spec:
             echo "Cleanup Job started"
 
             echo "1. Deleting Init Job ..."
-            kubectl delete job {{ include "csc.fullname" . }}-init --ignore-not-found=true
+            kubectl delete job {{ include "iot.fullname" . }}-init --ignore-not-found=true
 
-            backupname="{{ include "csc.configMapSeedsBackupName" . }}-${IMAGE_TAG}-final-backup-$(date +%s)"
-            echo "2. Backing up Configmap {{ include "csc.configMapSeedsBackupName" . }} to $backupname ..."
-            kubectl patch cm {{ include "csc.configMapSeedsBackupName" . }} -p "{\"metadata\":{ \"name\":\"$backupname\"}}" --dry-run=client -o yaml | kubectl create -f -
+            backupname="{{ include "iot.configMapSeedsBackupName" . }}-${IMAGE_TAG}-final-backup-$(date +%s)"
+            echo "2. Backing up Configmap {{ include "iot.configMapSeedsBackupName" . }} to $backupname ..."
+            kubectl patch cm {{ include "iot.configMapSeedsBackupName" . }} -p "{\"metadata\":{ \"name\":\"$backupname\"}}" --dry-run=client -o yaml | kubectl create -f -
 
-            echo "3. Deleting Configmap {{ include "csc.configMapSeedsBackupName" . }} ..."
-            kubectl delete cm {{ include "csc.configMapSeedsBackupName" . }} --ignore-not-found=true
+            echo "3. Deleting Configmap {{ include "iot.configMapSeedsBackupName" . }} ..."
+            kubectl delete cm {{ include "iot.configMapSeedsBackupName" . }} --ignore-not-found=true
 
             {{- if eq (toString .Values.persistence.deletePvcOnUninstall) "true" }}
-            echo "4. Deleting PersistentVolumeClaim {{ include "csc.fullname" . }} ..."
-            kubectl delete pvc {{ include "csc.fullname" . }} --ignore-not-found=true
+            echo "4. Deleting PersistentVolumeClaim {{ include "iot.fullname" . }} ..."
+            kubectl delete pvc {{ include "iot.fullname" . }} --ignore-not-found=true
             {{- else }}
-            echo "4. SKIPPED: Deleting PersistentVolumeClaim {{ include "csc.fullname" . }}."
+            echo "4. SKIPPED: Deleting PersistentVolumeClaim {{ include "iot.fullname" . }}."
             {{- end }}
         env:
           - name: IMAGE_TAG

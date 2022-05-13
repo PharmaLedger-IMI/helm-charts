@@ -5,15 +5,15 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-apiHubWorkingFolder: "csc-workspace"
+apiHubWorkingFolder: "iot-pmed-workspace"
 
 image:
   # -- The repository of the container image
-  repository: mastaleru/csc-deployment
+  repository: organisation_username/repository
   # -- Image Pull Policy
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.3"
+  tag: "1.0.0"
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:"
   sha: ""
@@ -153,9 +153,9 @@ config:
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
-  domain: "csc"
+  domain: "iot"
   # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
-  subDomain: "csc.my-company"
+  subDomain: "iot.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
@@ -168,25 +168,25 @@ config:
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {
-    "default": {
-      "replicas": [],
-      "brickStorages": [
-        "$ORIGIN"
-      ],
-      "anchoringServices": [
-        "$ORIGIN"
-      ]
-    },
-    "vault.my-company": {
-      "replicas": [],
-      "brickStorages": [
-        "$ORIGIN"
-      ],
-      "anchoringServices": [
-        "$ORIGIN"
-      ]
-    },
-    "csc.my-company":{
+      "default": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ]
+      },
+      "vault.my-company": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ]
+      },
+      "iot.my-company":{
         "replicas":[],
         "brickStorages":[
            "$ORIGIN"
@@ -194,16 +194,31 @@ config:
         "anchoringServices":[
            "$ORIGIN"
         ]
-     },
-    "csc":{
-            "replicas":[],
-            "brickStorages":[
-               "$ORIGIN"
-            ],
-            "anchoringServices":[
-               "$ORIGIN"
-            ]
-         }
+       },
+      "iot":{
+        "replicas":[],
+        "brickStorages":[
+           "$ORIGIN"
+        ],
+        "anchoringServices":[
+           "$ORIGIN"
+        ],
+        "mqEndpoints":[
+           "$ORIGIN"
+        ]
+      },
+      "eco":{
+        "replicas":[],
+        "brickStorages":[
+          "http://localhost:8081"
+        ],
+        "anchoringServices":[
+           "http://localhost:8081"
+        ],
+        "mqEndpoints":[
+           "http://localhost:8081"
+         ]
+      }
     }
 
   # -- Configuration file apihub.json.
@@ -242,29 +257,26 @@ config:
       ],
       "componentsConfig": {
         "staticServer": {
-                       "excludedFiles": [
-                           ".*.secret"
-                       ]
-                   },
+           "excludedFiles": [
+               ".*.secret"
+           ]
+         },
         "bricking": {},
         "anchoring": {}
       },
       "responseHeaders": {
-                 "X-Frame-Options": "SAMEORIGIN",
-                 "X-XSS-Protection": "1; mode=block"
-             },
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-XSS-Protection": "1; mode=block"
+      },
       "enableRequestLogger": true,
       "enableJWTAuthorisation": false,
       "enableLocalhostAuthorization": false,
       "serverAuthentication": false,
       "skipJWTAuthorisation": [
         "/assets",
-        "/leaflet-wallet",
-        "/dsu-fabric-wallet",
         "/directory-summary",
         "/resources",
         "/bdns",
-        "/anchor/epi",
         "/anchor/default",
         "/anchor/vault",
         "/bricking",
@@ -309,7 +321,7 @@ ingress:
   hosts:
     -
       # -- The FQDN/hostname
-      host: csc.some-pharma-company.com
+      host: iot.some-pharma-company.com
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
@@ -370,7 +382,7 @@ readinessProbe:
   exec:
     command:
     - cat
-    - /csc-workspace/apihub-root/ready
+    - /iot-pmed-workspace/apihub-root/ready
   initialDelaySeconds: 30
   periodSeconds: 5
   successThreshold: 1

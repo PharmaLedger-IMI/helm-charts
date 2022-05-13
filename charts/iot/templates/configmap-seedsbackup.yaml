@@ -5,7 +5,7 @@ It will be deleted be job-cleanup.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "csc.configMapSeedsBackupName" . }}
+  name: {{ include "iot.configMapSeedsBackupName" . }}
   annotations:
     "description": "Currently used Seedsbackup"
     "helm.sh/hook": pre-install
@@ -16,6 +16,6 @@ metadata:
     */}}
     "helm.sh/resource-policy": keep
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "iot.labels" . | nindent 4 }}
 data:
-{{ include "csc.seedsBackupData" . | indent 2}}
+{{ include "iot.seedsBackupData" . | indent 2}}
