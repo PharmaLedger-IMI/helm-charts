@@ -56,14 +56,14 @@ spec:
       {{- end }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       serviceAccountName: {{ include "epi.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.builder.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       restartPolicy: Never
       containers:
       - name: main
-        {{- with .Values.securityContext }}
+        {{- with .Values.builder.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}

@@ -2,197 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# -- The number of replicas if autoscaling is false
-replicaCount: 1
-
-runner:
-  image:
-    # -- The repository of the container image for the runner
-    repository: "pharmaledger/epi-runner"
-    # -- Image Pull Policy for the runner
-    pullPolicy: Always
-    # -- Overrides the image tag whose default is the chart appVersion.
-    # Default to v1.3.1
-    tag: "1.3.1"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # Default to v1.3.1
-    # <!-- # pragma: allowlist secret -->
-    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"  # pragma: allowlist secret
-
-builder:
-  # -- Boolean flag whether to enforce running the Builder even if it is not required.
-  # Useful for testing purpose.
-  forceRun: false
-  # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
-  sleepTime: "10s"
-
-  image:
-    # -- The repository of the container image for the builder.
-    repository: "pharmaledger/epi-builder"
-    # -- Image Pull Policy for the builder.
-    pullPolicy: Always
-    # -- Image tag for the builder.
-    # Default to v1.3.1
-    tag: "1.3.1"
-    # -- sha256 digest of the image for the builder.
-    # Do not add the prefix "@sha256:"
-    # Default to v1.3.1
-    # <!-- # pragma: allowlist secret -->
-    sha: "7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"  # pragma: allowlist secret
-
-# -- The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it.
-# See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
-deploymentStrategy:
-  type: Recreate
-
-# -- Secret(s) for pulling an container image from a private registry.
-# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
-imagePullSecrets: []
-# -- nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names.
-# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
-nameOverride: ""
-# -- fullnameOverride completely replaces the generated name.
-# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
-fullnameOverride: ""
-# -- Override the deployment namespace.
-# Very useful for multi-namespace deployments in combined charts
-namespaceOverride: ""
-
-serviceAccount:
-  # -- Specifies whether a service account should be created which is used by builder and runner.
-  create: false
-  # -- Annotations to add to the service account
-  annotations: {}
-  # -- The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-  # -- Whether automounting API credentials for a service account is enabled or not.
-  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
-  automountServiceAccountToken: false
-
-# -- Annotations added to the pod
-podAnnotations: {}
-
-# -- Security Context for the pod.
-# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-  # -- The SecComp configuration.
-  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-  seccompProfile:
-    type: RuntimeDefault
-
-# -- Security Context for the application container
-# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-securityContext:
-  capabilities:
-    drop:
-    - ALL
-  # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
-  readOnlyRootFilesystem: false
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  allowPrivilegeEscalation: false
-
-# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
-kubectl:
-  image:
-    # -- The repository of the container image containing kubectl
-    repository: bitnami/kubectl
-    # -- Image Pull Policy
-    pullPolicy: Always
-    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "1.21.8"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # <br/>
-    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
-    # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
-
-  # -- Resource constraints for the pre-builder and cleanup job
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-
-  # -- Security Context for the pod running kubectl.
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  # and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-  podSecurityContext:
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
-    seccompProfile:
-      type: RuntimeDefault
-
-  # -- Security Context for the container running kubectl
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-  securityContext:
-    capabilities:
-      drop:
-      - ALL
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-
-# Enable persistence using Persistent Volume Claims.
-# See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
-persistence:
-  # -- The name of an existing PVC to use instead of creating a new one.
-  existingClaim: ""
-  # -- Name of the storage class for the new PVC.
-  # If empty or not set then storage class will not be set - which means that the default storage class will be used.
-  storageClassName: ""
-  # -- Size of the volume for the new PVC
-  size: "20Gi"
-  # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
-  deleteOnUninstall: true
-  # -- Finalizers for the new PVC.
-  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
-  finalizers:
-    - kubernetes.io/pvc-protection
-  # -- AccessModes for the new PVC.
-  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
-  accessModes:
-    - ReadWriteOnce
-  # -- Selector Labels for the new PVC.
-  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
-  selectorLabels: {}
-  # -- DataSource option for cloning an existing volume or creating from a snapshot for a new PVC.
-  # See [values.yaml](values.yaml) for more details.
-  dataSource: {}
-    # # For cloning from an existing volume
-    # # See [https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/](https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/)
-    # kind: PersistentVolumeClaim
-    # name: pvc-1
-
-    # # For creating from a snapshot (here AWS)
-    # # [https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/](https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/)
-    # name: imported-aws-snapshot
-    # kind: VolumeSnapshot
-    # apiGroup: snapshot.storage.k8s.io
-
-service:
-  # -- Either ClusterIP, NodePort or LoadBalancer.
-  # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
-  type: ClusterIP
-  # -- Port where the service will be exposed
-  port: 80
-  # -- Annotations for the service.
-  # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
-  # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
-  annotations: {}
-
 # Application Configuration. Will be put in ConfigMaps/Secrets
 config:
   # -- The Domain, e.g. "epipoc"
@@ -262,6 +71,258 @@ config:
     # See [templates/_configmap-bdns.tpl](templates/_configmap-bdns.tpl) for default value.
     bdnsHosts: ""
 
+# Runner settings
+runner:
+  image:
+    # -- The repository of the container image for the runner
+    repository: "pharmaledger/epi-runner"
+    # -- Image Pull Policy for the runner
+    pullPolicy: Always
+    # -- Overrides the image tag whose default is the chart appVersion.
+    # Default to v1.3.1
+    tag: "1.3.1"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # Default to v1.3.1
+    # <!-- # pragma: allowlist secret -->
+    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"  # pragma: allowlist secret
+
+  # -- The number of replicas for the runner
+  replicaCount: 1
+
+  # -- Annotations added to the runner pod
+  podAnnotations: {}
+
+  # -- The strategy of the deployment for the runner. Defaults to type: Recreate as a PVC is bound to it.
+  # See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+  deploymentStrategy:
+    type: Recreate
+
+  # -- Liveness probe.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+      # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
+      httpHeaders:
+        - name: Host
+          value: localhost
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+  # -- Readiness probe.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+      # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
+      httpHeaders:
+        - name: Host
+          value: localhost
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+  # -- Pod Security Context for the runner.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    # -- The SecComp configuration.
+    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+    seccompProfile:
+      type: RuntimeDefault
+
+  # -- Security Context for the runner container
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+
+# Builder Settings
+builder:
+  # -- Boolean flag whether to enforce running the Builder even if it is not required.
+  # Useful for testing purpose.
+  forceRun: false
+  # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
+  sleepTime: "10s"
+
+  image:
+    # -- The repository of the container image for the builder.
+    repository: "pharmaledger/epi-builder"
+    # -- Image Pull Policy for the builder.
+    pullPolicy: Always
+    # -- Image tag for the builder.
+    # Default to v1.3.1
+    tag: "1.3.1"
+    # -- sha256 digest of the image for the builder.
+    # Do not add the prefix "@sha256:"
+    # Default to v1.3.1
+    # <!-- # pragma: allowlist secret -->
+    sha: "7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"  # pragma: allowlist secret
+
+  # -- Pod Security Context for the builder.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    # -- The SecComp configuration.
+    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+    seccompProfile:
+      type: RuntimeDefault
+
+  # -- Security Context for the builder container
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+
+# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
+kubectl:
+  image:
+    # -- The repository of the container image containing kubectl
+    repository: bitnami/kubectl
+    # -- Image Pull Policy
+    pullPolicy: Always
+    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
+    tag: "1.21.8"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # <br/>
+    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # <!-- # pragma: allowlist secret -->
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+
+  # -- Resource constraints for the pre-builder and cleanup job
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # -- Security Context for the pod running kubectl.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+  # and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  podSecurityContext:
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
+    seccompProfile:
+      type: RuntimeDefault
+
+  # -- Security Context for the container running kubectl
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+
+# Service Account for Builder and Runner
+serviceAccount:
+  # -- Specifies whether a service account should be created which is used by builder and runner.
+  create: false
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Whether automounting API credentials for a service account is enabled or not.
+  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
+  automountServiceAccountToken: false
+
+# -- Resource constraints for the builder and runner
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Persistence settings by using Persistent Volume Claims for the external volume of builder and runner.
+# See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
+persistence:
+  # -- The name of an existing PVC to use instead of creating a new one.
+  existingClaim: ""
+  # -- Name of the storage class for the new PVC.
+  # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+  storageClassName: ""
+  # -- Size of the volume for the new PVC
+  size: "20Gi"
+  # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
+  deleteOnUninstall: true
+  # -- Finalizers for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+  finalizers:
+    - kubernetes.io/pvc-protection
+  # -- AccessModes for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+  accessModes:
+    - ReadWriteOnce
+  # -- Selector Labels for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+  selectorLabels: {}
+  # -- DataSource option for cloning an existing volume or creating from a snapshot for a new PVC.
+  # See [values.yaml](values.yaml) for more details.
+  dataSource: {}
+    # # For cloning from an existing volume
+    # # See [https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/](https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/)
+    # kind: PersistentVolumeClaim
+    # name: pvc-1
+
+    # # For creating from a snapshot (here AWS)
+    # # [https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/](https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/)
+    # name: imported-aws-snapshot
+    # kind: VolumeSnapshot
+    # apiGroup: snapshot.storage.k8s.io
+
+# Service settings for the runner
+service:
+  # -- Either ClusterIP, NodePort or LoadBalancer for the runner
+  # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
+  type: ClusterIP
+  # -- Port where the service will be exposed
+  port: 80
+  # -- Annotations for the service.
+  # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
+  # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
+  annotations: {}
+
+# Settings for using SecretProviderClass (CSI Secrets driver) instead of Secret.
 secretProviderClass:
   # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
   # NOTE: DO ENABLE, NOT TESTED YET!
@@ -279,8 +340,9 @@ secretProviderClass:
     #       objectType: "secretsmanager"
     #       objectAlias: "orgAccountJson"
 
+# Ingress settings for the runner
 ingress:
-  # -- Whether to create ingress or not.
+  # -- Whether to create ingress or not for the runner.
   # <br/>
   # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
   enabled: false
@@ -326,18 +388,23 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- Resource constraints for the builder and runner
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+#
+# Overall settings
+#
+
+# -- Secret(s) for pulling an container image from a private registry.
+# Used for all images.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+imagePullSecrets: []
+# -- nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+nameOverride: ""
+# -- fullnameOverride completely replaces the generated name.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+fullnameOverride: ""
+# -- Override the deployment namespace.
+# Very useful for multi-namespace deployments in combined charts
+namespaceOverride: ""
 
 # -- Node Selectors in order to assign pods to certain nodes.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
@@ -351,34 +418,3 @@ tolerations: []
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 affinity: {}
 
-# -- Liveness probe.
-# See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
-    httpHeaders:
-      - name: Host
-        value: localhost
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
-
-# -- Readiness probe.
-# See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-    # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
-    httpHeaders:
-      - name: Host
-        value: localhost
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
