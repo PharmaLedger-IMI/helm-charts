@@ -345,7 +345,7 @@ secretProviderClass:
     #   objects: |
     #     - objectName: "TODO: ARN or Name of Secret"
     #       objectType: "secretsmanager"
-    #       jmesPath: 
+    #       jmesPath:
     #         - path: envJson
     #           objectAlias: env.json
     #         - path: apihubJson
