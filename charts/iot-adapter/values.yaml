@@ -174,57 +174,73 @@ config:
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {
-       "default":{
-          "replicas":[
-
+        "default": {
+          "replicas": [],
+          "brickStorages": [
+            "$ORIGIN"
           ],
-          "brickStorages":[
-             "$ORIGIN"
-          ],
-          "anchoringServices":[
-             "$ORIGIN"
+          "anchoringServices": [
+            "$ORIGIN"
           ]
-       },
-       "vault":{
-          "replicas":[
-
+        },
+        "vault.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "$ORIGIN"
           ],
-          "brickStorages":[
-             "$ORIGIN"
-          ],
-          "anchoringServices":[
-             "$ORIGIN"
+          "anchoringServices": [
+            "$ORIGIN"
           ]
-       },
-       "iot":{
-          "replicas":[
-
+        },
+        "iot": {
+          "replicas": [],
+          "brickStorages": [
+            "http://iot:80"
           ],
-          "brickStorages":[
-            "http://iot.dns"
+          "anchoringServices": [
+            "http://iot:80"
           ],
-          "anchoringServices":[
-            "http://iot.dns"
-          ],
-          "mqEndpoints":[
-            "http://iot.dns"
+          "mqEndpoints": [
+            "http://iot:80"
           ]
-       },
-       "eco":{
-          "replicas":[
-
+        },
+        "iot.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "http://iot:80"
           ],
-          "brickStorages":[
-            "http://eco.dns"
+          "anchoringServices": [
+            "http://iot:80"
           ],
-          "anchoringServices":[
-             "http://eco.dns"
+          "mqEndpoints": [
+            "http://iot:80"
+          ]
+        },
+        "eco": {
+          "replicas": [],
+          "brickStorages": [
+            "http://eco:80"
           ],
-          "mqEndpoints":[
-             "http://eco.dns"
-           ]
-       }
-    }
+          "anchoringServices": [
+            "http://eco:80"
+          ],
+          "mqEndpoints": [
+            "http://eco:80"
+          ]
+        },
+        "eco.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "http://eco:80"
+          ],
+          "anchoringServices": [
+            "http://eco:80"
+          ],
+          "mqEndpoints": [
+            "http://eco:80"
+          ]
+        }
+      }
 
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
