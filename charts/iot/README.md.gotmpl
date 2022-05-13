@@ -8,8 +8,8 @@
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 - These mandatory configuration values:
-  - Domain - The Domain - e.g. `csc`
-  - Sub Domain - The Sub Domain - e.g. `csc.my-company`
+  - Domain - The Domain - e.g. `iot`
+  - Sub Domain - The Sub Domain - e.g. `iot.my-company`
   - Vault Domain - The Vault Domain - e.g. `vault.my-company`
   - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000"
   - bdnsHosts - The Centrally managed and provided BDNS Hosts Config -
@@ -67,7 +67,7 @@ The Init Job is required to run the build process and to store the SeedsBackup i
 
 The pod consists an init containers and a main container.
 
-1. The Init Container uses the container image of the csc application and
+1. The Init Container uses the container image of the iot application and
    1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
    2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
 
@@ -98,13 +98,13 @@ These resources are:
 
 1. Init Job - The Init Job was created on pre-install/pre-upgrade and will remain after its execution.
 2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
-3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `csc-seedsbackup-poc.1.6-final-backup-1646063552`
+3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `iot-seedsbackup-poc.1.6-final-backup-1646063552`
 
 ## Installation
 
 ### Quick install with internal service of type ClusterIP
 
-By default, this helm chart installs the CSC use case at an internal ClusterIP Service.
+By default, this helm chart installs the IOT use case at an internal ClusterIP Service.
 This is to prevent exposing the service to the internet by accident!
 
 It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.
@@ -125,7 +125,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version={{ template "chart.version" . }} \
+    helm upgrade my-release-name pharmaledger-imi/iot --version={{ template "chart.version" . }} \
         --install \
         --values my-config.yaml \
     ```
@@ -173,7 +173,7 @@ Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github
 1. Enable ingress
 2. Add *host*, *path* *`/*`* and *pathType* `ImplementationSpecific`
 3. Add annotations for AWS LB Controller
-4. A SSL certificate at AWS Certificate Manager (either for the hostname, here `csc.mydomain.com` or wildcard `*.mydomain.com`)
+4. A SSL certificate at AWS Certificate Manager (either for the hostname, here `iot.mydomain.com` or wildcard `*.mydomain.com`)
 
 Configuration file *my-config.yaml*
 
@@ -186,7 +186,7 @@ ingress:
   # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
   className: alb
   hosts:
-    - host: csc.mydomain.com
+    - host: iot.mydomain.com
       # Path must be /* for ALB to match all paths
       paths:
         - path: /*
@@ -225,7 +225,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version={{ template "chart.version" . }} \
+    helm upgrade my-release-name pharmaledger-imi/iot --version={{ template "chart.version" . }} \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -236,7 +236,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version={{ template "chart.version" . }} \
+    helm upgrade my-release-name pharmaledger-imi/iot --version={{ template "chart.version" . }} \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \

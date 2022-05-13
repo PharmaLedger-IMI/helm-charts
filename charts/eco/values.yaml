@@ -5,15 +5,15 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-apiHubWorkingFolder: "csc-workspace"
+apiHubWorkingFolder: "eco-workspace"
 
 image:
   # -- The repository of the container image
-  repository: mastaleru/csc-deployment
+  repository: username/eco-docker-image
   # -- Image Pull Policy
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.3"
+  tag: "0.0.1"
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:"
   sha: ""
@@ -153,9 +153,9 @@ config:
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
-  domain: "csc"
+  domain: "eco"
   # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
-  subDomain: "csc.my-company"
+  subDomain: "eco.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
@@ -186,7 +186,7 @@ config:
         "$ORIGIN"
       ]
     },
-    "csc.my-company":{
+    "eco.my-company":{
         "replicas":[],
         "brickStorages":[
            "$ORIGIN"
@@ -195,7 +195,7 @@ config:
            "$ORIGIN"
         ]
      },
-    "csc":{
+    "eco":{
             "replicas":[],
             "brickStorages":[
                "$ORIGIN"
@@ -204,6 +204,20 @@ config:
                "$ORIGIN"
             ]
          }
+    },
+    "iot":{
+      "replicas":[
+
+      ],
+      "brickStorages":[
+         "http://localhost:8080"
+      ],
+      "anchoringServices":[
+         "http://localhost:8080"
+      ],
+      "mqEndpoints":[
+         "http://localhost:8080"
+      ]
     }
 
   # -- Configuration file apihub.json.
@@ -225,7 +239,7 @@ config:
   apihub: |-
     {
       "storage": "../apihub-root",
-      "port": 8080,
+      "port": 8081,
       "preventRateLimit": true,
       "activeComponents": [
         "virtualMQ",
@@ -236,8 +250,9 @@ config:
         "bricksLedger",
         "bricksFabric",
         "bricking",
-        "mq",
         "anchoring",
+        "debugLogger",
+        "mq",
         "staticServer"
       ],
       "componentsConfig": {
@@ -259,12 +274,9 @@ config:
       "serverAuthentication": false,
       "skipJWTAuthorisation": [
         "/assets",
-        "/leaflet-wallet",
-        "/dsu-fabric-wallet",
         "/directory-summary",
         "/resources",
         "/bdns",
-        "/anchor/epi",
         "/anchor/default",
         "/anchor/vault",
         "/bricking",
@@ -309,7 +321,7 @@ ingress:
   hosts:
     -
       # -- The FQDN/hostname
-      host: csc.some-pharma-company.com
+      host: eco.some-pharma-company.com
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
@@ -370,7 +382,7 @@ readinessProbe:
   exec:
     command:
     - cat
-    - /csc-workspace/apihub-root/ready
+    - /eco-workspace/apihub-root/ready
   initialDelaySeconds: 30
   periodSeconds: 5
   successThreshold: 1

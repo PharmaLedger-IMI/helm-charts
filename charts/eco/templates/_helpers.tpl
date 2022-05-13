@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "csc.name" -}}
+{{- define "eco.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "csc.fullname" -}}
+{{- define "eco.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "csc.chart" -}}
+{{- define "eco.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "csc.labels" -}}
-helm.sh/chart: {{ include "csc.chart" . }}
-{{ include "csc.selectorLabels" . }}
+{{- define "eco.labels" -}}
+helm.sh/chart: {{ include "eco.chart" . }}
+{{ include "eco.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "csc.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "csc.name" . }}
+{{- define "eco.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "eco.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "csc.serviceAccountName" -}}
+{{- define "eco.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "csc.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "eco.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -65,15 +65,15 @@ Create the name of the service account to use
 {{/*
 The Name of the ConfigMap for the Seeds Data
 */}}
-{{- define "csc.configMapSeedsBackupName" -}}
-{{- printf "%s-%s" (include "csc.fullname" .) "seedsbackup" }}
+{{- define "eco.configMapSeedsBackupName" -}}
+{{- printf "%s-%s" (include "eco.fullname" .) "seedsbackup" }}
 {{- end }}
 
 {{/*
 Lookup potentially existing seedsBackup data
 */}}
-{{- define "csc.seedsBackupData" -}}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "csc.configMapSeedsBackupName" .) -}}
+{{- define "eco.seedsBackupData" -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "eco.configMapSeedsBackupName" .) -}}
 {{- if $configMap -}}
 {{/*
     Reusing existing data
@@ -90,7 +90,7 @@ seedsBackup: ""
 {{/*
     The full image repository:tag[@sha256:sha]
 */}}
-{{- define "csc.image" -}}
+{{- define "eco.image" -}}
 {{- if .Values.image.sha -}}
 {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}
 {{- else -}}
@@ -102,7 +102,7 @@ seedsBackup: ""
 {{/*
     The full image of kubectl repository:tag[@sha256:sha]
 */}}
-{{- define "csc.kubectlImage" -}}
+{{- define "eco.kubectlImage" -}}
 {{- if .Values.kubectl.image.sha -}}
 {{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
 {{- else -}}
@@ -113,15 +113,15 @@ seedsBackup: ""
 {{/*
 The Name of the ConfigMap for the Build Info Data
 */}}
-{{- define "csc.configMapBuildInfoName" -}}
-{{- printf "%s-%s" (include "csc.fullname" .) "build-info" }}
+{{- define "eco.configMapBuildInfoName" -}}
+{{- printf "%s-%s" (include "eco.fullname" .) "build-info" }}
 {{- end }}
 
 {{/*
 The image that was built at last. Return an empty string if not yet exists.
 */}}
-{{- define "csc.lastBuiltImage" -}}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "csc.configMapBuildInfoName" .) -}}
+{{- define "eco.lastBuiltImage" -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "eco.configMapBuildInfoName" .) -}}
 {{- if $configMap -}}
 {{ $configMap.data.lastBuiltImage | default "" }}
 {{- end -}}

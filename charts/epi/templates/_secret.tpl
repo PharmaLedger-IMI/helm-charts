@@ -18,6 +18,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ include "epi.fullname" . }}{{ $suffix | default "" }}
+  namespace: {{ template "epi.namespace" . }}
   {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -27,7 +28,12 @@ metadata:
 type: Opaque
 data:
   # See https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/env.json
-  env.json: |- {{ include "epi.envJson" . | b64enc |nindent 4 }}
+  env.json: |-
+{{- if .Values.config.overrides.envJson }}
+{{ .Values.config.overrides.envJson | b64enc | indent 4 }}
+{{- else }}
+{{ include "epi.envJson" . | b64enc | indent 4 }}
+{{- end }}
 
   # https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.0/apihub-root/external-volume/config/apihub.json
   apihub.json: |-

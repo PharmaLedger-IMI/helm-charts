@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
+![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -142,20 +142,21 @@ It is recommended to put non-sensitive configuration values in an configuration 
 
     ```yaml
     config:
-      domain: "domain_value"
-      subDomain: "subDomain_value"
-      vaultDomain: "vaultDomain_value"
-      ethadapterUrl: "https://ethadapter.my-company.com:3000"
-      buildSecretKey: "SuperSecret"  # pragma: allowlist secret
-      bdnsHosts: |-
-        # ... content of the BDNS Hosts file ...
+      domain: "epipoc"
+      subDomain: "epipoc.companyname"
+      vaultDomain: "vault.companyname"
+      ethadapterUrl: "http://ethadapter.epi-poc-ethadapter:3000"
+      buildSecretKey: "SuperStrongPassword"  # pragma: allowlist secret
+      overrides:
+        bdnsHosts: |-
+          # ... content of the BDNS Hosts file ...
 
     ```
 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
         --install \
         --values my-config.yaml \
     ```
@@ -255,7 +256,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -266,7 +267,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.0 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -309,17 +310,18 @@ Tests can be found in [tests](./tests)
 | builder.image.sha | string | `"7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"` | sha256 digest of the image for the builder. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
 | builder.image.tag | string | `"1.3.1"` | Image tag for the builder. Default to v1.3.1 |
 | builder.sleepTime | string | `"10s"` | The time to sleep between start of apihub (npm run server) and build process (npm run build-all) |
-| config.bdnsHosts | string | `"{\n  \"epipoc\": {\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.my-company\": {\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  },\n  \"epipoc.other\": {\n      \"brickStorages\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"anchoringServices\": [\n          \"https://epipoc.other-company.com\"\n      ],\n      \"notifications\": [\n          \"https://epipoc.other-company.com\"\n      ]\n  },\n  \"vault.my-company\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n          \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n          \"$ORIGIN\"\n      ],\n      \"notifications\": [\n          \"$ORIGIN\"\n      ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
 | config.buildSecretKey | string | `""` | Secret Pass Phrase for de/encrypting private keys for application wallets created by builder. |
 | config.demiurgeMode | string | `"dev-secure"` | For SSO, set to "sso-pin" |
 | config.domain | string | `"epipoc"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` | For SSO, set to "sso-direct" |
 | config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
 | config.overrides.apihubJson | string | `""` | Option to explitly set the apihub.json instead of using the default from [https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json). Note: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault. <br/> Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For SSO (not enabled by default): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
+| config.overrides.bdnsHosts | string | `""` | Centrally managed and provided BDNS Hosts Config. You must set this value in a non-sandbox environment! See [templates/_configmap-bdns.tpl](templates/_configmap-bdns.tpl) for default value. |
 | config.overrides.demiurgeEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template. Note: Usually not required |
 | config.overrides.domainConfigJson | string | `""` | Option to explictly override the config.json used for the domain instead of using the predefined template. Note: Usually not required |
 | config.overrides.dsuExplorerEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template. Note: Usually not required |
 | config.overrides.dsuFabricEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template. Note: Usually not required |
+| config.overrides.envJson | string | `""` | Option to explitly override the env.json for APIHub instead of using the predefined template. Note 1: Usually not required to override. Note 2: If secretProviderClass.enabled=true, then this value is ignored as it is used/mounted from Secret Vault. |
 | config.overrides.leafletEnvironmentJs | string | `""` | Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template. Note: Usually not required |
 | config.overrides.subDomainConfigJson | string | `""` | Option to explictly override the config.json used for the subDomain instead of using the predefined template. Note: Usually not required |
 | config.overrides.vaultDomainConfigJson | string | `""` | Option to explictly override the config.json used for the vaultDomain instead of using the predefined template. Note: Usually not required |
