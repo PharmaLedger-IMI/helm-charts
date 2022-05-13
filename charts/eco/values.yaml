@@ -239,7 +239,7 @@ config:
   apihub: |-
     {
       "storage": "../apihub-root",
-      "port": 8081,
+      "port": 8080,
       "preventRateLimit": true,
       "activeComponents": [
         "virtualMQ",
