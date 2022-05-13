@@ -203,7 +203,6 @@ config:
             "anchoringServices":[
                "$ORIGIN"
             ]
-         }
     },
     "iot":{
       "replicas":[
@@ -218,6 +217,7 @@ config:
       "mqEndpoints":[
          "http://localhost:8080"
       ]
+    }
     }
 
   # -- Configuration file apihub.json.
