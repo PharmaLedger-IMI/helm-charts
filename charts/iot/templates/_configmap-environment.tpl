@@ -34,7 +34,7 @@ data:
       sw: false,
       pwa: false,
       workspace: 'iot',
-      iotAdaptorEndpoint: 'http://localhost:4500',
+      iotAdaptorEndpoint: {{ required "iotAdaptorEndpointPublicDNS must be set" .Values.config.iotAdaptorEndpointPublicDNS | quote }},
       'legenda for properties':
         ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }
@@ -55,7 +55,7 @@ data:
       sw: false,
       pwa: false,
       workspace: 'iot',
-      iotAdaptorEndpoint: 'http://localhost:4500',
+      iotAdaptorEndpoint: {{ required "iotAdaptorEndpointPublicDNS must be set" .Values.config.iotAdaptorEndpointPublicDNS | quote }},
       'legenda for properties':
         ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }
@@ -76,7 +76,7 @@ data:
       sw: false,
       pwa: false,
       workspace: 'iot',
-      iotAdaptorEndpoint: 'http://localhost:4500',
+      iotAdaptorEndpoint: {{ required "iotAdaptorEndpointPublicDNS must be set" .Values.config.iotAdaptorEndpointPublicDNS | quote }},
       'legenda for properties':
         ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }

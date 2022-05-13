@@ -1,7 +1,7 @@
 # iot
 
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: iot.1.0.2](https://img.shields.io/badge/AppVersion-iot.1.0.2-informational?style=flat-square) 
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: iot.1.0.2](https://img.shields.io/badge/AppVersion-iot.1.0.2-informational?style=flat-square) 
 
 A Helm chart for Pharma Ledger iot application
 
@@ -126,7 +126,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -226,7 +226,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -237,7 +237,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -284,6 +284,7 @@ Tests can be found in [tests](./tests)
 | config.domain | string | `"iot"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` |  |
 | config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
+| config.iotAdaptorEndpointPublicDNS | string | `"iot-adapter.dns"` | The public DNS of the IOT Adapter |
 | config.sleepTime | string | `"10s"` |  |
 | config.subDomain | string | `"iot.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
