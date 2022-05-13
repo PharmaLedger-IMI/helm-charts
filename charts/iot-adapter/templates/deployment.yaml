@@ -85,21 +85,12 @@ spec:
             echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
             cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
             echo "=======> Starting application in background process ..."
-            npm run server &
+            npm run iot-adaptor-server &
             server_pid=$!
             echo "=======> Application running in background with PID=$server_pid"
-            echo "=======> Sleiot-adapterng for {{ .Values.config.sleepTime }} ..."
-            sleep {{ .Values.config.sleepTime }}
-            echo "=======> Starting build process ..."
-            npm run build-all
-            rc=$?
-            echo "=======> Build process done - rc=$rc"
-            if [ $rc -eq 0 ]
-            then
-              echo "=======> Build process successful - Writing file that application is ready ..."
-              touch /{{ .Values.apiHubWorkingFolder }}/apihub-root/ready
-              tail -f /dev/null
-            fi
+            echo "=======> Build process successful - Writing file that application is ready ..."
+            touch /{{ .Values.apiHubWorkingFolder }}/apihub-root/ready
+            tail -f /dev/null
         volumeMounts:
           # As of Feb-2023 we do NOT mount seedsBackup to its desired destination /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackup
           # as the startup build process will write to that even if there are no changes.
