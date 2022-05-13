@@ -164,13 +164,13 @@ config:
   dsuFabricMode: "dev-secure"
 
   iotAdapter:
-    # pragma: allowlist nextline secret
+# pragma: allowlist nextline secret
     BUILD_SECRET_KEY: "BUILD_SECRET_KEY"
     IOT_ADAPTOR_DID: "IOT_ADAPTOR_DID"
     IOT_ADAPTOR_PORT: "4500"
     STORAGE_API_BASE_URL: "STORAGE_API_BASE_URL"
     STORAGE_API_APP_ID: "STORAGE_API_APP_ID"
-    # pragma: allowlist nextline secret
+# pragma: allowlist nextline secret
     STORAGE_API_REST_API_KEY: "STORAGE_API_REST_API_KEY"
 
   # -- Centrally managed and provided BDNS Hosts Config
