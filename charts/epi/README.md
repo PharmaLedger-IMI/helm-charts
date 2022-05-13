@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
+![Version: 0.4.5](https://img.shields.io/badge/Version-0.4.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -24,8 +24,10 @@ A Helm chart for Pharma Ledger epi (electronic product information) application
 
 - From 0.3.x to 0.4.x - Defaults to use epi v1.3.1
   - Removed Seedsbackup (required for epi <= 1.2.0)
+  - `values.yaml` has significant and breaking changes
   - Increased security by design: Run as non-root user, do not allow privilegeEscalation, remove all capabilites from container
-  - Sensitive configuration data is stored in Kubernetes Secrets instead of ConfigMaps. Note: Support for secret injection via *CSI Secrets Driver* is in progress.
+  - Sensitive configuration data is stored in Kubernetes Secret instead of ConfigMaps.
+  - Support for secret injection via *CSI Secrets Driver* instead of using Kubernetes Secret.
   - Option to use an existing PersistentVolumeClaim instead of creating a new one.
 
 - From 0.2.x to 0.3.x - Default values for epi v1.2.0
@@ -96,7 +98,7 @@ If you want to reuse an existing PVC instead of creating a new one, set `persist
 
 ## ServiceAccount
 
-A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets.
+A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets. Further information can be found later in this document.
 It is being deployed by the helm chart at hook `pre-install` and is being deleted by *Cleanup Job* on deletion of the helm chart.
 In order to create the ServiceAccount, set `serviceAccount.create: true` (default is `false`).
 
@@ -156,7 +158,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.5 \
         --install \
         --values my-config.yaml \
     ```
@@ -247,6 +249,100 @@ config:
   # ... config section keys and values ...
 ```
 
+## CSI Secrets Driver
+
+This enables storing the following secret values in one of the supported Secret stores (e.g. Azure Key Vault or AWS Secrets Manager) instead of using Kubernetes Secrets:
+
+- `apihub.json` - If using SSO, *apihub.json* contains SSO configuration like Client ID and Secret
+- `env.json` - Contains the secret passphrase for de/encrypting the generated private keys for the wallets.
+
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Sample for AWS:
+
+1. Prepare `env.json` and `apihub.json` files. See [here](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json) and [here](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/env.json) for templates.
+2. Create a new Secret in Secrets Manager with two keys `envJson` and `apihubJson`. Note: If you want to create the secret as PlainText, then you must encode the values to JSON String each!
+
+    Sample:
+
+    ```json
+    {
+        "envJson": "{  \"PSK_TMP_WORKING_DIR\": \"tmp\", <AND MORE IN JSON STRING FORMAT> }",
+        "apihubJson": "{  \"storage\": \"../apihub-root\",  <AND MORE IN JSON STRING FORMAT> }"
+    }
+    ```
+
+3. Create IAM role with trust relationship to the Kubernetes Service Account and a policy that allows getting the secret value.
+
+    Trust relationship sample:
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "AssumeableByOIDC",
+              "Effect": "Allow",
+              "Principal": {
+                  "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                  "StringLike": {
+                      "oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>:sub": "system:serviceaccount:<K8S_NAMESPACE>:<NAME>"
+                  }
+              }
+          }
+      ]
+    }
+    ```
+
+    Policy:
+
+    ```json
+    {
+        "Statement": [
+            {
+                "Action": [
+                    "secretsmanager:GetSecretValue",
+                    "secretsmanager:DescribeSecret"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "<SECRET_ARN>"
+                ]
+            }
+        ],
+        "Version": "2012-10-17"
+    }
+    ```
+
+4. Modify config to use ServiceAccount and SecretProviderClass
+
+    ```yaml
+    serviceAccount:
+      create: true
+      annotations:
+        eks.amazonaws.com/role-arn: "<ARN of the IAM role>"
+
+    secretProviderClass:
+      enabled: true
+      spec:
+        provider: aws
+        parameters:
+          objects: |
+            - objectName: "<ARN or Name of Secret>"
+              objectType: "secretsmanager"
+              jmesPath:
+                - path: envJson
+                  objectAlias: env.json
+                - path: apihubJson
+                  objectAlias: apihub.json
+    ```
+
 ## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
@@ -256,7 +352,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.5 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -267,7 +363,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.2 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.5 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -309,6 +405,8 @@ Tests can be found in [tests](./tests)
 | builder.image.repository | string | `"pharmaledger/epi-builder"` | The repository of the container image for the builder. |
 | builder.image.sha | string | `"7756930eecac2364ba66d052839bab512dbc5f423671c13aa5e368b313f61f60"` | sha256 digest of the image for the builder. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
 | builder.image.tag | string | `"1.3.1"` | Image tag for the builder. Default to v1.3.1 |
+| builder.podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsUser":1000}` | Pod Security Context for the builder. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| builder.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Security Context for the builder container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | builder.sleepTime | string | `"10s"` | The time to sleep between start of apihub (npm run server) and build process (npm run build-all) |
 | config.buildSecretKey | string | `""` | Secret Pass Phrase for de/encrypting private keys for application wallets created by builder. |
 | config.demiurgeMode | string | `"dev-secure"` | For SSO, set to "sso-pin" |
@@ -327,12 +425,11 @@ Tests can be found in [tests](./tests)
 | config.overrides.vaultDomainConfigJson | string | `""` | Option to explictly override the config.json used for the vaultDomain instead of using the predefined template. Note: Usually not required |
 | config.subDomain | string | `"epipoc.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
-| deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
-| imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
+| imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. Used for all images. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` | Ingress annotations. <br/> For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) <br/> For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) <br/> For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) <br/> For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
 | ingress.className | string | `""` | The className specifies the IngressClass object which is responsible for that class. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class) <br/> For Kubernetes >= 1.18 it is required to have an existing IngressClass object. If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead. <br/> For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'. |
-| ingress.enabled | bool | `false` | Whether to create ingress or not. <br/> Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration |
+| ingress.enabled | bool | `false` | Whether to create ingress or not for the runner. <br/> Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration |
 | ingress.hosts | list | `[{"host":"epi.some-pharma-company.com","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | A list of hostnames and path(s) to listen at the Ingress Controller |
 | ingress.hosts[0].host | string | `"epi.some-pharma-company.com"` | The FQDN/hostname |
 | ingress.hosts[0].paths[0].path | string | `"/"` | The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples) <br/> Note: For Ingress Controllers like AWS LB Controller see their specific documentation. |
@@ -342,10 +439,9 @@ Tests can be found in [tests](./tests)
 | kubectl.image.repository | string | `"bitnami/kubectl"` | The repository of the container image containing kubectl |
 | kubectl.image.sha | string | `"f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
 | kubectl.image.tag | string | `"1.21.8"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
-| kubectl.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/) |
+| kubectl.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | kubectl.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
 | kubectl.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
-| livenessProbe | object | `{"failureThreshold":3,"httpGet":{"httpHeaders":[{"name":"Host","value":"localhost"}],"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Liveness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | nameOverride | string | `""` | nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | namespaceOverride | string | `""` | Override the deployment namespace. Very useful for multi-namespace deployments in combined charts |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
@@ -357,23 +453,24 @@ Tests can be found in [tests](./tests)
 | persistence.selectorLabels | object | `{}` | Selector Labels for the new PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
 | persistence.size | string | `"20Gi"` | Size of the volume for the new PVC |
 | persistence.storageClassName | string | `""` | Name of the storage class for the new PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
-| podAnnotations | object | `{}` | Annotations added to the pod |
-| podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsUser":1000,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
-| podSecurityContext.seccompProfile | object | `{"type":"RuntimeDefault"}` | The SecComp configuration. [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/) |
-| readinessProbe | object | `{"failureThreshold":3,"httpGet":{"httpHeaders":[{"name":"Host","value":"localhost"}],"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
-| replicaCount | int | `1` | The number of replicas if autoscaling is false |
 | resources | object | `{}` | Resource constraints for the builder and runner |
+| runner.deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment for the runner. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | runner.image.pullPolicy | string | `"Always"` | Image Pull Policy for the runner |
 | runner.image.repository | string | `"pharmaledger/epi-runner"` | The repository of the container image for the runner |
-| runner.image.sha | string | `"6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"` | sha256 digest of the image. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
+| runner.image.sha | string | `"d9613cbf530cf057a3a1a781ff81b491e03a2d0194165a0045bee37c1c6c57da"` | sha256 digest of the image. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
 | runner.image.tag | string | `"1.3.1"` | Overrides the image tag whose default is the chart appVersion. Default to v1.3.1 |
+| runner.livenessProbe | object | `{"failureThreshold":3,"httpGet":{"httpHeaders":[{"name":"Host","value":"localhost"}],"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Liveness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| runner.podAnnotations | object | `{}` | Annotations added to the runner pod |
+| runner.podSecurityContext | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsUser":1000}` | Pod Security Context for the runner. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| runner.readinessProbe | object | `{"failureThreshold":3,"httpGet":{"httpHeaders":[{"name":"Host","value":"localhost"}],"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| runner.replicaCount | int | `1` | The number of replicas for the runner |
+| runner.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Security Context for the runner container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | secretProviderClass.apiVersion | string | `"secrets-store.csi.x-k8s.io/v1"` | API Version of the SecretProviderClass |
 | secretProviderClass.enabled | bool | `false` | Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret. NOTE: DO ENABLE, NOT TESTED YET! |
 | secretProviderClass.spec | object | `{}` | Spec for the SecretProviderClass. Note: The orgAccountJson must be mounted as objectAlias orgAccountJson |
-| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | service.annotations | object | `{}` | Annotations for the service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.port | int | `80` | Port where the service will be exposed |
-| service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
+| service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer for the runner See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created which is used by builder and runner. |

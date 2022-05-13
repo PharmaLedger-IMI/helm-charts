@@ -2,7 +2,7 @@
 Template for Configmap. Arguments to be passed are $ . suffix and an dictionary for annotations used for defining helm hooks.
 See https://blog.flant.com/advanced-helm-templating/
 */}}
-{{- define "iot.configmap-bdns" -}}
+{{- define "iot-adapter.configmap-bdns" -}}
 {{- $ := index . 0 }}
 {{- $suffix := index . 2 }}
 {{- $annotations := index . 3 }}
@@ -10,13 +10,13 @@ See https://blog.flant.com/advanced-helm-templating/
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "iot.fullname" . }}-bdns{{ $suffix | default "" }}
+  name: {{ include "iot-adapter.fullname" . }}-bdns{{ $suffix | default "" }}
   {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
-    {{- include "iot.labels" . | nindent 4 }}
+    {{- include "iot-adapter.labels" . | nindent 4 }}
 data:
   bdns.hosts: |-
 {{ required "config.bdnsHosts must be set" .Values.config.bdnsHosts | indent 4 }}
