@@ -1,6 +1,6 @@
 # eco
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: eco.0.0.1](https://img.shields.io/badge/AppVersion-eco.0.0.1-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: eco.0.0.1](https://img.shields.io/badge/AppVersion-eco.0.0.1-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger eco applications
 
@@ -122,7 +122,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -222,7 +222,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -233,7 +233,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/eco --version=0.0.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -271,8 +271,8 @@ Tests can be found in [tests](./tests)
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | apiHubWorkingFolder | string | `"eco-workspace"` |  |
-| config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8081,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"debugLogger\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"staticServer\": {\n                   \"excludedFiles\": [\n                       \".*.secret\"\n                   ]\n               },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"responseHeaders\": {\n             \"X-Frame-Options\": \"SAMEORIGIN\",\n             \"X-XSS-Protection\": \"1; mode=block\"\n         },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"serverAuthentication\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
-| config.bdnsHosts | string | `"{\n\"default\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"vault.my-company\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"eco.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n },\n\"eco\":{\n        \"replicas\":[],\n        \"brickStorages\":[\n           \"$ORIGIN\"\n        ],\n        \"anchoringServices\":[\n           \"$ORIGIN\"\n        ]\n     }\n},\n\"iot\":{\n  \"replicas\":[\n\n  ],\n  \"brickStorages\":[\n     \"http://localhost:8080\"\n  ],\n  \"anchoringServices\":[\n     \"http://localhost:8080\"\n  ],\n  \"mqEndpoints\":[\n     \"http://localhost:8080\"\n  ]\n},    "` | Centrally managed and provided BDNS Hosts Config |
+| config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"debugLogger\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"staticServer\": {\n                   \"excludedFiles\": [\n                       \".*.secret\"\n                   ]\n               },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"responseHeaders\": {\n             \"X-Frame-Options\": \"SAMEORIGIN\",\n             \"X-XSS-Protection\": \"1; mode=block\"\n         },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"serverAuthentication\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
+| config.bdnsHosts | string | `"{\n\"default\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"vault.my-company\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"eco.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n },\n\"eco\":{\n        \"replicas\":[],\n        \"brickStorages\":[\n           \"$ORIGIN\"\n        ],\n        \"anchoringServices\":[\n           \"$ORIGIN\"\n        ]\n     }\n},\n\"iot\":{\n  \"replicas\":[\n\n  ],\n  \"brickStorages\":[\n     \"http://localhost:8080\"\n  ],\n  \"anchoringServices\":[\n     \"http://localhost:8080\"\n  ],\n  \"mqEndpoints\":[\n     \"http://localhost:8080\"\n  ]\n}"` | Centrally managed and provided BDNS Hosts Config |
 | config.demiurgeMode | string | `"dev-secure"` |  |
 | config.domain | string | `"eco"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` |  |
