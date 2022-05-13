@@ -85,7 +85,7 @@ runner:
     # Do not add the prefix "@sha256:"
     # Default to v1.3.1
     # <!-- # pragma: allowlist secret -->
-    sha: "6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"  # pragma: allowlist secret
+    sha: "d9613cbf530cf057a3a1a781ff81b491e03a2d0194165a0045bee37c1c6c57da"  # pragma: allowlist secret
 
   # -- The number of replicas for the runner
   replicaCount: 1
@@ -137,9 +137,10 @@ runner:
     runAsGroup: 1000
     fsGroup: 1000
     # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
     # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    seccompProfile:
-      type: RuntimeDefault
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the runner container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -186,9 +187,10 @@ builder:
     runAsGroup: 1000
     fsGroup: 1000
     # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
     # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    seccompProfile:
-      type: RuntimeDefault
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the builder container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -228,15 +230,17 @@ kubectl:
       cpu: 100m
       memory: 128Mi
 
-  # -- Security Context for the pod running kubectl.
+  # -- Pod Security Context for the pod running kubectl.
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  # and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
   podSecurityContext:
     runAsUser: 65534
     runAsGroup: 65534
     fsGroup: 65534
-    seccompProfile:
-      type: RuntimeDefault
+    # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
+    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # -- Security Context for the container running kubectl
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
@@ -341,7 +345,11 @@ secretProviderClass:
     #   objects: |
     #     - objectName: "TODO: ARN or Name of Secret"
     #       objectType: "secretsmanager"
-    #       objectAlias: "orgAccountJson"
+    #       jmesPath:
+    #         - path: envJson
+    #           objectAlias: env.json
+    #         - path: apihubJson
+    #           objectAlias: apihub.json
 
 # Ingress settings for the runner
 ingress:
