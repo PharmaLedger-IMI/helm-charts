@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "csc.fullname" . }}
+  name: {{ include "iot.fullname" . }}
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "iot.labels" . | nindent 4 }}
   {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "csc.selectorLabels" . | nindent 4 }}
+    {{- include "iot.selectorLabels" . | nindent 4 }}

@@ -2,7 +2,7 @@
 Template for Configmap. Arguments to be passed are $ . suffix and an dictionary for annotations used for defining helm hooks.
 See https://blog.flant.com/advanced-helm-templating/
 */}}
-{{- define "csc.configmap-domains" -}}
+{{- define "iot.configmap-domains" -}}
 {{- $ := index . 0 }}
 {{- $suffix := index . 2 }}
 {{- $annotations := index . 3 }}
@@ -10,13 +10,13 @@ See https://blog.flant.com/advanced-helm-templating/
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "csc.fullname" . }}-domains{{ $suffix | default "" }}
+  name: {{ include "iot.fullname" . }}-domains{{ $suffix | default "" }}
   {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
-    {{- include "csc.labels" . | nindent 4 }}
+    {{- include "iot.labels" . | nindent 4 }}
 data:
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
     {
@@ -56,9 +56,26 @@ data:
     {
       "anchoring": {
         "type": "FS",
-         "option": {
-           "enableBricksLedger": false
-         }
+        "option": {
+         "enableBricksLedger": false
+        },
+        "commands": {
+          "addAnchor": "anchor"
+        }
+      },
+      "enable": ["mq", "enclave"]
+    }
+
+  eco.json: |-
+    {
+      "anchoring": {
+        "type": "FS",
+        "option": {
+          "enableBricksLedger": false
+        },
+        "commands": {
+          "addAnchor": "anchor"
+        }
       },
       "enable": ["mq", "enclave"]
     }
