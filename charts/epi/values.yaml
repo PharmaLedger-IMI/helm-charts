@@ -420,4 +420,3 @@ tolerations: []
 # -- Affinity for scheduling a pod.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 affinity: {}
-
