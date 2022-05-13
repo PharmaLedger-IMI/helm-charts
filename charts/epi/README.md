@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
+![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.3.0](https://img.shields.io/badge/AppVersion-v1.3.0-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -26,7 +26,8 @@ A Helm chart for Pharma Ledger epi (electronic product information) application
   - Removed Seedsbackup (required for epi <= 1.2.0)
   - `values.yaml` has significant and breaking changes
   - Increased security by design: Run as non-root user, do not allow privilegeEscalation, remove all capabilites from container
-  - Sensitive configuration data is stored in Kubernetes Secrets instead of ConfigMaps. Note: Support for secret injection via *CSI Secrets Driver* is in progress.
+  - Sensitive configuration data is stored in Kubernetes Secret instead of ConfigMaps.
+  - Support for secret injection via *CSI Secrets Driver* instead of using Kubernetes Secret.
   - Option to use an existing PersistentVolumeClaim instead of creating a new one.
 
 - From 0.2.x to 0.3.x - Default values for epi v1.2.0
@@ -97,7 +98,7 @@ If you want to reuse an existing PVC instead of creating a new one, set `persist
 
 ## ServiceAccount
 
-A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets.
+A dedicated ServiceAccount is required by the Builder Job and the Runner Pod(s) if you need to inject Secrets via *CSI Secrets Driver* instead of using Kubernetes Secrets. Further information can be found later in this document.
 It is being deployed by the helm chart at hook `pre-install` and is being deleted by *Cleanup Job* on deletion of the helm chart.
 In order to create the ServiceAccount, set `serviceAccount.create: true` (default is `false`).
 
@@ -157,7 +158,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.3 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.4 \
         --install \
         --values my-config.yaml \
     ```
@@ -248,6 +249,99 @@ config:
   # ... config section keys and values ...
 ```
 
+## CSI Secrets Driver
+
+This enables storing the following secret values in one of the supported Secret stores (e.g. Azure Key Vault or AWS Secrets Manager) instead of using Kubernetes Secrets:
+
+- `apihub.json` - If using SSO, *apihub.json* contains SSO configuration like Client ID and Secret
+- `env.json` - Contains the secret passphrase for de/encrypting the generated private keys for the wallets.
+
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Sample for AWS:
+
+1. Prepare `env.json` and `apihub.json` files. See [here](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-root/external-volume/config/apihub.json) and [here](https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/env.json) for templates.
+2. Create a new Secret in Secrets Manager with two keys `envJson` and `apihubJson`.
+Note: If you want to create the secret as PlainText, then you must encode the values to JSON String each!
+
+  Sample:
+  ```json
+  {
+      "envJson": "{  \"PSK_TMP_WORKING_DIR\": \"tmp\", <AND MORE IN JSON STRING FORMAT> }",
+      "apihubJson": "{  \"storage\": \"../apihub-root\",  <AND MORE IN JSON STRING FORMAT> }"
+  } 
+  ```
+
+3. Create IAM role with trust relationship to the Kubernetes Service Account and a policy that allows getting the secret value.
+
+  Trust relationship sample:
+
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AssumeableByOIDC",
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringLike": {
+                    "oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>:sub": "system:serviceaccount:<K8S_NAMESPACE>:<NAME>"
+                }
+            }
+        }
+    ]
+  }
+  ```
+
+  Policy:
+
+  ```json
+  {
+      "Statement": [
+          {
+              "Action": [
+                  "secretsmanager:GetSecretValue",
+                  "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                  "<SECRET_ARN>"
+              ]
+          }
+      ],
+      "Version": "2012-10-17"
+  }
+  ```
+
+4. Modify config to use ServiceAccount and SecretProviderClass
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "<ARN of the IAM role>"
+
+secretProviderClass:
+  enabled: true
+  spec:
+    provider: aws
+    parameters:
+      objects: |
+        - objectName: "<ARN or Name of Secret>"
+          objectType: "secretsmanager"
+          jmesPath:
+            - path: envJson
+              objectAlias: env.json
+            - path: apihubJson
+              objectAlias: apihub.json
+```
+
 ## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
@@ -257,7 +351,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.3 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.4 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -268,7 +362,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.3 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.4 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -363,7 +457,7 @@ Tests can be found in [tests](./tests)
 | runner.deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment for the runner. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | runner.image.pullPolicy | string | `"Always"` | Image Pull Policy for the runner |
 | runner.image.repository | string | `"pharmaledger/epi-runner"` | The repository of the container image for the runner |
-| runner.image.sha | string | `"6a0dbf0a2d54490235b303f97cbe5d833e6f1a69ac306e362a6ba72ef9c9c38a"` | sha256 digest of the image. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
+| runner.image.sha | string | `"d9613cbf530cf057a3a1a781ff81b491e03a2d0194165a0045bee37c1c6c57da"` | sha256 digest of the image. Do not add the prefix "@sha256:" Default to v1.3.1 <!-- # pragma: allowlist secret --> |
 | runner.image.tag | string | `"1.3.1"` | Overrides the image tag whose default is the chart appVersion. Default to v1.3.1 |
 | runner.livenessProbe | object | `{"failureThreshold":3,"httpGet":{"httpHeaders":[{"name":"Host","value":"localhost"}],"path":"/","port":"http"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Liveness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | runner.podAnnotations | object | `{}` | Annotations added to the runner pod |

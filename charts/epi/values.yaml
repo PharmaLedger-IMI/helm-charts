@@ -341,7 +341,11 @@ secretProviderClass:
     #   objects: |
     #     - objectName: "TODO: ARN or Name of Secret"
     #       objectType: "secretsmanager"
-    #       objectAlias: "orgAccountJson"
+    #       jmesPath: 
+    #         - path: envJson
+    #           objectAlias: env.json
+    #         - path: apihubJson
+    #           objectAlias: apihub.json
 
 # Ingress settings for the runner
 ingress:
