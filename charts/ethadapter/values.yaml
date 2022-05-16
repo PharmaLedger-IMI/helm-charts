@@ -7,14 +7,16 @@ replicaCount: 1
 
 image:
   # -- The repository of the container image
-  repository: "pharmaledger/apiadapter"
+  repository: "pharmaledger/ethadapter"
   # -- Image Pull Policy
   pullPolicy: Always
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "1.0.2"
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:"
-  sha: ""
+  # Default to image digest for version 1.0.2
+  # <!-- # pragma: allowlist secret -->
+  sha: "e387f4b292fff25f6d7fa1792ec586bf46cab31265a84136561c469accd81b06"  # pragma: allowlist secret
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
@@ -51,13 +53,15 @@ podAnnotations: {}
 
 # -- Security Context for the pod.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-# and [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
 podSecurityContext:
   runAsUser: 65534
   runAsGroup: 65534
   fsGroup: 65534
-  seccompProfile:
-    type: RuntimeDefault
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
 
 # -- Security Context for the container.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)

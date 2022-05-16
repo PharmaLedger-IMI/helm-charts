@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "iot.name" -}}
+{{- define "iot-adapter.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "iot.fullname" -}}
+{{- define "iot-adapter.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "iot.chart" -}}
+{{- define "iot-adapter.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "iot.labels" -}}
-helm.sh/chart: {{ include "iot.chart" . }}
-{{ include "iot.selectorLabels" . }}
+{{- define "iot-adapter.labels" -}}
+helm.sh/chart: {{ include "iot-adapter.chart" . }}
+{{ include "iot-adapter.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "iot.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "iot.name" . }}
+{{- define "iot-adapter.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "iot-adapter.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "iot.serviceAccountName" -}}
+{{- define "iot-adapter.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "iot.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "iot-adapter.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -65,15 +65,15 @@ Create the name of the service account to use
 {{/*
 The Name of the ConfigMap for the Seeds Data
 */}}
-{{- define "iot.configMapSeedsBackupName" -}}
-{{- printf "%s-%s" (include "iot.fullname" .) "seedsbackup" }}
+{{- define "iot-adapter.configMapSeedsBackupName" -}}
+{{- printf "%s-%s" (include "iot-adapter.fullname" .) "seedsbackup" }}
 {{- end }}
 
 {{/*
 Lookup potentially existing seedsBackup data
 */}}
-{{- define "iot.seedsBackupData" -}}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "iot.configMapSeedsBackupName" .) -}}
+{{- define "iot-adapter.seedsBackupData" -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "iot-adapter.configMapSeedsBackupName" .) -}}
 {{- if $configMap -}}
 {{/*
     Reusing existing data
@@ -90,7 +90,7 @@ seedsBackup: ""
 {{/*
     The full image repository:tag[@sha256:sha]
 */}}
-{{- define "iot.image" -}}
+{{- define "iot-adapter.image" -}}
 {{- if .Values.image.sha -}}
 {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}
 {{- else -}}
@@ -102,7 +102,7 @@ seedsBackup: ""
 {{/*
     The full image of kubectl repository:tag[@sha256:sha]
 */}}
-{{- define "iot.kubectlImage" -}}
+{{- define "iot-adapter.kubectlImage" -}}
 {{- if .Values.kubectl.image.sha -}}
 {{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
 {{- else -}}
@@ -113,15 +113,15 @@ seedsBackup: ""
 {{/*
 The Name of the ConfigMap for the Build Info Data
 */}}
-{{- define "iot.configMapBuildInfoName" -}}
-{{- printf "%s-%s" (include "iot.fullname" .) "build-info" }}
+{{- define "iot-adapter.configMapBuildInfoName" -}}
+{{- printf "%s-%s" (include "iot-adapter.fullname" .) "build-info" }}
 {{- end }}
 
 {{/*
 The image that was built at last. Return an empty string if not yet exists.
 */}}
-{{- define "iot.lastBuiltImage" -}}
-{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "iot.configMapBuildInfoName" .) -}}
+{{- define "iot-adapter.lastBuiltImage" -}}
+{{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace (include "iot-adapter.configMapBuildInfoName" .) -}}
 {{- if $configMap -}}
 {{ $configMap.data.lastBuiltImage | default "" }}
 {{- end -}}

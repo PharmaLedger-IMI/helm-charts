@@ -1,9 +1,9 @@
-# iot
+# iot-adapter
 
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: iot.1.0.2](https://img.shields.io/badge/AppVersion-iot.1.0.2-informational?style=flat-square) 
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: iot-adapter.0.0.1](https://img.shields.io/badge/AppVersion-iot--adapter.0.0.1-informational?style=flat-square) 
 
-A Helm chart for Pharma Ledger iot application
+A Helm chart for Pharma Ledger iot-adapter application
 
 ## Requirements
 
@@ -12,7 +12,6 @@ A Helm chart for Pharma Ledger iot application
   - Domain - The Domain - e.g. `iot`
   - Sub Domain - The Sub Domain - e.g. `iot.my-company`
   - Vault Domain - The Vault Domain - e.g. `vault.my-company`
-  - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000"
   - bdnsHosts - The Centrally managed and provided BDNS Hosts Config -
 
 ## Usage
@@ -68,7 +67,7 @@ The Init Job is required to run the build process and to store the SeedsBackup i
 
 The pod consists an init containers and a main container.
 
-1. The Init Container uses the container image of the iot application and
+1. The Init Container uses the container image of the iot-adapter application and
    1. Starts the apihub server (`npm run server`), waits for a short period of time and then starts the build process (`npm run build-all`).
    2. After build process, it writes the SeedsBackup file on a shared temporary volume between init and main container.
 
@@ -99,13 +98,13 @@ These resources are:
 
 1. Init Job - The Init Job was created on pre-install/pre-upgrade and will remain after its execution.
 2. PersistentVolumeClaim - In case the PersistentVolumeClaim shall not be deleted on deletion of the helm release, set `persistence.deletePvcOnUninstall` to `false`.
-3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `iot-seedsbackup-poc.1.6-final-backup-1646063552`
+3. ConfigMap SeedsBackup - Prior to deletion of the ConfigMap, a backup ConfigMap will be created with naming schema `{HELM_RELEASE_NAME}-seedsbackup-{IMAGE_TAG}-final-backup-{EPOCH_IN_SECONDS}`, e.g. `iot-adapter-seedsbackup-poc.1.6-final-backup-1646063552`
 
 ## Installation
 
 ### Quick install with internal service of type ClusterIP
 
-By default, this helm chart installs the IOT use case at an internal ClusterIP Service.
+By default, this helm chart installs the iot-adapter use case at an internal ClusterIP Service.
 This is to prevent exposing the service to the internet by accident!
 
 It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.
@@ -126,7 +125,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -174,7 +173,7 @@ Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github
 1. Enable ingress
 2. Add *host*, *path* *`/*`* and *pathType* `ImplementationSpecific`
 3. Add annotations for AWS LB Controller
-4. A SSL certificate at AWS Certificate Manager (either for the hostname, here `iot.mydomain.com` or wildcard `*.mydomain.com`)
+4. A SSL certificate at AWS Certificate Manager (either for the hostname, here `iot-adapter.mydomain.com` or wildcard `*.mydomain.com`)
 
 Configuration file *my-config.yaml*
 
@@ -187,7 +186,7 @@ ingress:
   # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
   className: alb
   hosts:
-    - host: iot.mydomain.com
+    - host: iot-adapter.mydomain.com
       # Path must be /* for ALB to match all paths
       paths:
         - path: /*
@@ -226,7 +225,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -237,7 +236,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -277,29 +276,33 @@ Tests can be found in [tests](./tests)
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| apiHubWorkingFolder | string | `"iot-pmed-workspace"` |  |
-| config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"mq\",\n    \"anchoring\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"staticServer\": {\n       \"excludedFiles\": [\n           \".*.secret\"\n       ]\n     },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"responseHeaders\": {\n    \"X-Frame-Options\": \"SAMEORIGIN\",\n    \"X-XSS-Protection\": \"1; mode=block\"\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"serverAuthentication\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
-| config.bdnsHosts | string | `"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"iot.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n   },\n  \"iot\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ],\n    \"mqEndpoints\":[\n       \"$ORIGIN\"\n    ]\n  },\n  \"eco\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n      \"http://localhost:8081\"\n    ],\n    \"anchoringServices\":[\n       \"http://localhost:8081\"\n    ],\n    \"mqEndpoints\":[\n       \"http://localhost:8081\"\n     ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
+| apiHubWorkingFolder | string | `"iot-workspace"` |  |
+| config.apihub | string | `"{\n\t\"storage\": \"../apihub-root\",\n\t\"port\": 8080,\n\t\"preventRateLimit\": true,\n\t\"activeComponents\": [\n\t\t\"virtualMQ\",\n\t\t\"messaging\",\n\t\t\"notifications\",\n\t\t\"filesManager\",\n\t\t\"bdns\",\n\t\t\"bricksLedger\",\n\t\t\"bricksFabric\",\n\t\t\"bricking\",\n\t\t\"anchoring\",\n\t\t\"debugLogger\",\n\t\t\"mq\",\n\t\t\"staticServer\"\n\t],\n    \"componentsConfig\": {\n        \"staticServer\": {\n                       \"excludedFiles\": [\n                           \".*.secret\"\n                       ]\n                   },\n        \"bricking\": {},\n        \"anchoring\": {}\n      },\n      \"responseHeaders\": {\n                 \"X-Frame-Options\": \"SAMEORIGIN\",\n                 \"X-XSS-Protection\": \"1; mode=block\"\n             },\n\t\"enableRequestLogger\": true,\n\t\"enableJWTAuthorisation\": false,\n\t\"enableLocalhostAuthorization\": false,\n    \"serverAuthentication\": false,\n\t\"skipJWTAuthorisation\": [\n\t\t\"/assets\",\n\t\t\"/directory-summary\",\n\t\t\"/resources\",\n\t\t\"/bdns\",\n\t\t\"/anchor/epi\",\n\t\t\"/anchor/default\",\n\t\t\"/anchor/vault\",\n\t\t\"/bricking\",\n\t\t\"/bricksFabric\",\n\t\t\"/bricksledger\",\n\t\t\"/create-channel\",\n\t\t\"/forward-zeromq\",\n\t\t\"/send-message\",\n\t\t\"/receive-message\",\n\t\t\"/files\",\n\t\t\"/notifications\",\n\t\t\"/mq\"\n\t]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
+| config.bdnsHosts | string | `"{\n    \"default\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"vault.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"iot\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"iot.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"eco\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    },\n    \"eco.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    }\n  }"` | Centrally managed and provided BDNS Hosts Config |
 | config.demiurgeMode | string | `"dev-secure"` |  |
 | config.domain | string | `"iot"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` |  |
-| config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
-| config.iotAdaptorEndpointPublicDNS | string | `"iot-adapter.dns"` | The public DNS of the IOT Adapter |
+| config.iotAdapter.BUILD_SECRET_KEY | string | `"BUILD_SECRET_KEY"` |  |
+| config.iotAdapter.IOT_ADAPTOR_DID | string | `"IOT_ADAPTOR_DID"` |  |
+| config.iotAdapter.IOT_ADAPTOR_PORT | string | `"4500"` |  |
+| config.iotAdapter.STORAGE_API_APP_ID | string | `"STORAGE_API_APP_ID"` |  |
+| config.iotAdapter.STORAGE_API_BASE_URL | string | `"STORAGE_API_BASE_URL"` |  |
+| config.iotAdapter.STORAGE_API_REST_API_KEY | string | `"STORAGE_API_REST_API_KEY"` |  |
 | config.sleepTime | string | `"10s"` |  |
 | config.subDomain | string | `"iot.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
 | deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
-| image.repository | string | `"organisation_username/repository"` | The repository of the container image |
+| image.repository | string | `"user/iotadapter"` | The repository of the container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
-| image.tag | string | `"1.0.0"` | Overrides the image tag whose default is the chart appVersion. |
+| image.tag | string | `"0.0.1"` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` | Ingress annotations. <br/> For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) <br/> For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) <br/> For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) <br/> For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
 | ingress.className | string | `""` | The className specifies the IngressClass object which is responsible for that class. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class) <br/> For Kubernetes >= 1.18 it is required to have an existing IngressClass object. If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead. <br/> For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'. |
 | ingress.enabled | bool | `false` | Whether to create ingress or not. <br/> Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration |
-| ingress.hosts | list | `[{"host":"iot.some-pharma-company.com","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | A list of hostnames and path(s) to listen at the Ingress Controller |
-| ingress.hosts[0].host | string | `"iot.some-pharma-company.com"` | The FQDN/hostname |
+| ingress.hosts | list | `[{"host":"iot-adapter.some-pharma-company.com","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | A list of hostnames and path(s) to listen at the Ingress Controller |
+| ingress.hosts[0].host | string | `"iot-adapter.some-pharma-company.com"` | The FQDN/hostname |
 | ingress.hosts[0].paths[0].path | string | `"/"` | The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples) <br/> Note: For Ingress Controllers like AWS LB Controller see their specific documentation. |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` | The type of path. This value is required since Kubernetes 1.18. <br/> For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types) and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/) |
 | ingress.tls | list | `[]` |  |
@@ -319,7 +322,7 @@ Tests can be found in [tests](./tests)
 | persistence.storageClassName | string | `""` | Name of the storage class for the PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{}` | Security Context for the pod. IMPORTANT: Take a look at README.md for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) <br/> For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser! |
-| readinessProbe | object | `{"exec":{"command":["cat","/iot-pmed-workspace/apihub-root/ready"]},"failureThreshold":60,"initialDelaySeconds":30,"periodSeconds":5,"successThreshold":1}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
+| readinessProbe | object | `{"exec":{"command":["cat","/iot-workspace/apihub-root/ready"]},"failureThreshold":60,"initialDelaySeconds":30,"periodSeconds":5,"successThreshold":1}` | Readiness probe. See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
 | replicaCount | int | `1` | The number of replicas if autoscaling is false |
 | resources | object | `{}` | Resource constraints for the container |
 | securityContext | object | `{}` | Security Context for the application container IMPORTANT: Take a look at README.md file for configuration for non-root user! See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) <br/> For running as non-root with uid 1000, remove {} from next line and uncomment next lines! |
