@@ -22,7 +22,7 @@ data:
     {
       "PSK_TMP_WORKING_DIR": "tmp",
       "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
-      "SSAPPS_FAVORITE_EDFS_ENDPOINT": "http://localhost:8081",
+      "SSAPPS_FAVORITE_EDFS_ENDPOINT": "http://localhost:8080",
       "IS_PRODUCTION_BUILD": true,
       "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}}
     }

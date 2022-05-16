@@ -23,7 +23,7 @@ rules:
     resourceNames: [{{ include "epi.fullname" . | quote }}]
     verbs: ["delete"]
   {{- end }}
-  {{- if .Values.serviceAccount.create -}}
+  {{- if .Values.serviceAccount.create }}
   # Delete ServiceAccount
   - apiGroups: [""]
     resources: ["serviceaccounts"]
@@ -123,7 +123,7 @@ spec:
             {{- end }}
             {{- end }}
 
-            {{- if .Values.serviceAccount.create -}}
+            {{- if .Values.serviceAccount.create }}
             echo "4. Deleting ServiceAccount {{ include "epi.serviceAccountName" . }} ..."
             kubectl delete serviceaccount {{ include "epi.serviceAccountName" . }} --ignore-not-found=true
             {{- end }}

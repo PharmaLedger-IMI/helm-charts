@@ -8,11 +8,11 @@ metadata:
   annotations:
     checkov.io/skip1: "CKV_K8S_40=Container is using uid 1000 (predefined user node) by default"
 spec:
-  replicas: 1
+  replicas: {{ .Values.runner.replicaCount }}
   selector:
     matchLabels:
       {{- include "epi.selectorLabels" . | nindent 6 }}
-{{- with .Values.deploymentStrategy }}
+{{- with .Values.runner.deploymentStrategy }}
   strategy:
 {{ toYaml . | trim | indent 4 }}
 {{- end }}
@@ -22,7 +22,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmaps.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.runner.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -34,14 +34,14 @@ spec:
       {{- end }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       serviceAccountName: {{ include "epi.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.runner.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       restartPolicy: Always
       containers:
       - name: main
-        {{- with .Values.securityContext }}
+        {{- with .Values.runner.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
@@ -51,11 +51,11 @@ spec:
           - name: http
             containerPort: 8080
             protocol: TCP
-        {{- with .Values.livenessProbe }}
+        {{- with .Values.runner.livenessProbe }}
         livenessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.readinessProbe }}
+        {{- with .Values.runner.readinessProbe }}
         readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end }}

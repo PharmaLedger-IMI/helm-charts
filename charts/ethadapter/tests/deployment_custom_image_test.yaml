@@ -19,6 +19,7 @@ tests:
         repository: custom_repository
         pullPolicy: IfNotPresent
         tag: "custom_tag"
+        sha: ""
     asserts:
       - template: deployment.yaml
         isKind:

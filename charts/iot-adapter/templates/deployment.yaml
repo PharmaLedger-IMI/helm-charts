@@ -1,5 +1,5 @@
 #
-# The Deployment of the iot application.
+# The Deployment of the iot-adapter application.
 # Note:
 # 1. As of Feb-23 2022 the build process needs to run on every container startup as some files are added to ephemeral container disk space.
 #    Without these files, the wallet application won't startup.
@@ -10,14 +10,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "iot.fullname" . }}
+  name: {{ include "iot-adapter.fullname" . }}
   labels:
-    {{- include "iot.labels" . | nindent 4 }}
+    {{- include "iot-adapter.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "iot.selectorLabels" . | nindent 6 }}
+      {{- include "iot-adapter.selectorLabels" . | nindent 6 }}
 {{- with .Values.deploymentStrategy }}
   strategy:
 {{ toYaml . | trim | indent 4 }}
@@ -30,25 +30,25 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "iot.selectorLabels" . | nindent 8 }}
+        {{- include "iot-adapter.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
-      serviceAccountName: {{ include "iot.serviceAccountName" . }}
+      serviceAccountName: {{ include "iot-adapter.serviceAccountName" . }}
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: iot
+      - name: iot-adapter
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: {{ include "iot.image" . | quote }}
+        image: {{ include "iot-adapter.image" . | quote }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
         ports:
           - name: http
@@ -85,99 +85,63 @@ spec:
             echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
             cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
             echo "=======> Starting application in background process ..."
-            npm run server &
+            npm run iot-adaptor-server &
             server_pid=$!
             echo "=======> Application running in background with PID=$server_pid"
-            echo "=======> Sleeping for {{ .Values.config.sleepTime }} ..."
-            sleep {{ .Values.config.sleepTime }}
-            echo "=======> Starting build process ..."
-            npm run build-all
-            rc=$?
-            echo "=======> Build process done - rc=$rc"
-            if [ $rc -eq 0 ]
-            then
-              echo "=======> Build process successful - Writing file that application is ready ..."
-              touch /{{ .Values.apiHubWorkingFolder }}/apihub-root/ready
-              tail -f /dev/null
-            fi
+            echo "=======> Build process successful - Writing file that application is ready ..."
+            touch /{{ .Values.apiHubWorkingFolder }}/apihub-root/ready
+            tail -f /dev/null
         volumeMounts:
           # As of Feb-2023 we do NOT mount seedsBackup to its desired destination /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackup
           # as the startup build process will write to that even if there are no changes.
           # Thus, we mount it to different location and copy it to desired location where the file is writeable then.
-          - name: iot-seeds-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/seedsBackupOnStartup
-            subPath: seedsBackup
-            readOnly: true
-          - name: iot-external-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume
-          - name: iot-config-volume
+          - name: iot-adapter-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/apihub.json
             subPath: apihub.json
             readOnly: true
-          - name: iot-bdns-config-volume
+          - name: iot-adapter-bdns-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/bdns.hosts
             subPath: bdns.hosts
             readOnly: true
-          - name: iot-config-volume
+          - name: iot-adapter-config-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/env.json
             subPath: env.json
             readOnly: true
-          - name: iot-domains-volume
+          - name: iot-adapter-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
             readOnly: true
-          - name: iot-domains-volume
+          - name: iot-adapter-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             readOnly: true
-          - name: iot-domains-volume
+          - name: iot-adapter-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             readOnly: true
-          - name: iot-domains-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.json
-            subPath: eco.json
-            readOnly: true
-          - name: iot-domains-volume
+          - name: iot-adapter-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/default.json
             subPath: default.json
             readOnly: true
-          - name: iot-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/clinical-site-wallet/loader/environment.js
-            subPath: clinical-site-environment.js
+          - name: iot-adapter-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.json
+            subPath: eco.json
             readOnly: true
-          - name: iot-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/researcher-wallet/loader/environment.js
-            subPath: researcher-environment.js
-            readOnly: true
-          - name: iot-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/trial-participant-wallet/loader/environment.js
-            subPath: trial-participant-environment.js
-            readOnly: true
-          - name: iot-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js
-            subPath: dsu-explorer-environment.js
+          - name: iot-adapter-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.rms.json
+            subPath: eco.rms.json
             readOnly: true
       restartPolicy: Always
       volumes:
-        - name: iot-seeds-volume
+        - name: iot-adapter-config-volume
           configMap:
-            name: {{ include "iot.configMapSeedsBackupName" . }}
-        - name: iot-config-volume
+            name: {{ include "iot-adapter.fullname" . }}-config
+        - name: iot-adapter-bdns-config-volume
           configMap:
-            name: {{ include "iot.fullname" . }}-config
-        - name: iot-bdns-config-volume
+            name: {{ include "iot-adapter.fullname" . }}-bdns
+        - name: iot-adapter-domains-volume
           configMap:
-            name: {{ include "iot.fullname" . }}-bdns
-        - name: iot-domains-volume
-          configMap:
-            name: {{ include "iot.fullname" . }}-domains
-        - name: iot-env-volume
-          configMap:
-            name: {{ include "iot.fullname" . }}-environment
-        - name: iot-external-volume
-          persistentVolumeClaim:
-            claimName:  {{ include "iot.fullname" . }}
+            name: {{ include "iot-adapter.fullname" . }}-domains
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

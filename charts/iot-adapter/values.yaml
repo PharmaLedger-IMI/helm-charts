@@ -5,11 +5,11 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-apiHubWorkingFolder: "eco-workspace"
+apiHubWorkingFolder: "iot-workspace"
 
 image:
   # -- The repository of the container image
-  repository: username/eco-docker-image
+  repository: user/iotadapter
   # -- Image Pull Policy
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
@@ -153,72 +153,94 @@ config:
   # The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
-  domain: "eco"
+  domain: "iot"
   # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
-  subDomain: "eco.my-company"
+  subDomain: "iot.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
-  # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
-  ethadapterUrl: "http://ethadapter.ethadapter:3000"
   # For SSO, set to "sso-pin"
   demiurgeMode: "dev-secure"
   # For SSO, set to "sso-direct"
   dsuFabricMode: "dev-secure"
 
+  iotAdapter:
+    BUILD_SECRET_KEY: "BUILD_SECRET_KEY"  # pragma: allowlist secret
+    IOT_ADAPTOR_DID: "IOT_ADAPTOR_DID"
+    IOT_ADAPTOR_PORT: "4500"
+    STORAGE_API_BASE_URL: "STORAGE_API_BASE_URL"
+    STORAGE_API_APP_ID: "STORAGE_API_APP_ID"
+    STORAGE_API_REST_API_KEY: "STORAGE_API_REST_API_KEY"  # pragma: allowlist secret
+
   # -- Centrally managed and provided BDNS Hosts Config
   bdnsHosts: |-
     {
-    "default": {
-      "replicas": [],
-      "brickStorages": [
-        "$ORIGIN"
-      ],
-      "anchoringServices": [
-        "$ORIGIN"
-      ]
-    },
-    "vault.my-company": {
-      "replicas": [],
-      "brickStorages": [
-        "$ORIGIN"
-      ],
-      "anchoringServices": [
-        "$ORIGIN"
-      ]
-    },
-    "eco.my-company":{
-        "replicas":[],
-        "brickStorages":[
-           "$ORIGIN"
-        ],
-        "anchoringServices":[
-           "$ORIGIN"
-        ]
-     },
-    "eco":{
-            "replicas":[],
-            "brickStorages":[
-               "$ORIGIN"
-            ],
-            "anchoringServices":[
-               "$ORIGIN"
-            ]
-    },
-    "iot":{
-      "replicas":[
-
-      ],
-      "brickStorages":[
-         "http://localhost:8080"
-      ],
-      "anchoringServices":[
-         "http://localhost:8080"
-      ],
-      "mqEndpoints":[
-         "http://localhost:8080"
-      ]
-    }
-    }
+        "default": {
+          "replicas": [],
+          "brickStorages": [
+            "$ORIGIN"
+          ],
+          "anchoringServices": [
+            "$ORIGIN"
+          ]
+        },
+        "vault.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "$ORIGIN"
+          ],
+          "anchoringServices": [
+            "$ORIGIN"
+          ]
+        },
+        "iot": {
+          "replicas": [],
+          "brickStorages": [
+            "http://iot:80"
+          ],
+          "anchoringServices": [
+            "http://iot:80"
+          ],
+          "mqEndpoints": [
+            "http://iot:80"
+          ]
+        },
+        "iot.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "http://iot:80"
+          ],
+          "anchoringServices": [
+            "http://iot:80"
+          ],
+          "mqEndpoints": [
+            "http://iot:80"
+          ]
+        },
+        "eco": {
+          "replicas": [],
+          "brickStorages": [
+            "http://eco:80"
+          ],
+          "anchoringServices": [
+            "http://eco:80"
+          ],
+          "mqEndpoints": [
+            "http://eco:80"
+          ]
+        },
+        "eco.rms": {
+          "replicas": [],
+          "brickStorages": [
+            "http://eco:80"
+          ],
+          "anchoringServices": [
+            "http://eco:80"
+          ],
+          "mqEndpoints": [
+            "http://eco:80"
+          ]
+        }
+      }
 
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
@@ -238,59 +260,61 @@ config:
   # 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/"
   apihub: |-
     {
-      "storage": "../apihub-root",
-      "port": 8080,
-      "preventRateLimit": true,
-      "activeComponents": [
-        "virtualMQ",
-        "messaging",
-        "notifications",
-        "filesManager",
-        "bdns",
-        "bricksLedger",
-        "bricksFabric",
-        "bricking",
-        "anchoring",
-        "debugLogger",
-        "mq",
-        "staticServer"
-      ],
-      "componentsConfig": {
-        "staticServer": {
-                       "excludedFiles": [
-                           ".*.secret"
-                       ]
-                   },
-        "bricking": {},
-        "anchoring": {}
-      },
-      "responseHeaders": {
-                 "X-Frame-Options": "SAMEORIGIN",
-                 "X-XSS-Protection": "1; mode=block"
-             },
-      "enableRequestLogger": true,
-      "enableJWTAuthorisation": false,
-      "enableLocalhostAuthorization": false,
-      "serverAuthentication": false,
-      "skipJWTAuthorisation": [
-        "/assets",
-        "/directory-summary",
-        "/resources",
-        "/bdns",
-        "/anchor/default",
-        "/anchor/vault",
-        "/bricking",
-        "/bricksFabric",
-        "/bricksledger",
-        "/create-channel",
-        "/forward-zeromq",
-        "/send-message",
-        "/receive-message",
-        "/files",
-        "/notifications",
-        "/mq"
-      ]
+    	"storage": "../apihub-root",
+    	"port": 8080,
+    	"preventRateLimit": true,
+    	"activeComponents": [
+    		"virtualMQ",
+    		"messaging",
+    		"notifications",
+    		"filesManager",
+    		"bdns",
+    		"bricksLedger",
+    		"bricksFabric",
+    		"bricking",
+    		"anchoring",
+    		"debugLogger",
+    		"mq",
+    		"staticServer"
+    	],
+        "componentsConfig": {
+            "staticServer": {
+                           "excludedFiles": [
+                               ".*.secret"
+                           ]
+                       },
+            "bricking": {},
+            "anchoring": {}
+          },
+          "responseHeaders": {
+                     "X-Frame-Options": "SAMEORIGIN",
+                     "X-XSS-Protection": "1; mode=block"
+                 },
+    	"enableRequestLogger": true,
+    	"enableJWTAuthorisation": false,
+    	"enableLocalhostAuthorization": false,
+        "serverAuthentication": false,
+    	"skipJWTAuthorisation": [
+    		"/assets",
+    		"/directory-summary",
+    		"/resources",
+    		"/bdns",
+    		"/anchor/epi",
+    		"/anchor/default",
+    		"/anchor/vault",
+    		"/bricking",
+    		"/bricksFabric",
+    		"/bricksledger",
+    		"/create-channel",
+    		"/forward-zeromq",
+    		"/send-message",
+    		"/receive-message",
+    		"/files",
+    		"/notifications",
+    		"/mq"
+    	]
     }
+
 
 ingress:
   # -- Whether to create ingress or not.
@@ -321,7 +345,7 @@ ingress:
   hosts:
     -
       # -- The FQDN/hostname
-      host: eco.some-pharma-company.com
+      host: iot-adapter.some-pharma-company.com
       paths:
         -
           # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
@@ -382,7 +406,7 @@ readinessProbe:
   exec:
     command:
     - cat
-    - /eco-workspace/apihub-root/ready
+    - /iot-workspace/apihub-root/ready
   initialDelaySeconds: 30
   periodSeconds: 5
   successThreshold: 1
