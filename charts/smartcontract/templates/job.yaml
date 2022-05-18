@@ -88,6 +88,15 @@ spec:
         {{- end }}
         imagePullPolicy: {{ .Values.kubectlImage.pullPolicy }}
         {{- with .Values.resources }}
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
