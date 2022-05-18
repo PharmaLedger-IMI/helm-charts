@@ -1,0 +1,52 @@
+# Default values for smartcontract.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+image:
+  # -- The repository of the container image which deploys the Smart Contract
+  repository: "pharmaledger/anchor_smart"
+  # -- Image Pull Policy of the node container
+  pullPolicy: IfNotPresent
+  # -- The tag of the container image which deploys the Smart Contract
+  tag: "latest"
+
+kubectlImage:
+  # -- The repository of the container image which creates configmap and secret
+  repository: bitnami/kubectl
+  # -- Image Pull Policy
+  pullPolicy: IfNotPresent
+  # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
+  tag: "1.21.8"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+config:
+  # -- Name of the ConfigMap with the anchoring info. If empty uses a generic name
+  configMapAnchoringInfoName: "smartcontract-anchoring-info"
+
+  # -- DNS Name or IP Address of Quorum node.
+  # Defaults to first Quorum node provided by helm chart 'standalone-quorum' on a Sandbox environment.
+  quorumNodeAddress: "quorum-validator1.quorum"
+  # -- Port of Quorum Node endpoint
+  quorumNodePort: "8545"
+  # -- Existing account on Blockchain network
+  # Defaults to the predefined account from node 'quorum-validator1' deployed by helm chart 'standalone-quorum'
+  account: "0xb5ced4530d6ccbb31b2b542fd9b4558b52296784"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

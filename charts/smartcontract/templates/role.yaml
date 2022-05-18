@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "smartcontract.fullname" . }}
+  annotations:
+    "description": "Role for SmartContract deployment. Allows updating the ConfigMap with information about anchored SmartContract"
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - {{ include "smartcontract.configMapNameAnchoringInfo" . | quote }}
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - patch
+  - update
