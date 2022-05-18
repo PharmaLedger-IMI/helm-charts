@@ -30,6 +30,10 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /bin/sh
           - -c
@@ -83,6 +87,10 @@ spec:
         image: "{{ .Values.kubectlImage.repository }}:{{ .Values.kubectlImage.tag }}"
         {{- end }}
         imagePullPolicy: {{ .Values.kubectlImage.pullPolicy }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /bin/sh
           - -c
