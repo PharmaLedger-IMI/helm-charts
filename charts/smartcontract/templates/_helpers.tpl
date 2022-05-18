@@ -78,14 +78,17 @@ Lookup potentially existing AnchoringSmartContract data
     Reusing existing data
 */}}
 abi: |-
-    {{ $configMap.data.abi | default "" }}
+  {{ $configMap.data.abi | default "" }}
 address: |-
-    {{ $configMap.data.address | default "" }}
+  {{ $configMap.data.address | default "" }}
+info: |-
+  {{ $configMap.data.info | default "" }}
 {{- else -}}
 {{/*
     Use new data
 */}}
 abi: ""
 address: ""
+info: ""
 {{- end -}}
 {{- end -}}

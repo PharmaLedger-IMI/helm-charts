@@ -18,3 +18,21 @@ data:
       fs.writeFileSync('/container-shared-data/AnchoringAbi.json',abi);
     }
     getabi();
+
+  # This function creates the info.json which contains the abi and address
+  getInfo.js: |
+    function getInfo(){
+      const fs = require('fs');
+      // 1. Read address
+      // https://stackoverflow.com/questions/48818415/json-parsefs-readfilesync-returning-a-buffer-string-of-numbers
+      const addressString = fs.readFileSync('./external/smartcontractaddress.txt', {encoding:'utf8', flag:'r'} );
+      
+      // 2. Read Abi
+      const anchoring = JSON.parse(fs.readFileSync('./build/contracts/Anchoring.json'), {encoding:'utf8', flag:'r'} );
+      const abiString = JSON.stringify(anchoring.abi); // Note: Abi must be stored as String, not as JSON object
+
+      // 3. Store Info
+      const info = { abi: abiString, address: addressString };
+      fs.writeFileSync('/container-shared-data/info.json', JSON.stringify(info));
+    }
+    getInfo();

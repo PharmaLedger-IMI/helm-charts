@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "smartcontract.configMapNameAnchoringInfo" . }}
   annotations:
-    "description": "Abi and Address of the SmartContract"
+    "description": "abi (string), address (string), info (JSON)"
   labels:
     {{- include "smartcontract.labels" . | nindent 4 }}
 data:

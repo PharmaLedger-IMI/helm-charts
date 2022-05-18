@@ -25,7 +25,7 @@ fullnameOverride: ""
 
 config:
   # -- Name of the ConfigMap with the anchoring info. If empty uses a generic name
-  configMapAnchoringInfoName: "smartcontract-anchoring-info"
+  configMapAnchoringInfoName: "smartcontractinfo"
 
   # -- DNS Name or IP Address of Quorum node.
   # Defaults to first Quorum node provided by helm chart 'standalone-quorum' on a Sandbox environment.

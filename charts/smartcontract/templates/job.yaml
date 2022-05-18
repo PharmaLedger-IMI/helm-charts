@@ -40,6 +40,9 @@ spec:
             echo "Extracting Abi to /container-shared-data ..."
             node ./getAbi.js
 
+            echo "Creating info and storing at /container-shared-data/info.json ..."
+            node ./getInfo.js
+
             echo ""
             echo "Show content of folder /container-shared-data"
             ls -las /container-shared-data
@@ -59,6 +62,9 @@ spec:
           - name: code
             mountPath: /usr/node/app/getAbi.js
             subPath: getAbi.js
+          - name: code
+            mountPath: /usr/node/app/getInfo.js
+            subPath: getInfo.js
             # We mount a temporary volume in order to hand over data from init to main container
           - name: container-shared-data
             mountPath: /container-shared-data
@@ -74,6 +80,7 @@ spec:
             kubectl create configmap {{ include "smartcontract.configMapNameAnchoringInfo" . }} \
               --from-file=abi=/container-shared-data/AnchoringAbi.json \
               --from-file=address=/container-shared-data/AnchoringAddress \
+              --from-file=info=/container-shared-data/info.json \
               --dry-run=client -o yaml | kubectl apply -f -
         volumeMounts:
           - name: container-shared-data
