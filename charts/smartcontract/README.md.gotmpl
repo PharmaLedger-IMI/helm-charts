@@ -16,6 +16,10 @@
 
 ## Changelog
 
+- From 0.3.x to 0.4.x
+  - Creates *info* in ConfigMap as JSON-input for deploying and auto-configuring *ethadapter* in Sandbox installation (for use with ethadapter helm chart >= `0.7.4`)
+  - ConfigMap for storing abi, address and info has been renamed from *smartcontract-anchoring-info* to *smartcontractinfo*.
+
 - From 0.2.x to 0.3.x
   - Uses `pharmaledger/anchor_smart:latest` image for SmartContract anchoring (`image.repository` and `image.tag`) which is compatible to epi application v1.1.x or higher. Not compatible with epi v1.0.x !
   - An preexisting ETH Account that you own needs must be provided. A new ETH account will *NOT* be created anymore.
