@@ -41,7 +41,7 @@
 
 1. A Kubernetes Job will be deployed which triggers scheduling of a Pod
 2. The Pod compiles the SmartContract and anchors it with the configure ETH account on the Quorum Blockchain.
-3. Then the address and Abi of the SmartContract will be stored in a Kubernetes ConfigMap.
+3. Then the SmartContract address, its Abi and a JSON object called *info* (which contains both address and abi) will be stored in a Kubernetes ConfigMap.
 
 ![How it works](./docs/smartcontract.drawio.png)
 
@@ -86,6 +86,10 @@ helm delete smartcontract \
   --namespace=ethadapter
 
 ```
+
+## Security
+
+Unfortunately the container image as of 2022 May-18 (`pharmaledger/anchor_smart:latest@sha256:6c146032888e99090200763e9479fd832aba36c5cc57859df521131fe913d731`) does not allow running as not root user.
 
 {{ template "chart.maintainersSection" . }}
 

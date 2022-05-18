@@ -2,6 +2,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "smartcontract.fullname" . }}
+  namespace: {{ template "smartcontract.namespace" . }}
+  annotations:
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
   labels:
     {{- include "smartcontract.labels" . | nindent 4 }}
 spec:
@@ -19,10 +22,18 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: init
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        {{- if .Values.image.sha }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+        {{- else }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /bin/sh
           - -c
@@ -70,7 +81,25 @@ spec:
             mountPath: /container-shared-data
       containers:
       - name: write-configmap
+        {{- if .Values.kubectlImage.sha }}
+        image: "{{ .Values.kubectlImage.repository }}:{{ .Values.kubectlImage.tag }}@sha256:{{ .Values.kubectlImage.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectlImage.repository }}:{{ .Values.kubectlImage.tag }}"
+        {{- end }}
+        imagePullPolicy: {{ .Values.kubectlImage.pullPolicy }}
+        {{- with .Values.resources }}
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65534
+          runAsGroup: 65534
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /bin/sh
           - -c

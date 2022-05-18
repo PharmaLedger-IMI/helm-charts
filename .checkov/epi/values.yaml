@@ -13,3 +13,18 @@ resources:
     cpu: 5m
     memory: 128Mi
 
+# Set seccompProfile as this is not set by default
+kubectl:
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+runner:
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+builder:
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
