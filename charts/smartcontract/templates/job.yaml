@@ -74,7 +74,12 @@ spec:
             mountPath: /container-shared-data
       containers:
       - name: write-configmap
+        {{- if .Values.kubectlImage.sha }}
+        image: "{{ .Values.kubectlImage.repository }}:{{ .Values.kubectlImage.tag }}@sha256:{{ .Values.kubectlImage.sha }}"
+        {{- else }}
         image: "{{ .Values.kubectlImage.repository }}:{{ .Values.kubectlImage.tag }}"
+        {{- end }}
+        imagePullPolicy: {{ .Values.kubectlImage.pullPolicy }}
         command:
           - /bin/sh
           - -c

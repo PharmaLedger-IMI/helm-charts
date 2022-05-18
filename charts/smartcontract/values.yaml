@@ -20,9 +20,15 @@ kubectlImage:
   # -- The repository of the container image which creates configmap and secret
   repository: bitnami/kubectl
   # -- Image Pull Policy
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
   tag: "1.21.8"
+  # -- sha256 digest of the image.
+  # Do not add the prefix "@sha256:"
+  # <br/>
+  # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+  # <!-- # pragma: allowlist secret -->
+  sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
