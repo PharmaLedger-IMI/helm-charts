@@ -87,7 +87,7 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "companyName": "Company Inc",
+      "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
       "disabledFeatures": "",
       "lockFeatures": false,
       "epiProtocolVersion": 1
