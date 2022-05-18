@@ -68,26 +68,26 @@ tolerations: []
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 affinity: {}
 
-# # -- Security Context for the pod.
-# # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-# podSecurityContext:
-#   runAsUser: 65534
-#   runAsGroup: 65534
-#   fsGroup: 65534
-#   # -- The SecComp configuration.
-#   # Not enabled by default as not every environment supports it.
-#   # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-#   # seccompProfile:
-#   #   type: RuntimeDefault
+# -- Security Context for the pod.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
 
-# # -- Security Context for the container.
-# # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-# securityContext:
-#   capabilities:
-#     drop:
-#     - ALL
-#   readOnlyRootFilesystem: true
-#   allowPrivilegeEscalation: false
-#   runAsNonRoot: true
-#   runAsUser: 65534
-#   runAsGroup: 65534
+# -- Security Context for the container.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  runAsNonRoot: false
+  runAsUser: 0
+  runAsGroup: 0
