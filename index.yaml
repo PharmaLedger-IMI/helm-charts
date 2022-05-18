@@ -800,6 +800,23 @@ entries:
   smartcontract:
   - apiVersion: v2
     appVersion: latest
+    created: "2022-05-18T13:33:52.274143667Z"
+    description: 'A Helm chart for deploying the Smartcontract on a goquorum node
+      for a given ETH account. The anchoring info (address and Abi) of the Smartcontract
+      will be stored in a Kubernetes ConfigMap to make them usable by other components
+      running on Kubernetes. '
+    digest: a932b6e4b8972ae445c6b27a2e816ff274fd5e4cdefd5ebb47fd589d862281a1
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: smartcontract
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/smartcontract-0.4.1/smartcontract-0.4.1.tgz
+    version: 0.4.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2022-05-18T10:28:59.764871118Z"
     description: 'A Helm chart for deploying the Smartcontract on a goquorum node
       for a given ETH account. The anchoring info (address and Abi) of the Smartcontract
@@ -843,4 +860,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-05-18T11:37:35.022873201Z"
+generated: "2022-05-18T13:33:52.277198458Z"
