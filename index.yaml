@@ -832,4 +832,15 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/smartcontract-0.3.0/smartcontract-0.3.0.tgz
     version: 0.3.0
-generated: "2022-05-18T10:39:11.265108367Z"
+  standalone-quorum:
+  - apiVersion: v2
+    appVersion: 21.10.2
+    created: "2022-05-18T11:37:35.022613297Z"
+    description: A Helm chart for a standalone Quorum network adapted from https://github.com/ConsenSys/quorum-kubernetes/tree/master/playground/kubectl/quorum-go/ibft
+    digest: 36e4a3168f197a568d1332ac8655c8aab04701dbd9610dc8b375b08260edeeb9
+    name: standalone-quorum
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
+    version: 0.3.0
+generated: "2022-05-18T11:37:35.022873201Z"
