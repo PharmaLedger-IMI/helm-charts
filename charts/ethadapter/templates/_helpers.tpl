@@ -81,14 +81,14 @@ The value for the Smart Contract Info
 2. If not, look if ConfigMap exists and get value from there
 */}}
 {{- define "ethadapter.smartContractInfo" -}}
-{{- if .Values.config.smartContractInfo }}
+{{- if and .Values.config.smartContractInfo (and (.Values.config.smartContractInfo | fromJson).abi (.Values.config.smartContractInfo | fromJson).address) }}
 {{- .Values.config.smartContractInfo }}
 {{- else }}
 {{- $configMap := lookup "v1" "ConfigMap" .Release.Namespace .Values.config.smartContractInfoConfigMapName -}}
 {{- if $configMap -}}
-{{- required "Either config.smartContractInfo must be set or value must exists in ConfigMap" (get $configMap.data .Values.config.smartContractInfoConfigMapKey) }}
+{{- required "Either config.smartContractInfo must be set appropriately or value must exists in ConfigMap" (get $configMap.data .Values.config.smartContractInfoConfigMapKey) }}
 {{- else -}}
-{{- required "Either config.smartContractInfo must be set or ConfigMap with value must exists" "" }}
+{{- required "Either config.smartContractInfo must be set appropriately or ConfigMap with value must exists" "" }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
