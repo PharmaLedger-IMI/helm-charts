@@ -1,0 +1,8 @@
+Configmap name = {{ include "smartcontract.configMapNameAnchoringInfo" . }}
+
+How to get values:
+==================
+1a. Get value abi 
+kubectl get configmap -n={{ .Release.Namespace }} -o jsonpath='{.data.abi}' {{ include "smartcontract.configMapNameAnchoringInfo" . }}
+1b. Get value address 
+kubectl get configmap -n={{ .Release.Namespace }} -o jsonpath='{.data.address}' {{ include "smartcontract.configMapNameAnchoringInfo" . }}

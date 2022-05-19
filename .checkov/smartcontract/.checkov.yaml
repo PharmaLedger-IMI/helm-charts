@@ -1,0 +1,13 @@
+compact: true
+directory:
+- charts/smartcontract
+download-external-modules: false
+evaluate-variables: true
+external-modules-download-path: .external_modules
+framework:
+- helm
+quiet: true
+soft-fail: true
+var-file:
+- .checkov/smartcontract/values.yaml
+output: cli

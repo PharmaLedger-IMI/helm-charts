@@ -41,6 +41,7 @@ data:
       "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote }},
       "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote }},
       "enclaveType":"WalletDBEnclave",
+      "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
       "sw": false,
       "pwa": false
     }
@@ -87,7 +88,7 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "companyName": "Company Inc",
+      "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
       "disabledFeatures": "",
       "lockFeatures": false,
       "epiProtocolVersion": 1

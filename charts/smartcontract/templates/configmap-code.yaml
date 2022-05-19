@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smartcontract.fullname" . }}-code
+  namespace: {{ template "smartcontract.namespace" . }}
+  annotations:
+    "description": "Required Code for deploying SmartContract"
+  labels:
+    {{- include "smartcontract.labels" . | nindent 4 }}
+data:
+  # This function extracts the 'abi' element from the JSON representation of the Smart Contract
+  # and writes it to the shared destination
+  getAbi.js: |
+    function getabi(){
+      const fs = require('fs');
+      const result = require('fs').readFileSync('./build/contracts/Anchoring.json');
+      const jsonResult = JSON.parse(result);
+      const abi = JSON.stringify(jsonResult.abi);
+      fs.writeFileSync('/container-shared-data/AnchoringAbi.json',abi);
+    }
+    getabi();
+
+  # This function creates the info.json which contains the abi and address
+  getInfo.js: |
+    function getInfo(){
+      const fs = require('fs');
+      // 1. Read address
+      // https://stackoverflow.com/questions/48818415/json-parsefs-readfilesync-returning-a-buffer-string-of-numbers
+      const addressString = fs.readFileSync('./external/smartcontractaddress.txt', {encoding:'utf8', flag:'r'} );
+      
+      // 2. Read Abi
+      const anchoring = JSON.parse(fs.readFileSync('./build/contracts/Anchoring.json'), {encoding:'utf8', flag:'r'} );
+      const abiString = JSON.stringify(anchoring.abi); // Note: Abi must be stored as String, not as JSON object
+
+      // 3. Store Info
+      const info = { abi: abiString, address: addressString };
+      fs.writeFileSync('/container-shared-data/info.json', JSON.stringify(info));
+    }
+    getInfo();

@@ -12,6 +12,8 @@ config:
   vaultDomain: "vault.my-company"
   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
   ethadapterUrl: "http://ethadapter.ethadapter:3000"
+  # -- A CompanyName which is displayed on the web page.
+  companyName: "Company Inc"
   # -- For SSO, set to "sso-pin"
   demiurgeMode: "dev-secure"
   # -- For SSO, set to "sso-direct"
