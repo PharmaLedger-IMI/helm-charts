@@ -55,7 +55,7 @@ This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name your-container-registry/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --values my-config.yaml \
     ```
@@ -166,7 +166,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name your-container-registry/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -177,7 +177,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name your-container-registry/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
