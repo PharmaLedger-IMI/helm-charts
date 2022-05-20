@@ -176,7 +176,7 @@ config:
   credentials: |-
     {
       "id": {
-        "secret": "MAH251339219",
+        "secret": "MAH123",
         "public": true
       },
       "name": {

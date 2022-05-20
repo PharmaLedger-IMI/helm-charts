@@ -1,6 +1,6 @@
 # fgt
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.4](https://img.shields.io/badge/AppVersion-0.9.4-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.4](https://img.shields.io/badge/AppVersion-0.9.4-informational?style=flat-square)
 
 A Helm chart for a FGT deployment on Kubernetes
 
@@ -8,20 +8,26 @@ A Helm chart for a FGT deployment on Kubernetes
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 - These mandatory configuration values:
-  - Domain - The Domain - e.g. `traceability`
-  - + Endpoint - The Domain URL - e.g. `https://fgt-dev.pharmaledger.pdmfc.com/traceability` - default is `$ORIGIN`
-  - Sub Domain - The Sub Domain - e.g. `traceability.my-company`
-  - Vault Domain - The Vault Domain - e.g. `vault.my-company`
+  - Domain - The DID Domain - e.g. `traceability`
+  - subDomain - The Sub Domain - e.g. `traceability.my-company`
+  - vaultDomain - The Vault Domain - e.g. `vault.my-company`
   - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000" - if not specified, the local file storage will be used instead
+  - FGT API url - The url where your API is exposed to - e.g. "https://fgt-mah-api.pharma-company.com/traceability"
   - bdnsHosts - The Centrally managed and provided BDNS Hosts Config
+  - credentials - Your secret credentials file which is used as a secret seed for access to all data
 
 ## Usage
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+- The [example-my-config.yaml](./example-my-config.yaml) shows some useful configuration examples
 
 ## Changelog
 
+- First official release v0.2.0
+  - Tested single MAH install on Kubernetes/EKS in AWS
+  - Tested multi-participant (MAH, WHS, PHA, Traceability) install on Kubernetes/EKS in AWS
+  - Not tested with a blockchain yet - all anchors are stored on file storage
 - Initial version 0.1.3
   - For use with FGT in version v0.9.3
   - Only tested locally with Minikube yet
@@ -33,28 +39,23 @@ This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in 
 
 ### Quick install with internal service of type ClusterIP
 
-By default, this helm chart installs the Ethereum Adapter Service at an internal ClusterIP Service listening at port 3000.
-This is to prevent exposing the service to the internet by accident!
-
-It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.
-
 1. Create configuration file, e.g. *my-config.yaml*
 
     ```yaml
     config:
+      role: "mah"
       domain: "domain_value"
       subDomain: "subDomain_value"
       vaultDomain: "vaultDomain_value"
-      ethadapterUrl: "https://ethadapter.my-company.com:3000"
-      bdnsHosts: |-
-        # ... content of the BDNS Hosts file ...
+      credentials: |-
+        # ... content of the credentials json file ...
 
     ```
 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.6 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --values my-config.yaml \
     ```
@@ -68,8 +69,13 @@ In order to expose the service **directly** by an **own dedicated** Load Balance
 Configuration file *my-config.yaml*
 
 ```yaml
-service:
-  type: LoadBalancer
+services:
+  app:
+    type: LoadBalancer
+  api:
+    type: LoadBalancer
+  swagger:
+    type: LoadBalancer
 
 config:
   # ... config section keys and values ...
@@ -83,14 +89,15 @@ Sample for AWS (SSL and listening on port 1234 instead 80 which is the default):
 
 ```yaml
 service:
-  type: LoadBalancer
-  port: 80
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "80"
-    # https://docs.aws.amazon.com/de_de/elasticloadbalancing/latest/classic/elb-security-policy-table.html
-    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+  app:
+    type: LoadBalancer
+    port: 80
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "1234"
+      # https://docs.aws.amazon.com/de_de/elasticloadbalancing/latest/classic/elb-security-policy-table.html
+      service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
 
 # further config
 ```
@@ -108,38 +115,43 @@ Configuration file *my-config.yaml*
 
 ```yaml
 ingress:
-  enabled: true
-  # Let AWS LB Controller handle the ingress (default className is alb)
-  # Note: Use className instead of annotation 'kubernetes.io/ingress.class' which is deprecated since 1.18
-  # For Kubernetes >= 1.18 it is required to have an existing IngressClass object.
-  # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
-  className: alb
-  hosts:
-    - host: epi.mydomain.com
-      # Path must be /* for ALB to match all paths
-      paths:
-        - path: /*
-          pathType: ImplementationSpecific
-  # For full list of annotations for AWS LB Controller, see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/
-  annotations:
-    # The ARN of the existing SSL Certificate at AWS Certificate Manager
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERTIFICATE_ID
-    # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
-    alb.ingress.kubernetes.io/group.name: default
-    # Specifies the HTTP path when performing health check on targets.
-    alb.ingress.kubernetes.io/healthcheck-path: /
-    # Specifies the port used when performing health check on targets.
-    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-    # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
-    alb.ingress.kubernetes.io/success-codes: "200"
-    # Listen on HTTPS protocol at port 443 at the ALB
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    # Use internet facing
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    # Use most current (as of Dec 2021) encryption ciphers
-    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
-    # Use target type IP which is the case if the service type is ClusterIP
-    alb.ingress.kubernetes.io/target-type: ip
+  app:
+    # -- Whether to create ingress or not.
+    # Note: For ingress an Ingress Controller (e.g. AWS LB Controller, NGINX Ingress Controller, Traefik, ...) is required and service.type should be ClusterIP or NodePort depending on your configuration
+    enabled: false
+    # -- The className specifies the IngressClass object which is responsible for that class.
+    # Note for Kubernetes >= 1.18 it is required to have an existing IngressClass object.
+    # If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead.
+    # For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'.
+    # See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class
+    className: ""
+    # -- Ingress annotations.
+    # For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/)
+    # For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/)
+    # For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/)
+    # For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations)
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    # -- A list of hostnames and path(s) to listen at the Ingress Controller
+    hosts:
+      -
+        # -- The FQDN/hostname
+        host: fgt.some-pharma-company.com
+        paths:
+          -
+            # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
+            # Note: For Ingress Controllers like AWS LB Controller see their specific documentation.
+            path: /
+            # -- The type of path. This value is required since Kubernetes 1.18.
+            # For Ingress Controllers like AWS LB Controller or Traefik it is usually required to set its value to ImplementationSpecific
+            # See [https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types](https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types)
+            # and [https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/](https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/)
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
 config:
   # ... config section keys and values ...
@@ -154,7 +166,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.6 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -165,7 +177,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.1.6 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -194,7 +206,7 @@ Tests can be found in [tests](./tests)
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| config | object | `{"apihub":"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}","bdnsHosts":"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.other-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}","credentials":"{\n  \"id\": {\n    \"secret\": \"MAH251339219\",\n    \"public\": true\n  },\n  \"name\": {\n    \"secret\": \"Company Inc.\",\n    \"public\": true\n  },\n  \"email\": {\n    \"secret\": \"pharmaledger@company.com\",\n    \"public\": true\n  },\n  \"pass\": {\n    \"secret\": \"This1sSuchAS3curePassw0rd\"\n  }\n}","domain":"traceability","ethadapterUrl":"","fgtApi":"http://fgt-api.some-pharma-company.com/traceability","isTraceability":true,"role":"mah","sleepTime":"10s","subDomain":"traceability.my-company","vaultDomain":"vault.my-company"}` | Configuration. Will be put in ConfigMaps. |
+| config | object | `{"apihub":"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}","bdnsHosts":"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.other-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}","credentials":"{\n  \"id\": {\n    \"secret\": \"MAH123\",\n    \"public\": true\n  },\n  \"name\": {\n    \"secret\": \"Company Inc.\",\n    \"public\": true\n  },\n  \"email\": {\n    \"secret\": \"pharmaledger@company.com\",\n    \"public\": true\n  },\n  \"pass\": {\n    \"secret\": \"This1sSuchAS3curePassw0rd\"\n  }\n}","domain":"traceability","ethadapterUrl":"","fgtApi":"http://fgt-api.some-pharma-company.com/traceability","isTraceability":true,"role":"mah","sleepTime":"10s","subDomain":"traceability.my-company","vaultDomain":"vault.my-company"}` | Configuration. Will be put in ConfigMaps. |
 | config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"anchoring\",\n    \"dsu-wizard\",\n    \"pdm-dsu-toolkit-app-store\",\n    \"pdm-dsu-toolkit-app-commands\",\n    \"fgt-dsu-wizard\",\n    \"gtin-dsu-wizard\",\n    \"mq\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"gtin-dsu-wizard\": {\n      \"module\": \"./../../gtin-dsu-wizard\"\n    },\n    \"pdm-dsu-toolkit-app-commands\": {\n      \"module\": \"./../../pdm-dsu-toolkit\",\n      \"function\": \"Init\"\n    },\n    \"fgt-dsu-wizard\": {\n      \"module\": \"./../../fgt-dsu-wizard\",\n      \"function\": \"Init\"\n    },\n    \"mq\":{\n      \"module\": \"./components/mqHub\",\n      \"function\": \"MQHub\"\n    },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"CORS\": {\n    \"Access-Control-Allow-Origin\":\"*\",\n    \"Access-Control-Allow-Methods\": \"POST, GET, PUT, DELETE, OPTIONS\",\n    \"Access-Control-Allow-Credentials\": true\n  },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/fgt\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) |
 | config.bdnsHosts | string | `"{\n  \"default\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"traceability.other-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"mqEndpoints\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault.my-company\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  },\n  \"vault\": {\n    \"replicas\": [],\n    \"brickStorages\": [\n      \"$ORIGIN\"\n    ],\n    \"anchoringServices\": [\n      \"$ORIGIN\"\n    ]\n  }\n}"` | Centrally managed and provided BDNS Hosts Config |
 | config.domain | string | `"traceability"` | The Domain, e.g. "fgt" |
