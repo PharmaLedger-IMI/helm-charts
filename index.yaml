@@ -892,6 +892,16 @@ entries:
   standalone-quorum:
   - apiVersion: v2
     appVersion: 21.10.2
+    created: "2022-05-31T14:11:44.029460076Z"
+    description: A Helm chart for a standalone Quorum network adapted from https://github.com/ConsenSys/quorum-kubernetes/tree/master/playground/kubectl/quorum-go/ibft
+    digest: 41fb5561b56b7a4a2667823924186292c9bc4df6dc93cebee200e65e40994e61
+    name: standalone-quorum
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.1/standalone-quorum-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 21.10.2
     created: "2022-05-18T11:37:35.022613297Z"
     description: A Helm chart for a standalone Quorum network adapted from https://github.com/ConsenSys/quorum-kubernetes/tree/master/playground/kubectl/quorum-go/ibft
     digest: 36e4a3168f197a568d1332ac8655c8aab04701dbd9610dc8b375b08260edeeb9
@@ -900,4 +910,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-05-20T19:06:38.649697504Z"
+generated: "2022-05-31T14:11:44.029687778Z"
