@@ -226,7 +226,7 @@ spec:
         - name: secret-account-key
           secret:
             secretName: {{ include "quorumNode.Identifier" . }}-account-key
-            defaultMode: 0444  # mount as r
+            defaultMode: 0440  # mount as r
             items:
               - key: key
                 path: key
@@ -234,14 +234,14 @@ spec:
         - name: secret-nodekey
           secret:
             secretName: {{ include "quorumNode.Identifier" . }}-nodekey
-            defaultMode: 0444  # mount as r
+            defaultMode: 0440  # mount as r
             items:
               - key: nodekey
                 path: nodekey
         - name: cm-settings
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-settings
-            defaultMode: 0444  # mount as r
+            defaultMode: 0440  # mount as r
             items:
               - key: enode
                 path: enode
@@ -254,7 +254,7 @@ spec:
         - name: cm-scripts
           configMap:
             name: {{ include "quorumnode.configmap.scripts" . }}
-            defaultMode: 0555  # mount as rx
+            defaultMode: 0550  # mount as rx
             items:
               - key: geth-attach.sh
                 path: geth-attach.sh
