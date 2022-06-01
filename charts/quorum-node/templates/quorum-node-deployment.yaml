@@ -165,11 +165,11 @@ spec:
             - name: cm-genesis
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
-            - name: cm-nodekey
+            - name: secret-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: cm-account-key
+            - name: secret-account-key
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
           {{- end }}
@@ -190,9 +190,9 @@ spec:
               subPath: ibft_propose_all.sh
       volumes:
       {{- if .Values.use_case.newNetwork.enabled }}
-        - name: cm-account-key
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-account-key
+        - name: secret-account-key
+          secret:
+            secretName: {{ include "quorumNode.Identifier" . }}-account-key
             items:
               - key: key
                 path: key
@@ -209,9 +209,9 @@ spec:
             items:
               - key: genesis-geth.json
                 path: genesis-geth.json
-        - name: cm-nodekey
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey
+        - name: secret-nodekey
+          secret:
+            secretName: {{ include "quorumNode.Identifier" . }}-nodekey
             items:
               - key: nodekey
                 path: nodekey

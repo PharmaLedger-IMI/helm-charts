@@ -1,18 +1,15 @@
-#
-# TODO: Put into Secret
-# Secret Account key
-#
 {{- if .Values.use_case.newNetwork.enabled }}
 # ethereum / geth account keys (keystore)
 {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: {{ include "quorumNode.Identifier" . }}-account-key
   namespace: {{ default .Release.Namespace }}
   labels:
     name: {{ include "quorumNode.Identifier" . }}-account-key
 data:
-  key: |- {{ ($generatedPrivateJson.genesisKeyStoreAccount | b64dec) | nindent 4 }}
-
+  # Note: $generatedPrivateJson.genesisKeyStoreAccount is already base64 encoded
+  key: |- {{ $generatedPrivateJson.genesisKeyStoreAccount | nindent 4 }}
+type: Opaque
 {{- end }}

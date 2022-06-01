@@ -87,7 +87,7 @@ spec:
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
           {{- end }}
-            - name: cm-nodekey
+            - name: secret-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
             - name: cm-enode
@@ -103,9 +103,9 @@ spec:
               - key: genesis-geth.json
                 path: genesis-geth.json
       {{- end }}
-        - name: cm-nodekey
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey
+        - name: secret-nodekey
+          secret:
+            secretName: {{ include "quorumNode.Identifier" . }}-nodekey
             items:
               - key: nodekey
                 path: nodekey
