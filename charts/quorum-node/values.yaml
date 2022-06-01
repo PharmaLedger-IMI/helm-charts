@@ -4,33 +4,33 @@
 
 deployment:
   # -- The number of the deployed Quorum node
-  quorum_node_no:
-  # -- The name of the company that makes the deployment
+  quorum_node_no: ""
+  # -- The name of the company that makes the deployment (required on git upload) - e.g. "bayer"
   company: ""
-  # -- The name of the use case that is being deployed
+  # -- The name of the use case that is being deployed (required on git upload) - e.g. "dev"
   network_name: ""
-  # -- The Quorum node public ip address
+  # -- The Quorum node public ip address (required on git upload) - e.g. "54.43.32.21"
   enode_address: ""
-  # -- The Port of the Quorum node public address
+  # -- The Port of the Quorum node public address (required on git upload) - usually "30303" - e.g. "30303"
   enode_address_port: "30303"
-  # -- NAT address, used for firewall configuration
-  NAT: "1.2.3.4"
+  # -- NAT (public IP address your node is sending from) (required on git upload) - e.g. "9.8.7.6"
+  NAT: ""
 
 git_shared_configuration:
-  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
+  # -- shared github repository name (required on git upload) - e.g. "PharmaLedger-IMI/epi-shared-configuration"
   repository_name: ""
-  # -- github read-write token
+  # -- github read-write token (required on git upload) - See [https://github.com/settings/tokens](https://github.com/settings/tokens) for creating a personal access token with "Full control of private repositories".
   read_write_token: ""
 
 git_upload:
   # --  Enable the automatic upload to the use case shared repository of the shareable data
   enabled: true
-  # -- The email used by the git in order to upload the data
+  # -- The email used by the git in order to upload the data (required on git upload) - e.g. first.last@company.com
   email: ""
-  # -- The user used by the git in order to upload the data
+  # -- The user used by the git in order to upload the data (required on git upload) - e.g. "Firstname Lastname"
   user: ""
-  # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step
-  git_repo_clone_directory: "helm-charts"
+  # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step - do not change
+  git_repo_clone_directory: "cloned-repo"
   # -- The description associated with the commit into the use case shared repository of the shareable data
   git_commit_description: "added genesis and node information"
 
