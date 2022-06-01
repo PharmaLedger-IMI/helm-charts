@@ -1,12 +1,22 @@
 # quorum-node
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
 ## Requirements
 
 - [helm 3](https://helm.sh/docs/intro/install/)
+
+## Changelog
+
+- From 0.3.x to 0.4.x
+  - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
+  - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
+  - Security: Run as non root user with readonly filesystem by default
+  - Reacts to config changes and restart quorum node [https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
+  - Follows standard Helm naming conventions (e.g. use `fullnameOverride` to set fix names) and removed function "quorum-node.Identifier"
+  - Some minor fixes
 
 ## Deployment use case matrix
 
@@ -99,27 +109,41 @@ spec:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) Notes for AWS: We want to schedule the pod in a certain availability zone, here eu-west-1a Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets Please note, that your nodes must be labeled accordingly! See [https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone) |
-| deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
-| deployment.company | string | `""` | The name of the company that makes the deployment |
-| deployment.enode_address | string | `""` | The Quorum node public ip address |
-| deployment.enode_address_port | string | `"30303"` | The Port of the Quorum node public address |
-| deployment.network_name | string | `""` | The name of the use case that is being deployed |
-| deployment.quorum_node_no | string | `nil` | The number of the deployed Quorum node |
+| deployment.NAT | string | `""` | NAT (public IP address your node is sending from) (required on git upload) - e.g. "9.8.7.6" |
+| deployment.company | string | `""` | The name of the company that makes the deployment (required on git upload) - e.g. "bayer" |
+| deployment.enode_address | string | `""` | The Quorum node public ip address (required on git upload) - e.g. "54.43.32.21" |
+| deployment.enode_address_port | string | `"30303"` | The Port of the Quorum node public address (required on git upload) - usually "30303" - e.g. "30303" |
+| deployment.network_name | string | `""` | The name of the use case that is being deployed (required on git upload) - e.g. "dev" |
+| deployment.quorum_node_no | string | `""` | The number of the deployed Quorum node |
 | deploymentStrategy.type | string | `"Recreate"` |  |
-| fullnameOverride | string | `"quorum"` | Override the full name |
-| git_shared_configuration.read_write_token | string | `""` | github read-write token |
-| git_shared_configuration.repository_name | string | `""` | shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration |
-| git_upload.email | string | `""` | The email used by the git in order to upload the data |
+| fullnameOverride | string | `""` | Override the full name |
+| git.image.pullPolicy | string | `"Always"` | Image Pull Policy |
+| git.image.repository | string | `"alpine/git"` | The repository of the container image containing kubectl |
+| git.image.sha | string | `"b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
+| git.image.tag | string | `"v2.32.0"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
+| git.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| git.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
+| git.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
+| git_shared_configuration.read_write_token | string | `""` | github read-write token (required on git upload) - See [https://github.com/settings/tokens](https://github.com/settings/tokens) for creating a personal access token with "Full control of private repositories". |
+| git_shared_configuration.repository_name | string | `""` | shared github repository name (required on git upload) - e.g. "PharmaLedger-IMI/epi-shared-configuration" |
+| git_upload.email | string | `""` | The email used by the git in order to upload the data (required on git upload) - e.g. first.last@company.com |
 | git_upload.enabled | bool | `true` | Enable the automatic upload to the use case shared repository of the shareable data |
 | git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
-| git_upload.git_repo_clone_directory | string | `"helm-charts"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step |
-| git_upload.user | string | `""` | The user used by the git in order to upload the data |
+| git_upload.git_repo_clone_directory | string | `"cloned-repo"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step - do not change |
+| git_upload.user | string | `""` | The user used by the git in order to upload the data (required on git upload) - e.g. "Firstname Lastname" |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `"21.7.1"` | Image tag |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
-| nameOverride | string | `"quorum"` | override the name |
+| kubectl.image.pullPolicy | string | `"Always"` | Image Pull Policy |
+| kubectl.image.repository | string | `"bitnami/kubectl"` | The repository of the container image containing kubectl |
+| kubectl.image.sha | string | `"f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
+| kubectl.image.tag | string | `"1.21.8"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
+| kubectl.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| kubectl.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
+| kubectl.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
+| nameOverride | string | `""` | override the name |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.data.annotations | object | `{}` | Annotations for the data PVC. |
@@ -139,7 +163,7 @@ spec:
 | persistence.logs.size | string | `"1Gi"` | Size of the logs PVC volume. |
 | persistence.logs.storageClassName | string | `""` | Name of the storage class for logs PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
-| podSecurityContext | object | `{}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| podSecurityContext | object | `{"fsGroup":10000,"runAsGroup":10000,"runAsUser":10000}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | quorum.dataDirPath | string | `"/quorum/home/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume. |
 | quorum.genesisFilePath | string | `"/quorum/home/genesis/genesis-geth.json"` | File path to genesis file |
 | quorum.homeMountPath | string | `"/quorum/home"` | Directory path to where the persistent volume "data" will be mounted to. Also some config file will be mounted there. |
@@ -159,7 +183,7 @@ spec:
 | quorum.rpc.vHosts | string | `"*"` | The virtual hostnames for the RPC endpoint to listen for. If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local |
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
 | resources | object | `{}` | Pod resources |
-| securityContext | object | `{}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":10000,"runAsNonRoot":true,"runAsUser":10000}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | service.p2p.annotations | object | `{}` | Annotations for the P2P service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.p2p.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the P2P service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | service.p2p.port | int | `30303` | Port where the P2P service will be exposed. |

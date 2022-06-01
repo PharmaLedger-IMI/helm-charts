@@ -34,7 +34,14 @@ spec:
       name: {{ include "quorumNode.fullname" . }}
       labels:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
+      # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
+      {{- if .Values.use_case.newNetwork.enabled }}
+        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/secret-keyconfig-account.yaml") . | sha256sum }}
+      {{- end }}
+        checksum/nodekey: {{ include (print $.Template.BasePath "/secret-nodekey.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+        checksum/settings: {{ include (print $.Template.BasePath "/configmap-settings.yaml") . | sha256sum }}
       {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
         prometheus.io/scrape: "true"
         prometheus.io/path: "/debug/metrics/prometheus"
@@ -47,6 +54,7 @@ spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
+      automountServiceAccountToken: false
       {{- with .Values.podSecurityContext }}
       securityContext: {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -77,10 +85,11 @@ spec:
           volumeMounts:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}
-            - name: cm-genesis
+              subPath: {{ include "quorumNode.fullname" . }}
+            - name: cm-settings
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
+              readOnly: true
       containers:
         - name: quorum
           {{- with .Values.securityContext }}
@@ -150,99 +159,61 @@ spec:
             - name: PRIVATE_CONFIG
               value: "ignore"
             - name: THIS_NODE_ID
-              value: {{ include "quorumNode.Identifier" . }}
+              value: {{ include "quorumNode.fullname" . }}
             - name: THIS_ENODE
               value: {{ $enode }}
           volumeMounts:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}
+              subPath: {{ include "quorumNode.fullname" . }}
           {{- if .Values.persistence.logs.enabled }}
             - name: pvc-logs
               mountPath: {{ .Values.quorum.logsMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}-logs
+              subPath: {{ include "quorumNode.fullname" . }}-logs
           {{- end }}
-            - name: cm-genesis
-              mountPath: {{ .Values.quorum.genesisFilePath }}
-              subPath: genesis-geth.json
-            - name: cm-nodekey
+            - name: secret-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
+              readOnly: true
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: cm-account-key
+            - name: secret-account-key
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
+              readOnly: true
           {{- end }}
-            - name: cm-enode
+            - name: cm-settings
+              mountPath: {{ .Values.quorum.genesisFilePath }}
+              subPath: genesis-geth.json
+              readOnly: true
+            - name: cm-settings
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
-            - name: cm-permissioned-nodes
-              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes
-            - name: cm-geth-helpers
-              mountPath: /geth-helpers
-            - name: cm-validator-config
-              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml
-            - name: cm-node-management
+              readOnly: true
+            - name: cm-settings
+              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json
+              subPath: permissioned-nodes.json
+              readOnly: true
+            - name: cm-settings
+              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml
+              subPath: istanbul-validator-config.toml
+              readOnly: true
+            - name: cm-scripts
+              mountPath: /geth-helpers/geth-attach.sh
+              subPath: geth-attach.sh
+              readOnly: true
+            - name: cm-scripts
+              mountPath: /geth-helpers/geth-exec.sh
+              subPath: geth-exec.sh
+              readOnly: true
+            - name: cm-scripts
               mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
-            - name: cm-node-management
+              readOnly: true
+            - name: cm-scripts
               mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
+              readOnly: true
       volumes:
-      {{- if .Values.use_case.newNetwork.enabled }}
-        - name: cm-account-key
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-account-key
-            items:
-              - key: key
-                path: key
-      {{- end }}
-        - name: cm-permissioned-nodes
-          configMap:
-            name: {{ include "quorumnode.permissionedNodes" . }}
-            items:
-              - key: permissioned-nodes.json
-                path: permissioned-nodes.json
-        - name: cm-genesis
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis
-            items:
-              - key: genesis-geth.json
-                path: genesis-geth.json
-        - name: cm-nodekey
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey
-            items:
-              - key: nodekey
-                path: nodekey
-        - name: cm-enode
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode
-            items:
-              - key: enode
-                path: enode
-        - name: cm-geth-helpers
-          configMap:
-            name: {{ include "quorumnode.gethHelpers" . }}
-            items:
-              - key: geth-attach.sh
-                path: geth-attach.sh
-              - key: geth-exec.sh
-                path: geth-exec.sh
-            defaultMode: 0777
-        - name: cm-validator-config
-          configMap:
-            name: {{ include "quorumnode.IValidatorCfg" . }}
-        - name: cm-node-management
-          configMap:
-            name: {{ include "quorumnode.NodeManagement" . }}
-            items:
-              - key: ibft_propose.sh
-                path: ibft_propose.sh
-              - key: ibft_propose_all.sh
-                path: ibft_propose_all.sh
-            defaultMode: 0777
-        # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
         - name: pvc-data
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcData" . }}
@@ -251,3 +222,45 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
       {{- end }}
+      {{- if .Values.use_case.newNetwork.enabled }}
+        - name: secret-account-key
+          secret:
+            secretName: {{ include "quorumNode.fullname" . }}-account-key
+            defaultMode: 0440  # mount as r
+            items:
+              - key: key
+                path: key
+      {{- end }}
+        - name: secret-nodekey
+          secret:
+            secretName: {{ include "quorumNode.fullname" . }}-nodekey
+            defaultMode: 0440  # mount as r
+            items:
+              - key: nodekey
+                path: nodekey
+        - name: cm-settings
+          configMap:
+            name: {{ include "quorumNode.fullname" . }}-settings
+            defaultMode: 0440  # mount as r
+            items:
+              - key: enode
+                path: enode
+              - key: permissioned-nodes.json
+                path: permissioned-nodes.json
+              - key: istanbul-validator-config.toml
+                path: istanbul-validator-config.toml
+              - key: genesis-geth.json
+                path: genesis-geth.json
+        - name: cm-scripts
+          configMap:
+            name: {{ include "quorumnode.configmap.scripts" . }}
+            defaultMode: 0550  # mount as rx
+            items:
+              - key: geth-attach.sh
+                path: geth-attach.sh
+              - key: geth-exec.sh
+                path: geth-exec.sh
+              - key: ibft_propose.sh
+                path: ibft_propose.sh
+              - key: ibft_propose_all.sh
+                path: ibft_propose_all.sh
