@@ -8,6 +8,13 @@
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 
+## Changelog
+
+- From 0.3.x to 0.4.x
+  - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
+  - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
+  - Security: Run as non root user with readonly filesystem by default
+
 ## Deployment use case matrix
 
 | Use case | Configuration |
