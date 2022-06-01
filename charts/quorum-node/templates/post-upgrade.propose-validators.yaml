@@ -34,7 +34,7 @@ spec:
               echo "Sleeping for short time to wait until container may have restarted"
               sleep 60
               echo "Propose all as validator..."
-              kubectl exec --container=quorum -it deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
+              kubectl exec --container=quorum -t deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
 
 ---
 # TODO : add remove of validators in plugin, chart as sh ibft_un_propose_all.sh and job
@@ -50,13 +50,14 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["get","list","watch"]
+    verbs: ["list"]
   - apiGroups: [""]
     resources: ["pods/exec"]
-    verbs: ["create","get","list","watch"]
+    verbs: ["create","watch"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    verbs: ["get","list"]
+    resourceNames: [{{ include "quorumNode.fullname" . | quote }}]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
