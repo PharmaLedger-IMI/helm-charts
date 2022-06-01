@@ -41,6 +41,7 @@ spec:
         checksum/keyconfig-account: {{ include (print $.Template.BasePath "/secret-keyconfig-account.yaml") . | sha256sum }}
       {{- end }}
         checksum/keyconfigs: {{ include (print $.Template.BasePath "/configmap-keyconfigs.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
         checksum/shared-config: {{ include (print $.Template.BasePath "/configmap-shared-config.yaml") . | sha256sum }}
       {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
         prometheus.io/scrape: "true"
