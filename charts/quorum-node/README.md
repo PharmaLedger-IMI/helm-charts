@@ -14,6 +14,8 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
   - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
   - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
   - Security: Run as non root user with readonly filesystem by default
+  - Follows standard Helm naming conventions (e.g. use `fullnameOverride` to set fix names) and removed function "quorum-node.Identifier"
+  - Some minor fixes
 
 ## Deployment use case matrix
 
@@ -113,7 +115,7 @@ spec:
 | deployment.network_name | string | `""` | The name of the use case that is being deployed (required on git upload) - e.g. "dev" |
 | deployment.quorum_node_no | string | `""` | The number of the deployed Quorum node |
 | deploymentStrategy.type | string | `"Recreate"` |  |
-| fullnameOverride | string | `"quorum"` | Override the full name |
+| fullnameOverride | string | `""` | Override the full name |
 | git.image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | git.image.repository | string | `"alpine/git"` | The repository of the container image containing kubectl |
 | git.image.sha | string | `"b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
@@ -140,7 +142,7 @@ spec:
 | kubectl.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | kubectl.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
 | kubectl.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
-| nameOverride | string | `"quorum"` | override the name |
+| nameOverride | string | `""` | override the name |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.data.annotations | object | `{}` | Annotations for the data PVC. |
