@@ -95,20 +95,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- printf "%s-permissioned-nodes" $qni }}
 {{- end }}
 
-{{- define "quorumnode.NodeManagement" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-node-management" $qni }}
-{{- end }}
-
 {{- define "quorumnode.IValidatorCfg" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-istanbul-validator-config" $qni }}
 {{- end }}
 
-{{- define "quorumnode.gethHelpers" -}}
+{{- define "quorumnode.configmap.scripts" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-geth-helpers" $qni }}
+{{- printf "%s-scripts" $qni }}
 {{- end }}
+
 
 {{/*
     The full image repository:tag[@sha256:sha]

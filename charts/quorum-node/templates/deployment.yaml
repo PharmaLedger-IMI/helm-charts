@@ -185,14 +185,14 @@ spec:
               subPath: enode
             - name: cm-permissioned-nodes
               mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes
-            - name: cm-geth-helpers
-              mountPath: /geth-helpers
             - name: cm-validator-config
               mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml
-            - name: cm-node-management
+            - name: cm-scripts
+              mountPath: /geth-helpers
+            - name: cm-scripts
               mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
-            - name: cm-node-management
+            - name: cm-scripts
               mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
               subPath: ibft_propose_all.sh
       volumes:
@@ -228,27 +228,22 @@ spec:
             items:
               - key: enode
                 path: enode
-        - name: cm-geth-helpers
+        - name: cm-scripts
           configMap:
-            name: {{ include "quorumnode.gethHelpers" . }}
+            name: {{ include "quorumnode.configmap.scripts" . }}
             items:
               - key: geth-attach.sh
                 path: geth-attach.sh
               - key: geth-exec.sh
                 path: geth-exec.sh
-            defaultMode: 0777
-        - name: cm-validator-config
-          configMap:
-            name: {{ include "quorumnode.IValidatorCfg" . }}
-        - name: cm-node-management
-          configMap:
-            name: {{ include "quorumnode.NodeManagement" . }}
-            items:
               - key: ibft_propose.sh
                 path: ibft_propose.sh
               - key: ibft_propose_all.sh
                 path: ibft_propose_all.sh
             defaultMode: 0777
+        - name: cm-validator-config
+          configMap:
+            name: {{ include "quorumnode.IValidatorCfg" . }}
         # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
         - name: pvc-data
           persistentVolumeClaim:

@@ -35,10 +35,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "quorumnode.NodeManagement" . }}
+  name: {{ include "quorumnode.configmap.scripts" . }}
   namespace: {{ default .Release.Namespace }}
   labels:
-    name: {{ include "quorumnode.NodeManagement" . }}
+    name: {{ include "quorumnode.configmap.scripts" . }}
 data:
   ibft_propose.sh: |-
     #/bin/ash
@@ -64,39 +64,6 @@ data:
       echo $Addr
       {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh $Addr true
     done
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "quorumnode.IValidatorCfg" . }}
-  namespace: {{ default .Release.Namespace }}
-  labels:
-    name: {{ include "quorumnode.IValidatorCfg" . }}
-data:
-  istanbul-validator-config.toml: |-
-    vanity = "0x00"
-    validators = [
-      {{ $nodeKeyPublic | quote }}
-{{- if .Values.use_case.updatePartnersInfo.enabled }}
-  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
-  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
-  {{- range $peers }}
-    {{- $peer := . }}
-      {{- printf "," }}
-      {{ $peer.nodeKeyPublic | quote }}
-  {{- end }}
-{{- end }}
-    ]
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "quorumnode.gethHelpers" . }}
-  namespace: {{ default .Release.Namespace }}
-  labels:
-    name: {{ include "quorumnode.gethHelpers" . }}
-data:
   geth-attach.sh: |-
     #!/bin/sh
 
@@ -121,3 +88,28 @@ data:
     # to avoid warning being returned
     # "WARN [02-20|00:21:04.382] Sanitizing cache to Go's GC limits  provided=1024 updated=663"
     geth --exec $GETH_CMD  --cache=16 attach --datadir {{ .Values.quorum.dataDirPath }} {{ .Values.quorum.dataDirPath }}/geth.ipc
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumnode.IValidatorCfg" . }}
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumnode.IValidatorCfg" . }}
+data:
+  istanbul-validator-config.toml: |-
+    vanity = "0x00"
+    validators = [
+      {{ $nodeKeyPublic | quote }}
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
+    {{- $peer := . }}
+      {{- printf "," }}
+      {{ $peer.nodeKeyPublic | quote }}
+  {{- end }}
+{{- end }}
+    ]
+
