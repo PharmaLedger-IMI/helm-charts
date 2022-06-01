@@ -166,7 +166,7 @@ spec:
             sizeLimit: "2Gi"
         - name: cm-settings
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-settings
+            name: {{ include "quorumNode.fullname" . }}-settings
             defaultMode: 0440  # mount as r
             items:
           {{- if .Values.use_case.newNetwork.enabled }}

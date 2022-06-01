@@ -85,7 +85,7 @@ spec:
           volumeMounts:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}
+              subPath: {{ include "quorumNode.fullname" . }}
             - name: cm-settings
               mountPath: {{ .Values.quorum.genesisFilePath }}
               subPath: genesis-geth.json
@@ -159,17 +159,17 @@ spec:
             - name: PRIVATE_CONFIG
               value: "ignore"
             - name: THIS_NODE_ID
-              value: {{ include "quorumNode.Identifier" . }}
+              value: {{ include "quorumNode.fullname" . }}
             - name: THIS_ENODE
               value: {{ $enode }}
           volumeMounts:
             - name: pvc-data
               mountPath: {{ .Values.quorum.homeMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}
+              subPath: {{ include "quorumNode.fullname" . }}
           {{- if .Values.persistence.logs.enabled }}
             - name: pvc-logs
               mountPath: {{ .Values.quorum.logsMountPath }}
-              subPath: {{ include "quorumNode.Identifier" . }}-logs
+              subPath: {{ include "quorumNode.fullname" . }}-logs
           {{- end }}
             - name: secret-nodekey
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
@@ -225,7 +225,7 @@ spec:
       {{- if .Values.use_case.newNetwork.enabled }}
         - name: secret-account-key
           secret:
-            secretName: {{ include "quorumNode.Identifier" . }}-account-key
+            secretName: {{ include "quorumNode.fullname" . }}-account-key
             defaultMode: 0440  # mount as r
             items:
               - key: key
@@ -233,14 +233,14 @@ spec:
       {{- end }}
         - name: secret-nodekey
           secret:
-            secretName: {{ include "quorumNode.Identifier" . }}-nodekey
+            secretName: {{ include "quorumNode.fullname" . }}-nodekey
             defaultMode: 0440  # mount as r
             items:
               - key: nodekey
                 path: nodekey
         - name: cm-settings
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-settings
+            name: {{ include "quorumNode.fullname" . }}-settings
             defaultMode: 0440  # mount as r
             items:
               - key: enode

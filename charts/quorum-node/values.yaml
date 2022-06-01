@@ -249,9 +249,9 @@ persistence:
 # -- Number of replicas for the quorum-node !! DO NOT CHANGE !!
 replicasCount: 1
 # -- Override the full name
-fullnameOverride: "quorum"
+fullnameOverride: ""
 # -- override the name
-nameOverride: "quorum"
+nameOverride: ""
 
 # -- Secret(s) for pulling an container image from a private registry.
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)

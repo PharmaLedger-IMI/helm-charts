@@ -14,7 +14,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default ( include "quorumNode.Identifier" . ) .Values.nameOverride }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -69,25 +69,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "quorumNode.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "quorumNode.Identifier" . }}
+app.kubernetes.io/name: {{ include "quorumNode.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{- define "quorumNode.Identifier" -}}
-{{- $name := (include "quorumNode.name" .) }}
-{{- if .Values.deployment.quorum_node_no }}
-{{- printf "%s-%s" $name .Values.deployment.quorum_node_no | trunc 63 }}
-{{- else }}
-{{- printf "%s" $name | trunc 63 }}
-{{- end }}
-{{- end }}
-
 
 {{- define "quorumnode.PvcLogs" -}}
 {{- if .Values.persistence.logs.existingClaim }}
 {{- .Values.persistence.logs.existingClaim }}
 {{- else }}
-{{- $qni := include "quorumNode.Identifier" . }}
+{{- $qni := include "quorumNode.fullname" . }}
 {{- printf "%s-logs" $qni }}
 {{- end }}
 {{- end }}
@@ -96,13 +86,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Values.persistence.data.existingClaim }}
 {{- .Values.persistence.data.existingClaim }}
 {{- else }}
-{{- $qni := include "quorumNode.Identifier" . }}
+{{- $qni := include "quorumNode.fullname" . }}
 {{- printf "%s-data" $qni }}
 {{- end }}
 {{- end }}
 
 {{- define "quorumnode.configmap.scripts" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
+{{- $qni := include "quorumNode.fullname" . }}
 {{- printf "%s-scripts" $qni }}
 {{- end }}
 
