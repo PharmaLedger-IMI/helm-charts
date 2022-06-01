@@ -1,31 +1,14 @@
-{{- $nodeKey := "" }}
 {{- $nodeKeyPublic := "" }}
 {{- $enode := "" }}
 {{- if .Values.use_case.newNetwork.enabled }}
   {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-  {{- $generatedPrivateJson := ( .Values.use_case.newNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
   {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
-  {{- $nodeKey = $generatedPrivateJson.nodeKey }}
 {{- else }}
   {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-  {{- $generatedPrivateJson := ( .Values.use_case.joinNetwork.plugin_data_secrets | fromJson ) }}
   {{- $enode = $generatedPublicJson.enode }}
   {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
-  {{- $nodeKey = $generatedPrivateJson.nodeKey }}
 {{- end }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ include "quorumNode.Identifier" . }}-nodekey
-  namespace: {{ default .Release.Namespace }}
-  labels:
-    name: {{ include "quorumNode.Identifier" . }}-nodekey
-data:
-  nodekey: | {{ $nodeKey | b64enc | nindent 4 }}
-type: Opaque
-# Only IBFT / istanbul networks need access to the nodekey address.
 ---
 # nodekey address public and used to generate istanbul-validator-config.toml
 apiVersion: v1
