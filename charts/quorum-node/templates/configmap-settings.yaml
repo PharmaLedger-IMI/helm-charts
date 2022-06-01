@@ -1,0 +1,97 @@
+{{- $enode := "" }}
+{{- $nodeKeyPublic := ""}}
+{{- if .Values.use_case.newNetwork.enabled }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+{{- else }}
+  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  {{- $enode = $generatedPublicJson.enode }}
+  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
+{{- end }}
+# public node key (aka node address) and used to generate istanbul-validator-config.toml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorumNode.Identifier" . }}-settings
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    name: {{ include "quorumNode.Identifier" . }}-settings
+data:
+  nodekey.pub: | {{ $nodeKeyPublic | nindent 4 }}
+  enode: | {{ $enode | nindent 4 }}
+  permissioned-nodes.json: |
+    [
+      "enode://{{ $enode }}@{{ include "quorumNode.fullname" . }}:30303?discport=0"
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
+    {{- $peer := . }}
+      {{- printf "," }}
+      {{ printf "enode://%s@%s:%s?discport=0" $peer.enode $peer.enodeAddress $peer.enodeAddressPort | quote }}
+  {{- end }}
+{{- end }}
+    ]
+  istanbul-validator-config.toml: |-
+    vanity = "0x00"
+    validators = [
+      {{ $nodeKeyPublic | quote }}
+{{- if .Values.use_case.updatePartnersInfo.enabled }}
+  {{- $generatedUpdatePartnersPublicJson := ( .Values.use_case.updatePartnersInfo.plugin_data_common | fromJson ) }}
+  {{- $peers := $generatedUpdatePartnersPublicJson.peers }}
+  {{- range $peers }}
+    {{- $peer := . }}
+      {{- printf "," }}
+      {{ $peer.nodeKeyPublic | quote }}
+  {{- end }}
+{{- end }}
+    ]
+
+{{- if .Values.use_case.newNetwork.enabled }}
+  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
+  genesis-geth.json: |-
+    {
+      "alloc": {
+        "{{ $generatedPublicJson.genesisAccount }}": {
+            "balance": "1000000000000000000000000000"
+        }
+      },
+      "coinbase": "0x0000000000000000000000000000000000000000",
+      "config": {
+        "homesteadBlock": 0,
+        "byzantiumBlock": 0,
+        "constantinopleBlock": 0,
+        "petersburgBlock": 0,
+        "istanbulBlock": 0,
+        "eip150Block": 0,
+        "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "eip155Block": 0,
+        "eip158Block": 0,
+        "maxCodeSizeConfig": [
+          {
+            "block": 0,
+            "size": 32
+          }
+        ],
+        "chainId": 10,
+        "isQuorum": true,
+        "istanbul": {
+          "epoch": 30000,
+          "policy": 0
+        }
+      },
+      "difficulty": "0x1",
+      "extraData": "{{ $generatedPublicJson.extradata }}",
+      "gasLimit": "0xE0000000",
+      "mixHash": "0x63746963616c2062797a616e74696e65206661756c7420746f6c6572616e6365",
+      "nonce": "0x0",
+      "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "timestamp": "0x00"
+    }
+
+{{- else }}
+    {{- $genesis := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
+  genesis-geth.json: |- {{ $genesis.genesis | nindent 4 }}
+{{- end }}
+

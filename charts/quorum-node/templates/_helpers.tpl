@@ -90,16 +90,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 {{- end }}
 
-{{- define "quorumnode.permissionedNodes" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-permissioned-nodes" $qni }}
-{{- end }}
-
-{{- define "quorumnode.IValidatorCfg" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-istanbul-validator-config" $qni }}
-{{- end }}
-
 {{- define "quorumnode.configmap.scripts" -}}
 {{- $qni := include "quorumNode.Identifier" . }}
 {{- printf "%s-scripts" $qni }}
