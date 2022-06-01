@@ -36,12 +36,12 @@ spec:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
-        checksum/genesis: {{ include (print $.Template.BasePath "/quorum-genesis.yaml") . | sha256sum }}
+        checksum/genesis: {{ include (print $.Template.BasePath "/configmap-genesis.yaml") . | sha256sum }}
       {{- if .Values.use_case.newNetwork.enabled }}
-        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/quorum-keyconfig-account.yaml") . | sha256sum }}
+        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/configmap-keyconfig-account.yaml") . | sha256sum }}
       {{- end }}
-        checksum/keyconfigs: {{ include (print $.Template.BasePath "/quorum-keyconfigs.yaml") . | sha256sum }}
-        checksum/shared-config: {{ include (print $.Template.BasePath "/quorum-shared-config.yaml") . | sha256sum }}
+        checksum/keyconfigs: {{ include (print $.Template.BasePath "/configmap-keyconfigs.yaml") . | sha256sum }}
+        checksum/shared-config: {{ include (print $.Template.BasePath "/configmap-shared-config.yaml") . | sha256sum }}
       {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
         prometheus.io/scrape: "true"
         prometheus.io/path: "/debug/metrics/prometheus"
