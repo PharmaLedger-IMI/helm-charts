@@ -17,12 +17,29 @@ spec:
   activeDeadlineSeconds: 120
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "quorumNode.fullname" . }}-quorum-propose
+      automountServiceAccountToken: true
+      {{- with .Values.kubectl.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       restartPolicy: Never
       containers:
         - name: kubectl
-          imagePullPolicy: IfNotPresent
-          image: bitnami/kubectl:1.23.5
+          {{- with .Values.kubectl.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.kubectl.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ include "quorumNode.kubectl.image" . | quote }}
+          imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
           command:
             - sh
             - -cx
@@ -35,6 +52,18 @@ spec:
               sleep 60
               echo "Propose all as validator..."
               kubectl exec --container=quorum -t deploy/{{ include "quorumNode.fullname" . }} -- {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose_all.sh
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
 ---
 # TODO : add remove of validators in plugin, chart as sh ibft_un_propose_all.sh and job

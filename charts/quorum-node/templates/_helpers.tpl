@@ -44,6 +44,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 
 {{/*
+    The full image repository:tag[@sha256:sha] for kubectl
+*/}}
+{{- define "quorumNode.kubectl.image" -}}
+{{- if .Values.kubectl.image.sha -}}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
+{{- else -}}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Selector labels
 */}}
 {{- define "quorumNode.selectorLabels" -}}

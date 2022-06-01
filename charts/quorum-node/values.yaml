@@ -377,3 +377,53 @@ podSecurityContext: {}
 # -- Security Context for the application container
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
 securityContext: {}
+
+
+# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
+kubectl:
+  image:
+    # -- The repository of the container image containing kubectl
+    repository: bitnami/kubectl
+    # -- Image Pull Policy
+    pullPolicy: Always
+    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
+    tag: "1.21.8"
+    # -- sha256 digest of the image.
+    # Do not add the prefix "@sha256:"
+    # <br/>
+    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # <!-- # pragma: allowlist secret -->
+    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+
+  # -- Resource constraints for the pre-builder and cleanup job
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # -- Pod Security Context for the pod running kubectl.
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+  podSecurityContext:
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
+    # -- The SecComp configuration.
+    # Not enabled by default as not every environment supports it.
+    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+    # seccompProfile:
+    #   type: RuntimeDefault
+
+  # -- Security Context for the container running kubectl
+  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
