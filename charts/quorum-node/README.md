@@ -106,21 +106,28 @@ spec:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) Notes for AWS: We want to schedule the pod in a certain availability zone, here eu-west-1a Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets Please note, that your nodes must be labeled accordingly! See [https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone](https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone) |
-| deployment.NAT | string | `"1.2.3.4"` | NAT address, used for firewall configuration |
-| deployment.company | string | `""` | The name of the company that makes the deployment |
-| deployment.enode_address | string | `""` | The Quorum node public ip address |
-| deployment.enode_address_port | string | `"30303"` | The Port of the Quorum node public address |
-| deployment.network_name | string | `""` | The name of the use case that is being deployed |
-| deployment.quorum_node_no | string | `nil` | The number of the deployed Quorum node |
+| deployment.NAT | string | `""` | NAT (public IP address your node is sending from) (required on git upload) - e.g. "9.8.7.6" |
+| deployment.company | string | `""` | The name of the company that makes the deployment (required on git upload) - e.g. "bayer" |
+| deployment.enode_address | string | `""` | The Quorum node public ip address (required on git upload) - e.g. "54.43.32.21" |
+| deployment.enode_address_port | string | `"30303"` | The Port of the Quorum node public address (required on git upload) - usually "30303" - e.g. "30303" |
+| deployment.network_name | string | `""` | The name of the use case that is being deployed (required on git upload) - e.g. "dev" |
+| deployment.quorum_node_no | string | `""` | The number of the deployed Quorum node |
 | deploymentStrategy.type | string | `"Recreate"` |  |
 | fullnameOverride | string | `"quorum"` | Override the full name |
-| git_shared_configuration.read_write_token | string | `""` | github read-write token |
-| git_shared_configuration.repository_name | string | `""` | shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration |
-| git_upload.email | string | `""` | The email used by the git in order to upload the data |
+| git.image.pullPolicy | string | `"Always"` | Image Pull Policy |
+| git.image.repository | string | `"alpine/git"` | The repository of the container image containing kubectl |
+| git.image.sha | string | `"b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore) <!-- # pragma: allowlist secret --> |
+| git.image.tag | string | `"v2.32.0"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
+| git.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
+| git.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
+| git.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
+| git_shared_configuration.read_write_token | string | `""` | github read-write token (required on git upload) - See [https://github.com/settings/tokens](https://github.com/settings/tokens) for creating a personal access token with "Full control of private repositories". |
+| git_shared_configuration.repository_name | string | `""` | shared github repository name (required on git upload) - e.g. "PharmaLedger-IMI/epi-shared-configuration" |
+| git_upload.email | string | `""` | The email used by the git in order to upload the data (required on git upload) - e.g. first.last@company.com |
 | git_upload.enabled | bool | `true` | Enable the automatic upload to the use case shared repository of the shareable data |
 | git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
-| git_upload.git_repo_clone_directory | string | `"helm-charts"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step |
-| git_upload.user | string | `""` | The user used by the git in order to upload the data |
+| git_upload.git_repo_clone_directory | string | `"cloned-repo"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step - do not change |
+| git_upload.user | string | `""` | The user used by the git in order to upload the data (required on git upload) - e.g. "Firstname Lastname" |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
