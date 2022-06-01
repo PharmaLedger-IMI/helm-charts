@@ -184,11 +184,17 @@ spec:
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
               subPath: enode
             - name: cm-permissioned-nodes
-              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes
+              mountPath: {{ .Values.quorum.homeMountPath }}/permission-nodes/permissioned-nodes.json
+              subPath: permissioned-nodes.json
             - name: cm-validator-config
-              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml
+              mountPath: {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml
+              subPath: istanbul-validator-config.toml
             - name: cm-scripts
-              mountPath: /geth-helpers
+              mountPath: /geth-helpers/geth-attach.sh
+              subPath: geth-attach.sh
+            - name: cm-scripts
+              mountPath: /geth-helpers/geth-exec.sh
+              subPath: geth-exec.sh
             - name: cm-scripts
               mountPath: {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh
               subPath: ibft_propose.sh
@@ -240,10 +246,13 @@ spec:
                 path: ibft_propose.sh
               - key: ibft_propose_all.sh
                 path: ibft_propose_all.sh
-            defaultMode: 0777
+            defaultMode: 0555
         - name: cm-validator-config
           configMap:
             name: {{ include "quorumnode.IValidatorCfg" . }}
+            items:
+              - key: istanbul-validator-config.toml
+                path: istanbul-validator-config.toml
         # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
         - name: pvc-data
           persistentVolumeClaim:
