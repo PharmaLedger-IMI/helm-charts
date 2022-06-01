@@ -74,7 +74,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: quorum-propose-service-account
-    namespace: default
+    namespace: {{ default .Release.Namespace }}
 
 ---
 apiVersion: v1
