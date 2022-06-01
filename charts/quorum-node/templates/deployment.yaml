@@ -214,10 +214,19 @@ spec:
               subPath: ibft_propose_all.sh
               readOnly: true
       volumes:
+        - name: pvc-data
+          persistentVolumeClaim:
+            claimName: {{ include "quorumnode.PvcData" . }}
+      {{- if .Values.persistence.logs.enabled }}
+        - name: pvc-logs
+          persistentVolumeClaim:
+            claimName: {{ include "quorumnode.PvcLogs" . }}
+      {{- end }}
       {{- if .Values.use_case.newNetwork.enabled }}
         - name: secret-account-key
           secret:
             secretName: {{ include "quorumNode.Identifier" . }}-account-key
+            defaultMode: 0444  # mount as r
             items:
               - key: key
                 path: key
@@ -225,12 +234,14 @@ spec:
         - name: secret-nodekey
           secret:
             secretName: {{ include "quorumNode.Identifier" . }}-nodekey
+            defaultMode: 0444  # mount as r
             items:
               - key: nodekey
                 path: nodekey
         - name: cm-settings
           configMap:
             name: {{ include "quorumNode.Identifier" . }}-settings
+            defaultMode: 0444  # mount as r
             items:
               - key: enode
                 path: enode
@@ -243,6 +254,7 @@ spec:
         - name: cm-scripts
           configMap:
             name: {{ include "quorumnode.configmap.scripts" . }}
+            defaultMode: 0555  # mount as rx
             items:
               - key: geth-attach.sh
                 path: geth-attach.sh
@@ -252,13 +264,3 @@ spec:
                 path: ibft_propose.sh
               - key: ibft_propose_all.sh
                 path: ibft_propose_all.sh
-            defaultMode: 0555
-        # PVC (configurable) https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
-        - name: pvc-data
-          persistentVolumeClaim:
-            claimName: {{ include "quorumnode.PvcData" . }}
-      {{- if .Values.persistence.logs.enabled }}
-        - name: pvc-logs
-          persistentVolumeClaim:
-            claimName: {{ include "quorumnode.PvcLogs" . }}
-      {{- end }}
