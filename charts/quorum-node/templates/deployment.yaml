@@ -38,7 +38,7 @@ spec:
       annotations:
         checksum/genesis: {{ include (print $.Template.BasePath "/configmap-genesis.yaml") . | sha256sum }}
       {{- if .Values.use_case.newNetwork.enabled }}
-        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/configmap-keyconfig-account.yaml") . | sha256sum }}
+        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/secret-keyconfig-account.yaml") . | sha256sum }}
       {{- end }}
         checksum/keyconfigs: {{ include (print $.Template.BasePath "/configmap-keyconfigs.yaml") . | sha256sum }}
         checksum/shared-config: {{ include (print $.Template.BasePath "/configmap-shared-config.yaml") . | sha256sum }}
