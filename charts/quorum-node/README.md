@@ -14,6 +14,7 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
   - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
   - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
   - Security: Run as non root user with readonly filesystem by default
+  - Reacts to config changes and restart quorum node [https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
   - Follows standard Helm naming conventions (e.g. use `fullnameOverride` to set fix names) and removed function "quorum-node.Identifier"
   - Some minor fixes
 
