@@ -89,10 +89,12 @@ spec:
             mountPath: /ePI-workspace/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
             readOnly: true
+            {{- if ne .Values.config.domain .Values.config.subDomain }}
           - name: epi-domains-volume
             mountPath: /ePI-workspace/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             readOnly: true
+            {{- end}}
           - name: epi-domains-volume
             mountPath: /ePI-workspace/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
