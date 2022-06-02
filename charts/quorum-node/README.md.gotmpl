@@ -8,6 +8,16 @@
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 
+## Changelog
+
+- From 0.3.x to 0.4.x
+  - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
+  - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
+  - Security: Run as non root user with readonly filesystem by default
+  - Reacts to config changes and restart quorum node [https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
+  - Follows standard Helm naming conventions (e.g. use `fullnameOverride` to set fix names) and removed function "quorum-node.Identifier"
+  - Some minor fixes
+
 ## Deployment use case matrix
 
 | Use case | Configuration |

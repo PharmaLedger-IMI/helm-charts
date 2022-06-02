@@ -1,118 +1,180 @@
 {{- if .Values.git_upload.enabled  }}
-{{- $nodeKeyPublic := ""}}
-{{- $enode := "" }}
-
-{{- if .Values.use_case.newNetwork.enabled }}
-  {{- $generatedPublicJson := ( .Values.use_case.newNetwork.plugin_data_common | fromJson ) }}
-  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
-  {{- $enode = $generatedPublicJson.enode }}
-{{- else }}
-  {{- $generatedPublicJson := ( .Values.use_case.joinNetwork.plugin_data_common | fromJson ) }}
-  {{- $nodeKeyPublic = $generatedPublicJson.nodeKeyPublic }}
-  {{- $enode = $generatedPublicJson.enode }}
-{{- end }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: quorum-git-post-install
+  name: {{ include "quorumNode.fullname" . }}-git-upload
   namespace: {{ default .Release.Namespace }}
   labels:
-    app: quorum-git-post-install
+    app: {{ include "quorumNode.fullname" . }}-git-upload
   annotations:
     "helm.sh/hook": post-install, post-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    # Keep job after completion in order to take look at logs
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
+  backoffLimit: 4
+  activeDeadlineSeconds: 300
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      automountServiceAccountToken: false
+      {{- with .Values.git.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
       containers:
-        - name: quorum-git-post-install
-          imagePullPolicy: IfNotPresent
-          image: alpine/git:v2.32.0
+        - name: git
+          {{- with .Values.git.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.git.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: {{ include "quorumNode.git.image" . | quote }}
+          imagePullPolicy: {{ .Values.git.image.pullPolicy | default "Always" }}
           command:
             - sh
             - -cx
           args:
             - |
-              git config --global user.email {{ .Values.git_upload.email | quote }}
-              git config --global user.name {{ .Values.git_upload.user | quote }}
-            {{- $storagepath :=  printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name .Values.deployment.company }}
-            {{- $genesisstoragepath :=  printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path .Values.deployment.network_name }}
+              # Exit on error
+              set -e
+              # Do not echo commands
+              set +x
+              # switch to temporary mounted volume /repo with write access as container filesystem is readonly by default!
+              cd /repo
 
-            {{- /*
+            {{/*
             # pragma: allowlist nextline secret
-            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" .Values.git_shared_configuration.read_write_token .Values.git_shared_configuration.repository_name }}
-            {{- $validatorFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.validator_file_name }}
-            {{- $enodeFilename := printf "%s/%s" $storagepath  .Values.shared_repository_conventions.enode_file_name }}
-            {{- $enodeaddressFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_file_name }}
-            {{- $enodeportFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.enode_address_port_file_name }}
-            {{- $natFilename := printf "%s/%s" $storagepath .Values.shared_repository_conventions.nat_file_name }}
-
-              git clone {{ $gitRepo }} {{ .Values.git_upload.git_repo_clone_directory }}
+            */}}{{- $gitRepo := printf "https://%s:x-oauth-basic@github.com/%s" (required ".Values.git_shared_configuration.read_write_token is required" .Values.git_shared_configuration.read_write_token) (required ".Values.git_shared_configuration.repository_name is required" .Values.git_shared_configuration.repository_name) }}
+              echo ""
+              echo "Cloning git repo .."
+              git clone {{ $gitRepo }} -b master --single-branch --depth 1 {{ required ".Values.git_upload.git_repo_clone_directory is required" .Values.git_upload.git_repo_clone_directory }}
               cd {{ .Values.git_upload.git_repo_clone_directory }}/
-              mkdir -p {{ $storagepath }}
+              echo ""
+              echo "Repo Root Folder content ..."
+              ls -las
 
-              rm -f {{ $validatorFilename }}
-              rm -f {{ $enodeFilename }}
-              rm -f {{ $enodeaddressFilename }}
-              rm -f {{ $enodeportFilename }}
-              rm -f {{ $natFilename }}
+              echo ""
+              echo "Configuring git locally in repo ..."
+              git config --local user.email {{ required ".Values.git_upload.email is required" .Values.git_upload.email | quote }}
+              git config --local user.name {{ required ".Values.git_upload.user is required" .Values.git_upload.user | quote }}
 
             {{- if .Values.use_case.newNetwork.enabled }}
+              #
+              # On new network, we store Genesis mounted from ConfigMap
+              #
+              {{- $genesisstoragepath := printf "%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path (required ".Values.deployment.network_name is required" .Values.deployment.network_name) }}
               {{- $genesisFilename := printf "%s/%s" $genesisstoragepath .Values.shared_repository_conventions.genesis_file_name }}
+              echo ""
+              echo "genesis-geth.json"
               rm -f {{ $genesisFilename }}
-              cat {{ .Values.quorum.genesisFilePath }} > {{ $genesisFilename }}
+              cp /cm-settings/genesis-geth.json {{ $genesisFilename }}
               git add {{ $genesisFilename }}
+              cat {{ $genesisFilename }}
             {{- end }}
-            
-              echo {{ $nodeKeyPublic | quote }} > {{ $validatorFilename }}
+
+              #
+              # Company settings
+              #
+              {{ $companyPath := printf "%s/%s/%s" .Values.shared_repository_conventions.base_shareable_storage_path (required ".Values.deployment.network_name is required" .Values.deployment.network_name) (required ".Values.deployment.company is required" .Values.deployment.company) -}}
+              mkdir -p {{ $companyPath }}
+              echo "Company Path content before doing changes ..."
+              ls -las {{ $companyPath }}
+
+              {{ $validatorFilename := printf "%s/%s" $companyPath .Values.shared_repository_conventions.validator_file_name -}}
+              echo ""
+              echo "nodekey.pub"
+              rm -f {{ $validatorFilename }}
+              cp /cm-settings/nodekey.pub {{ $validatorFilename }}
               git add {{ $validatorFilename }}
+              cat {{ $validatorFilename }}
 
-              echo {{ $enode | quote }} > {{ $enodeFilename }}
+              {{ $enodeFilename := printf "%s/%s" $companyPath .Values.shared_repository_conventions.enode_file_name -}}
+              echo ""
+              echo "enode"
+              rm -f {{ $enodeFilename }}
+              cp /cm-settings/enode {{ $enodeFilename }}
               git add {{ $enodeFilename }}
+              cat {{ $enodeFilename }}
 
-              echo {{ .Values.deployment.enode_address | quote }} > {{ $enodeaddressFilename }}
+              #
+              # Values from ".Values.deployment"
+              #
+              {{ $enodeaddressFilename := printf "%s/%s" $companyPath .Values.shared_repository_conventions.enode_address_file_name -}}
+              echo ""
+              echo "enode_address"
+              rm -f {{ $enodeaddressFilename }}
+              echo {{ (required ".Values.deployment.enode_address is required" .Values.deployment.enode_address) | quote }} > {{ $enodeaddressFilename }}
               git add {{ $enodeaddressFilename }}
+              cat {{ $enodeaddressFilename }}
 
-              echo {{ .Values.deployment.enode_address_port | quote }} > {{ $enodeportFilename }}
+              {{ $enodeportFilename := printf "%s/%s" $companyPath .Values.shared_repository_conventions.enode_address_port_file_name -}}
+              echo ""
+              echo "enode_address_port"
+              rm -f {{ $enodeportFilename }}
+              echo {{ (required ".Values.deployment.enode_address_port is required" .Values.deployment.enode_address_port)| quote }} > {{ $enodeportFilename }}
               git add {{ $enodeportFilename }}
+              cat {{ $enodeportFilename }}
 
-              echo {{ .Values.deployment.NAT | quote }} > {{ $natFilename }}
+              {{ $natFilename := printf "%s/%s" $companyPath .Values.shared_repository_conventions.nat_file_name -}}
+              echo ""
+              echo "NAT"
+              rm -f {{ $natFilename }}
+              echo {{ (required ".Values.deployment.NAT is required" .Values.deployment.NAT) | quote }} > {{ $natFilename }}
               git add {{ $natFilename }}
+              cat {{ $natFilename }}
 
+              echo ""
+              echo "Company Path content after doing changes ..."
+              ls -las {{ $companyPath }}
+
+              echo ""
+              echo "Commiting changes ..."
               git commit -m {{ .Values.git_upload.git_commit_description | quote }}
+
+              echo ""
+              echo "Pushing changes ..."
               git push origin master
           volumeMounts:
+            - name: repo
+              mountPath: /repo
+              readOnly: false
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: cm-genesis
-              mountPath: {{ .Values.quorum.genesisFilePath }}
+            - name: cm-settings
+              mountPath: /cm-settings/genesis-geth.json
               subPath: genesis-geth.json
+              readOnly: true
           {{- end }}
-            - name: cm-nodekey
-              mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
-              subPath: nodekey
-            - name: cm-enode
-              mountPath: {{ .Values.quorum.dataDirPath }}/geth/enode
+            - name: cm-settings
+              mountPath: /cm-settings/nodekey.pub
+              subPath: nodekey.pub
+              readOnly: true
+            - name: cm-settings
+              mountPath: /cm-settings/enode
               subPath: enode
+              readOnly: true
       restartPolicy: Never
       volumes:
-      {{- if .Values.use_case.newNetwork.enabled }}
-        - name: cm-genesis
+        - name: repo
+          emptyDir:
+            sizeLimit: "2Gi"
+        - name: cm-settings
           configMap:
-            name: {{ include "quorumNode.Identifier" . }}-genesis
+            name: {{ include "quorumNode.fullname" . }}-settings
+            defaultMode: 0440  # mount as r
             items:
+          {{- if .Values.use_case.newNetwork.enabled }}
               - key: genesis-geth.json
                 path: genesis-geth.json
-      {{- end }}
-        - name: cm-nodekey
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-nodekey
-            items:
-              - key: nodekey
-                path: nodekey
-        - name: cm-enode
-          configMap:
-            name: {{ include "quorumNode.Identifier" . }}-enode
-            items:
+          {{- end }}
+              - key: nodekey.pub
+                path: nodekey.pub
               - key: enode
                 path: enode
 
