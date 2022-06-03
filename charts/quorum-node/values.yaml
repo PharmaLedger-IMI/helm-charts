@@ -259,6 +259,8 @@ imagePullSecrets: []
 
 service:
   p2p:
+    # -- Whether to deploy the P2P service or not.
+    enabled: true
     # -- Either ClusterIP, NodePort or LoadBalancer for P2P Service.
     # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
     type: ClusterIP
@@ -314,6 +316,8 @@ service:
       # - 8.8.4.4/32
 
   rpc:
+    # -- Whether to deploy the RPC service or not.
+    enabled: true
     # -- Either ClusterIP, NodePort or LoadBalancer for RPC Service.
     # See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/)
     type: ClusterIP
