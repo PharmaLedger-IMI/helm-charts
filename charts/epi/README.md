@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.4.10](https://img.shields.io/badge/Version-0.4.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
+![Version: 0.4.11](https://img.shields.io/badge/Version-0.4.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -158,7 +158,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.10 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.11 \
         --install \
         --values my-config.yaml \
     ```
@@ -352,7 +352,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.10 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.11 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -363,7 +363,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.10 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.4.11 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -426,6 +426,7 @@ Tests can be found in [tests](./tests)
 | config.overrides.vaultDomainConfigJson | string | `""` | Option to explictly override the config.json used for the vaultDomain instead of using the predefined template. Note: Usually not required |
 | config.subDomain | string | `"epipoc.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
+| extraResources | string | `nil` | An array of extra resources that will be deployed. This is useful e.g. for custom resources like SnapshotSchedule provided by [https://github.com/backube/snapscheduler](https://github.com/backube/snapscheduler). |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. Used for all images. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` | Ingress annotations. <br/> For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) <br/> For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) <br/> For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) <br/> For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |

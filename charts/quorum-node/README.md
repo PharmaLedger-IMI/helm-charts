@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -116,6 +116,7 @@ spec:
 | deployment.network_name | string | `""` | The name of the use case that is being deployed (required on git upload) - e.g. "dev" |
 | deployment.quorum_node_no | string | `""` | The number of the deployed Quorum node |
 | deploymentStrategy.type | string | `"Recreate"` |  |
+| extraResources | string | `nil` | An array of extra resources that will be deployed. This is useful e.g. for custom resources like SnapshotSchedule provided by [https://github.com/backube/snapscheduler](https://github.com/backube/snapscheduler). |
 | fullnameOverride | string | `""` | Override the full name |
 | git.image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | git.image.repository | string | `"alpine/git"` | The repository of the container image containing kubectl |
