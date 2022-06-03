@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   # -- The repository of the container image
-  repository: fgt-workspace
+  repository: joaoluispdm/pharmaledger-imi-fgt
   # -- Image Pull Policy
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.

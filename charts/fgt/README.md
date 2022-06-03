@@ -1,6 +1,6 @@
 # fgt
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.4](https://img.shields.io/badge/AppVersion-0.9.4-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.9.6](https://img.shields.io/badge/AppVersion-v0.9.6-informational?style=flat-square)
 
 A Helm chart for a FGT deployment on Kubernetes
 
@@ -15,6 +15,15 @@ A Helm chart for a FGT deployment on Kubernetes
   - FGT API url - The url where your API is exposed to - e.g. "https://fgt-mah-api.pharma-company.com/traceability"
   - bdnsHosts - The Centrally managed and provided BDNS Hosts Config
   - credentials - Your secret credentials file which is used as a secret seed for access to all data
+
+Additional remarks:
+
+- We have experienced some issues when using an AWS ALB in combination with an AWS WAF - therefore please disable the following rules in your WAF in the AWS-AWSManagedRulesCommonRuleSet:
+  - CrossSiteScripting_BODY
+  - SizeRestrictions_BODY
+  - GenericLFI_BODY
+  - NoUserAgent_HEADER
+- For sandbox environments, please install the traceability instance first, wait for readiness and afterwards install the other three participants (mah, whs and pha)
 
 ## Usage
 
@@ -55,7 +64,7 @@ This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
         --install \
         --values my-config.yaml \
     ```
@@ -166,7 +175,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -177,7 +186,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.0 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -219,7 +228,7 @@ Tests can be found in [tests](./tests)
 | deploymentStrategy.type | string | `"Recreate"` |  |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
-| image.repository | string | `"fgt-workspace"` | The repository of the container image |
+| image.repository | string | `"joaoluispdm/pharmaledger-imi-fgt"` | The repository of the container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |

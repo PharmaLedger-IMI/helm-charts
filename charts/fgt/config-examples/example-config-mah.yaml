@@ -1,0 +1,252 @@
+# image:
+#   # -- The repository of the container image
+#   repository: xxxx.dkr.ecr.eu-central-1.amazonaws.com/your-repo-name
+#   # -- Image Pull Policy
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: "xxxxx"
+
+# # Example my-config.yaml for local testing setup with port forwarding
+# config:
+#   # -- The URL of the FGT API including port
+#   fgtApi: "http://localhost:8091/traceability"
+
+# Example my-config.yaml for AWS EKS deployment
+config:
+  # -- The role the FGT API Hub takes
+  role: "mah"
+  # -- If instance hosts its own traceability functionality
+  isTraceability: false
+  # -- The URL of the FGT API including port
+  fgtApi: "https://fgt-mah-app.pharma-company.com/traceability"
+  # -- The Domain, e.g. "fgt"
+  domain: "traceability"
+  # -- The Subdomain, should be domain.company, e.g. fgt.my-company
+  subDomain: "traceability.mah"
+  # -- The Vault domain, should be vault.company, e.g. vault.my-company
+  vaultDomain: "vault.mah"
+  # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
+  ethadapterUrl: ""
+  bdnsHosts: |-
+    {
+      "default": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ],
+        "notifications": [
+          "$ORIGIN"
+        ]
+      },
+      "traceability": {
+        "replicas": [],
+        "brickStorages": [
+          "https://fgt-traceability-app.pharma-company.com"
+        ],
+        "mqEndpoints": [
+          "https://fgt-traceability-app.pharma-company.com"
+        ],
+        "anchoringServices": [
+          "https://fgt-traceability-app.pharma-company.com"
+        ],
+        "notifications": [
+          "https://fgt-traceability-app.pharma-company.com"
+        ]
+      },
+      "traceability.mah": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "mqEndpoints": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ],
+        "notifications": [
+          "$ORIGIN"
+        ]
+      },
+      "traceability.whs": {
+        "replicas": [],
+        "brickStorages": [
+          "https://fgt-whs-app.pharma-company.com"
+        ],
+        "mqEndpoints": [
+          "https://fgt-whs-app.pharma-company.com"
+        ],
+        "anchoringServices": [
+          "https://fgt-whs-app.pharma-company.com"
+        ],
+        "notifications": [
+          "https://fgt-whs-app.pharma-company.com"
+        ]
+      },
+      "traceability.pha": {
+        "replicas": [],
+        "brickStorages": [
+          "https://fgt-pha-app.pharma-company.com"
+        ],
+        "mqEndpoints": [
+          "https://fgt-pha-app.pharma-company.com"
+        ],
+        "anchoringServices": [
+          "https://fgt-pha-app.pharma-company.com"
+        ],
+        "notifications": [
+          "https://fgt-pha-app.pharma-company.com"
+        ]
+      },
+      "vault.mah": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ],
+        "notifications": [
+          "$ORIGIN"
+        ]
+      },
+      "vault": {
+        "replicas": [],
+        "brickStorages": [
+          "$ORIGIN"
+        ],
+        "anchoringServices": [
+          "$ORIGIN"
+        ],
+        "notifications": [
+          "$ORIGIN"
+        ]
+      }
+    }
+  credentials: |-
+    {
+      "id": {
+        "secret": "MAH011",
+        "public": true
+      },
+      "name": {
+        "secret": "Company Inc.",
+        "public": true
+      },
+      "email": {
+        "secret": "pharmaledger@company.com",
+        "public": true
+      },
+      "pass": {
+        "secret": "This1sSuchAS3curePassw0rd"
+      }
+    }
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+
+ingress:
+  app:
+    # -- Whether to create ingress or not.
+    enabled: true
+    # -- The className specifies the IngressClass object which is responsible for that class.
+    className: alb
+    # -- Ingress annotations.
+    annotations:
+      # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+      alb.ingress.kubernetes.io/group.name: default
+      # Specifies the HTTP path when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-path: /
+      # Specifies the port used when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+      # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+      alb.ingress.kubernetes.io/success-codes: "200"
+      # Listen on HTTPS protocol at port 443 at the ALB
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      # Use target type IP which is the case if the service type is ClusterIP
+      alb.ingress.kubernetes.io/target-type: ip   
+    # -- A list of hostnames and path(s) to listen at the Ingress Controller
+    hosts:
+      -
+        # -- The FQDN/hostname
+        host: fgt-mah-app.pharma-company.com
+        paths:
+          -
+            # -- The Ingress Path.
+            path: /*
+            # -- The type of path. This value is required since Kubernetes 1.18.
+            pathType: ImplementationSpecific
+
+  api:
+    # -- Whether to create ingress or not.
+    enabled: true
+    # -- The className specifies the IngressClass object which is responsible for that class.
+    className: alb
+    # -- Ingress annotations.
+    annotations:
+      # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+      alb.ingress.kubernetes.io/group.name: default
+      # Specifies the HTTP path when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-path: /
+      # Specifies the port used when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+      # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+      alb.ingress.kubernetes.io/success-codes: "200"
+      # Listen on HTTPS protocol at port 443 at the ALB
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      # Use target type IP which is the case if the service type is ClusterIP
+      alb.ingress.kubernetes.io/target-type: ip   
+    # -- A list of hostnames and path(s) to listen at the Ingress Controller
+    hosts:
+      -
+        # -- The FQDN/hostname
+        host: fgt-mah-api.pharma-company.com
+        paths:
+          -
+            # -- The Ingress Path.
+            path: /*
+            # -- The type of path. This value is required since Kubernetes 1.18.
+            pathType: ImplementationSpecific
+
+  swagger:
+    # -- Whether to create ingress or not.
+    enabled: true
+    # -- The className specifies the IngressClass object which is responsible for that class.
+    className: alb
+    # -- Ingress annotations.
+    annotations:
+      # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+      alb.ingress.kubernetes.io/group.name: default
+      # Specifies the HTTP path when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-path: /
+      # Specifies the port used when performing health check on targets.
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+      # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+      alb.ingress.kubernetes.io/success-codes: "200"
+      # Listen on HTTPS protocol at port 443 at the ALB
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      # Use target type IP which is the case if the service type is ClusterIP
+      alb.ingress.kubernetes.io/target-type: ip   
+    # -- A list of hostnames and path(s) to listen at the Ingress Controller
+    hosts:
+      -
+        # -- The FQDN/hostname
+        host: fgt-mah-swagger.pharma-company.com
+        paths:
+          -
+            # -- The Ingress Path.
+            path: /*
+            # -- The type of path. This value is required since Kubernetes 1.18.
+            pathType: ImplementationSpecific
