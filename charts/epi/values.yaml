@@ -430,3 +430,26 @@ tolerations: []
 # -- Affinity for scheduling a pod.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 affinity: {}
+
+# -- An array of extra resources that will be deployed.
+# This is useful e.g. for custom resources like SnapshotSchedule provided by [https://github.com/backube/snapscheduler](https://github.com/backube/snapscheduler).
+extraResources:
+# - |
+#   apiVersion: snapscheduler.backube/v1
+#   kind: SnapshotSchedule
+#   metadata:
+#     name: daily
+#   spec:
+#     retention:
+#       maxCount: 30
+#     schedule: 30 0 * * *
+
+# - |
+#   apiVersion: snapscheduler.backube/v1
+#   kind: SnapshotSchedule
+#   metadata:
+#     name: hourly
+#   spec:
+#     retention:
+#       maxCount: 24
+#     schedule: 15 * * * *
