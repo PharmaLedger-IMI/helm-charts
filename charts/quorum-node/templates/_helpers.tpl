@@ -14,7 +14,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default ( include "quorumNode.Identifier" . ) .Values.nameOverride }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -44,28 +44,40 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 
 {{/*
+    The full image repository:tag[@sha256:sha] for kubectl
+*/}}
+{{- define "quorumNode.kubectl.image" -}}
+{{- if .Values.kubectl.image.sha -}}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}@sha256:{{ .Values.kubectl.image.sha }}
+{{- else -}}
+{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+    The full image repository:tag[@sha256:sha] for git
+*/}}
+{{- define "quorumNode.git.image" -}}
+{{- if .Values.git.image.sha -}}
+{{ .Values.git.image.repository }}:{{ .Values.git.image.tag }}@sha256:{{ .Values.git.image.sha }}
+{{- else -}}
+{{ .Values.git.image.repository }}:{{ .Values.git.image.tag }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Selector labels
 */}}
 {{- define "quorumNode.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "quorumNode.Identifier" . }}
+app.kubernetes.io/name: {{ include "quorumNode.fullname" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{- define "quorumNode.Identifier" -}}
-{{- $name := (include "quorumNode.name" .) }}
-{{- if .Values.deployment.quorum_node_no }}
-{{- printf "%s-%s" $name .Values.deployment.quorum_node_no | trunc 63 }}
-{{- else }}
-{{- printf "%s" $name | trunc 63 }}
-{{- end }}
-{{- end }}
-
 
 {{- define "quorumnode.PvcLogs" -}}
 {{- if .Values.persistence.logs.existingClaim }}
 {{- .Values.persistence.logs.existingClaim }}
 {{- else }}
-{{- $qni := include "quorumNode.Identifier" . }}
+{{- $qni := include "quorumNode.fullname" . }}
 {{- printf "%s-logs" $qni }}
 {{- end }}
 {{- end }}
@@ -74,30 +86,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Values.persistence.data.existingClaim }}
 {{- .Values.persistence.data.existingClaim }}
 {{- else }}
-{{- $qni := include "quorumNode.Identifier" . }}
+{{- $qni := include "quorumNode.fullname" . }}
 {{- printf "%s-data" $qni }}
 {{- end }}
 {{- end }}
 
-{{- define "quorumnode.permissionedNodes" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-permissioned-nodes" $qni }}
+{{- define "quorumnode.configmap.scripts" -}}
+{{- $qni := include "quorumNode.fullname" . }}
+{{- printf "%s-scripts" $qni }}
 {{- end }}
 
-{{- define "quorumnode.NodeManagement" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-node-management" $qni }}
-{{- end }}
-
-{{- define "quorumnode.IValidatorCfg" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-istanbul-validator-config" $qni }}
-{{- end }}
-
-{{- define "quorumnode.gethHelpers" -}}
-{{- $qni := include "quorumNode.Identifier" . }}
-{{- printf "%s-geth-helpers" $qni }}
-{{- end }}
 
 {{/*
     The full image repository:tag[@sha256:sha]

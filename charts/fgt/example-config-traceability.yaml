@@ -9,7 +9,7 @@
 # # Example my-config.yaml for local testing setup with port forwarding
 # config:
 #   # -- The URL of the FGT API including port
-#   fgtApi: "http://localhost:8091/traceability"
+#   fgtApi: "http://localhost:8090/traceability"
 
 # # Example my-config.yaml for AWS EKS deployment
 # config:
@@ -250,3 +250,17 @@
 #             path: /*
 #             # -- The type of path. This value is required since Kubernetes 1.18.
 #             pathType: ImplementationSpecific
+
+
+# # For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
+# podSecurityContext:
+#   fsGroup: 1000
+
+# securityContext:
+#   capabilities:
+#     drop:
+#     - ALL
+#   readOnlyRootFilesystem: false
+#   runAsNonRoot: true
+#   runAsUser: 1000
+#   allowPrivilegeEscalation: false
