@@ -14,22 +14,122 @@
 # # Example my-config.yaml for AWS EKS deployment
 # config:
 #   # -- The role the FGT API Hub takes
-#   role: "mah"
+#   role: "whs"
+#   # -- If instance hosts its own traceability functionality
+#   isTraceability: false
 #   # -- The URL of the FGT API including port
-#   fgtApi: "http://fgt-mah-api.pharma-company.com/traceability"
+#   fgtApi: "http://fgt-whs-api.pharma-company.com/traceability"
 #   # -- The Domain, e.g. "fgt"
 #   domain: "traceability"
 #   # -- The Subdomain, should be domain.company, e.g. fgt.my-company
-#   subDomain: "traceability.my-company"
+#   subDomain: "traceability.whs"
 #   # -- The Vault domain, should be vault.company, e.g. vault.my-company
-#   vaultDomain: "vault.my-company"
+#   vaultDomain: "vault.whs"
 #   # -- The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000"
 #   ethadapterUrl: ""
-#   # -- The credentials file used as the secret seed to all data
+#   bdnsHosts: |-
+#     {
+#       "default": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "$ORIGIN"
+#         ],
+#         "anchoringServices": [
+#           "$ORIGIN"
+#         ],
+#         "notifications": [
+#           "$ORIGIN"
+#         ]
+#       },
+#       "traceability": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "https://fgt-traceability-app.pharma-company.com"
+#         ],
+#         "mqEndpoints": [
+#           "https://fgt-traceability-app.pharma-company.com"
+#         ],
+#         "anchoringServices": [
+#           "https://fgt-traceability-app.pharma-company.com"
+#         ],
+#         "notifications": [
+#           "https://fgt-traceability-app.pharma-company.com"
+#         ]
+#       },
+#       "traceability.maah": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "https://fgt-mah-app.pharma-company.com"
+#         ],
+#         "mqEndpoints": [
+#           "https://fgt-mah-app.pharma-company.com"
+#         ],
+#         "anchoringServices": [
+#           "https://fgt-mah-app.pharma-company.com"
+#         ],
+#         "notifications": [
+#           "https://fgt-mah-app.pharma-company.com"
+#         ]
+#       },
+#       "traceability.whs": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "$ORIGIN"
+#         ],
+#         "mqEndpoints": [
+#           "$ORIGIN"
+#         ],
+#         "anchoringServices": [
+#           "$ORIGIN"
+#         ],
+#         "notifications": [
+#           "$ORIGIN"
+#         ]
+#       },
+#       "traceability.pha": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "https://fgt-pha-app.pharma-company.com"
+#         ],
+#         "mqEndpoints": [
+#           "https://fgt-pha-app.pharma-company.com"
+#         ],
+#         "anchoringServices": [
+#           "https://fgt-pha-app.pharma-company.com"
+#         ],
+#         "notifications": [
+#           "https://fgt-pha-app.pharma-company.com"
+#         ]
+#       },
+#       "vault.whs": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "$ORIGIN"
+#         ],
+#         "anchoringServices": [
+#           "$ORIGIN"
+#         ],
+#         "notifications": [
+#           "$ORIGIN"
+#         ]
+#       },
+#       "vault": {
+#         "replicas": [],
+#         "brickStorages": [
+#           "$ORIGIN"
+#         ],
+#         "anchoringServices": [
+#           "$ORIGIN"
+#         ],
+#         "notifications": [
+#           "$ORIGIN"
+#         ]
+#       }
+#     }
 #   credentials: |-
 #     {
 #       "id": {
-#         "secret": "MAH123",
+#         "secret": "WHS011",
 #         "public": true
 #       },
 #       "name": {
@@ -45,6 +145,17 @@
 #       }
 #     }
 
+# podSecurityContext:
+#   fsGroup: 1000
+
+# securityContext:
+#   capabilities:
+#     drop:
+#     - ALL
+#   readOnlyRootFilesystem: false
+#   runAsNonRoot: true
+#   runAsUser: 1000
+#   allowPrivilegeEscalation: false
 
 # ingress:
 #   app:
@@ -70,7 +181,7 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-app.pharma-company.com
+#         host: fgt-whs-app.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
@@ -101,7 +212,7 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-api.pharma-company.com
+#         host: fgt-whs-api.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
@@ -132,24 +243,10 @@
 #     hosts:
 #       -
 #         # -- The FQDN/hostname
-#         host: fgt-mah-swagger.pharma-company.com
+#         host: fgt-whs-swagger.pharma-company.com
 #         paths:
 #           -
 #             # -- The Ingress Path.
 #             path: /*
 #             # -- The type of path. This value is required since Kubernetes 1.18.
 #             pathType: ImplementationSpecific
-
-
-# # For running as non-root with uid 1000, remove {} from next line and uncomment fsGroup and runAsUser!
-# podSecurityContext:
-#   fsGroup: 1000
-
-# securityContext:
-#   capabilities:
-#     drop:
-#     - ALL
-#   readOnlyRootFilesystem: false
-#   runAsNonRoot: true
-#   runAsUser: 1000
-#   allowPrivilegeEscalation: false
