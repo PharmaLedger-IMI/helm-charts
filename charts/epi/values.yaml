@@ -443,7 +443,7 @@ extraResources:
 #     retention:
 #       maxCount: 30
 #     schedule: 30 0 * * *
-
+#
 # - |
 #   apiVersion: snapscheduler.backube/v1
 #   kind: SnapshotSchedule
