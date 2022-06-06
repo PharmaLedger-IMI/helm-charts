@@ -154,7 +154,9 @@ config:
   sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
   domain: "csc"
-  # -- The Subdomain, should be domain.company, e.g. epipoc.my-company
+  # -- The didDomain, should be domain.company, e.g. csc.rms
+  didDomain: "csc.did.my-company"
+  # -- The Subdomain, should be domain.company, e.g. csc.did.rms
   subDomain: "csc.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
   vaultDomain: "vault.my-company"
@@ -187,6 +189,15 @@ config:
       ]
     },
     "csc.my-company":{
+        "replicas":[],
+        "brickStorages":[
+           "$ORIGIN"
+        ],
+        "anchoringServices":[
+           "$ORIGIN"
+        ]
+     },
+    "csc.did.my-company":{
         "replicas":[],
         "brickStorages":[
            "$ORIGIN"
