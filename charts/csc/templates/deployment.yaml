@@ -127,6 +127,10 @@ spec:
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
             readOnly: true
           - name: csc-domains-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.didDomain must be set" .Values.config.didDomain }}.json
+            subPath: {{ required "config.didDomain must be set" .Values.config.didDomain }}.json
+            readOnly: true
+          - name: csc-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             subPath: {{ required "config.subDomain must be set" .Values.config.subDomain }}.json
             readOnly: true
