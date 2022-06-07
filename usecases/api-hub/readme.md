@@ -52,6 +52,6 @@ helm upgrade --install network-name pharmaledger-imi/network-name -f ./my-values
 
 #### Step 5: Backup your installation and private information
 
-Upload to your private repository all the data located in the folder _private_configs/network_name/charts/epi-api-hub_
+Upload to your private repository all the data located in the folder _private_configs/network_name/network_name_
 
 
