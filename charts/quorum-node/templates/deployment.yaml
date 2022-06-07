@@ -36,10 +36,11 @@ spec:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
-      {{- if .Values.use_case.newNetwork.enabled }}
-        checksum/keyconfig-account: {{ include (print $.Template.BasePath "/secret-keyconfig-account.yaml") . | sha256sum }}
+      {{- if .Values.secretProviderClass.enabled }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secretproviderclass.yaml") . | sha256sum }}
+      {{- else }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       {{- end }}
-        checksum/nodekey: {{ include (print $.Template.BasePath "/secret-nodekey.yaml") . | sha256sum }}
         checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
         checksum/settings: {{ include (print $.Template.BasePath "/configmap-settings.yaml") . | sha256sum }}
       {{- if and .Values.quorum.metrics.enabled .Values.quorum.metrics.prometheusAnnotationsEnabled }}
@@ -171,12 +172,12 @@ spec:
               mountPath: {{ .Values.quorum.logsMountPath }}
               subPath: {{ include "quorumNode.fullname" . }}-logs
           {{- end }}
-            - name: secret-nodekey
+            - name: secret
               mountPath: {{ .Values.quorum.dataDirPath }}/geth/nodekey
               subPath: nodekey
               readOnly: true
           {{- if .Values.use_case.newNetwork.enabled }}
-            - name: secret-account-key
+            - name: secret
               mountPath: {{ .Values.quorum.dataDirPath }}/keystore/key
               subPath: key
               readOnly: true
@@ -222,22 +223,25 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "quorumnode.PvcLogs" . }}
       {{- end }}
-      {{- if .Values.use_case.newNetwork.enabled }}
-        - name: secret-account-key
+        - name: secret
+      {{- if .Values.secretProviderClass.enabled }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "quorumNode.fullname" . }}
+      {{- else }}
           secret:
-            secretName: {{ include "quorumNode.fullname" . }}-account-key
-            defaultMode: 0440  # mount as r
-            items:
-              - key: key
-                path: key
-      {{- end }}
-        - name: secret-nodekey
-          secret:
-            secretName: {{ include "quorumNode.fullname" . }}-nodekey
+            secretName: {{ include "quorumNode.fullname" . }}
             defaultMode: 0440  # mount as r
             items:
               - key: nodekey
                 path: nodekey
+            {{- if .Values.use_case.newNetwork.enabled }}
+              - key: key
+                path: key
+            {{- end }}
+      {{- end }}
         - name: cm-settings
           configMap:
             name: {{ include "quorumNode.fullname" . }}-settings
