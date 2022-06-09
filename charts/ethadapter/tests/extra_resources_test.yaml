@@ -1,0 +1,27 @@
+suite: test if extra resources will be created
+templates:
+  - extra-resources.yaml
+tests:
+  - it: should work
+    set:
+      extraResources:
+        - |
+          kind: NetworkPolicy
+          name1: "name_value1"
+          spec1: "spec_value1"
+        #
+        # Todo: No clue how to test multiple yaml documents in onw file!
+        #
+        # - |
+        #   kind: NetworkPolicy
+        #   name2: "name_value2"
+        #   spec2: "spec_value2"
+    asserts:
+      - isKind:
+          of: NetworkPolicy
+      - equal:
+          path: name1
+          value: "name_value1"
+      - equal:
+          path: spec1
+          value: "spec_value1"
