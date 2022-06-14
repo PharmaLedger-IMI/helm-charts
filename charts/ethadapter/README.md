@@ -20,7 +20,7 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
 
 ## Changelog
 
-See [./CHANGELOG.md] for changes
+See [Changelog](./CHANGELOG.md) for significant changes!
 
 ## Usage
 
