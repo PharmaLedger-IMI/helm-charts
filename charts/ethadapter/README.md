@@ -51,7 +51,7 @@ A Helm chart for Pharma Ledger Ethereum Adapter Service
   - SecurityContext
   - Non-root user
   - readonly filesystem
-- Option to mount sensitive/secret via *CSI Secrets Driver* from AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault (see sample below) instead of using *Kubernetes Secret*. See [here](./examples/secret_provider_class/README.md) for full documentation.
+- Option to mount sensitive/secret via *CSI Secrets Driver* from AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault (see sample below) instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for full documentation.
 
 ## How it works
 
@@ -119,9 +119,10 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
 
     ```
 
-### Further configuration options
+## Further configuration options
 
-- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md) for full documentation.
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
+- [Network Policies](./network_policies/README.md)
 - [Expose Service via Load Balancer](./docs/load_balancer/README.md)
 - [AWS Load Balancer Controller: Expose Service via Ingress](./docs/aws_lb_controller_ingress/README.md)
 
