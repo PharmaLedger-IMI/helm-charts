@@ -166,64 +166,11 @@ service:
 
 ### AWS Load Balancer Controller: Expose Service via Ingress
 
-Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.
-
-1. Enable ingress
-2. Add *host*, *path* *`/*`* and *pathType* `ImplementationSpecific`
-3. Add annotations for AWS LB Controller
-4. A SSL certificate at AWS Certificate Manager (either for the hostname, here `ethadapter.mydomain.com` or wildcard `*.mydomain.com`)
-
-Configuration file *my-config.yaml*
-
-```yaml
-ingress:
-  enabled: true
-  # Let AWS LB Controller handle the ingress (default className is alb)
-  # Note: Use className instead of annotation 'kubernetes.io/ingress.class' which is deprecated since 1.18
-  # For Kubernetes >= 1.18 it is required to have an existing IngressClass object.
-  # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
-  className: alb
-  hosts:
-    - host: ethadapter.mydomain.com
-      # Path must be /* for ALB to match all paths
-      paths:
-        - path: /*
-          pathType: ImplementationSpecific
-  # For full list of annotations for AWS LB Controller, see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/
-  annotations:
-    # The ARN of the existing SSL Certificate at AWS Certificate Manager
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:REGION:ACCOUNT_ID:certificate/CERTIFICATE_ID
-    # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
-    alb.ingress.kubernetes.io/group.name: default
-    # Specifies the HTTP path when performing health check on targets.
-    alb.ingress.kubernetes.io/healthcheck-path: /check
-    # Specifies the port used when performing health check on targets. 
-    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-    # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
-    alb.ingress.kubernetes.io/success-codes: "200"
-    # Listen on HTTPS protocol at port 3000 at the ALB
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":3000}]'
-    # Allow access from a specific IP address only, e.g. from the NAT Gateway of your EPI Cluster
-    alb.ingress.kubernetes.io/inbound-cidrs: 8.8.8.8/32
-    # Use internet facing
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    # Use most current (as of Dec 2021) encryption ciphers
-    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
-    # Use target type IP which is the case if the service type is ClusterIP
-    alb.ingress.kubernetes.io/target-type: ip
-
-config:
-  rpcAddress: "rpcAddress_value"
-  smartContractInfo: |-
-    {
-      "address": "smartContractAddress_value",
-      "abi": "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"str\",\"type\":\"bool\"}],\"name\":\"BoolResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"str\",\"type\":\"bytes1\"}],\"name\":\"Bytes1Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"str\",\"type\":\"bytes32\"}],\"name\":\"Bytes32Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"statusCode\",\"type\":\"uint256\"}],\"name\":\"InvokeStatus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"str\",\"type\":\"bytes\"}],\"name\":\"Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[2]\",\"name\":\"str\",\"type\":\"string[2]\"}],\"name\":\"StringArray2Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[]\",\"name\":\"str\",\"type\":\"string[]\"}],\"name\":\"StringArrayResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"str\",\"type\":\"string\"}],\"name\":\"StringResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"str\",\"type\":\"uint256\"}],\"name\":\"UIntResult\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"newAnchorValue\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"createAnchor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"newAnchorValue\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"appendAnchor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"}],\"name\":\"getAllVersions\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"}],\"name\":\"getLastVersion\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"anchors\",\"type\":\"string[]\"}],\"name\":\"createOrUpdateMultipleAnchors\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"from\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"limit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxSize\",\"type\":\"uint256\"}],\"name\":\"dumpAnchors\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string[]\",\"name\":\"anchorValues\",\"type\":\"string[]\"}],\"internalType\":\"struct Anchoring.Anchor[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalNumberOfAnchors\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"recover\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
-    }
-```
+See [here](./docs/aws_lb_controller_ingress/README.md) for full documentation.
 
 ## Mount Secrets from Vault Solution via Secrets Store CSI Driver
 
-See [here](./examples/secret_provider_class/README.md) for full documentation.
+See [here](./docs/secret_provider_class/README.md) for full documentation.
 
 ## Uninstalling the Chart
 
