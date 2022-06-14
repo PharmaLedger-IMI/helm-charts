@@ -10,9 +10,9 @@ variable "eks_cluster_name" {
   description = "Name/ID of the EKS Cluster"
   type        = string
 }
-variable "oidc_provider_url" {
+variable "oidc_provider_arn" {
   type        = string
-  description = "URL of the AWS OIDC Provider associated with the EKS cluster"
+  description = "ARN of the AWS OIDC Provider associated with the EKS cluster"
 }
 variable "namespace" {
   type        = string
@@ -88,32 +88,47 @@ resource "aws_secretsmanager_secret_version" "main" {
   secret_string = var.org_account_json
 }
 
-# 3. Create an IAM Role (for Kubernetes Service Account) with appropriate permissions to get the secret value from Secrets Manager. 
-module "iam_role" {
-  source = "./modules/aws_iam_role_for_service_account"
+# 3. Create IAM policy with permission to get the secret value from Secrets Manager.
+resource "aws_iam_policy" "main" {
+  name_prefix = "${var.eks_cluster_name}-${var.namespace}-ethadapter"
+  description = "Allows getting secret account key from Secrets Manager"
 
-  account_id        = var.account_id
-  oidc_provider_url = var.oidc_provider_url
-  name              = "${var.eks_cluster_name}-${var.namespace}-ethadapter"
-  service_accounts  = ["${var.namespace}/ethadapter"]
-  inline_policies = [
-    jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Effect   = "Allow"
-          Action   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
-          Resource = [aws_secretsmanager_secret.main.arn]
-        },
-        {
-          Effect = "Allow"
-          # https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html
-          Action   = ["kms:GenerateDataKey", "kms:Decrypt"]
-          Resource = [aws_kms_key.main.arn]
-        }
-      ]
-    })
-  ]
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+        Resource = [aws_secretsmanager_secret.main.arn]
+      },
+      {
+        Effect = "Allow"
+        # https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html
+        Action   = ["kms:GenerateDataKey", "kms:Decrypt"]
+        Resource = [aws_kms_key.main.arn]
+      }
+    ]
+  })
+}
+
+# 4. Create an IAM Role for Kubernetes Service Account
+# see https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf
+module "iam_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "v5.1.0"
+
+  role_name = "${var.eks_cluster_name}-${var.namespace}-ethadapter"
+
+  oidc_providers = {
+    eks = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["${var.namespace}:ethadapter"]
+    }
+  }
+
+  role_policy_arns = {
+    main = aws_iam_policy.main.arn
+  }
 }
 
 locals {
@@ -149,7 +164,7 @@ config:
 serviceAccount:
   create: true
   annotations:
-    eks.amazonaws.com/role-arn: "${module.iam_role.this_role_arn}"
+    eks.amazonaws.com/role-arn: "${module.iam_role.iam_role_arn}"
 
 secretProviderClass:
   enabled: true
