@@ -122,6 +122,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
 
 ## Further configuration options
 
+- [FULL SAMPLE](./docs/full_sample/README.md)
 - [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
 - [Network Policies](./docs/network_policies/README.md)
 - [Expose Service via Load Balancer](./docs/load_balancer/README.md)
