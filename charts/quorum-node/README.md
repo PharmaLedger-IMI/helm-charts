@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -102,6 +102,98 @@ spec:
     - 8.8.4.4/32
 ```
 
+## CSI Secrets Driver
+
+This enables storing the following secret values in one of the supported Secret stores (e.g. Azure Key Vault or AWS Secrets Manager) instead of using Kubernetes Secrets:
+
+- `nodekey` - The private node key
+- `key` - Only required on new network use case: The account key
+
+More information can be found here:
+
+- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
+- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
+
+Sample for AWS:
+
+1. Create a new Secret in Secrets Manager with keys `nodekey` (and only on new network use case: `key`). Note: If you want to create the secret as PlainText, then you must encode the values to JSON String each!
+
+    Sample for join network use case:
+
+    ```json
+    {
+        "nodekey": ""
+    }
+    ```
+
+2. Create IAM role with trust relationship to the Kubernetes Service Account and a policy that allows getting the secret value.
+
+    Trust relationship sample:
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "AssumeableByOIDC",
+              "Effect": "Allow",
+              "Principal": {
+                  "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                  "StringLike": {
+                      "oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>:sub": "system:serviceaccount:<K8S_NAMESPACE>:<NAME>"
+                  }
+              }
+          }
+      ]
+    }
+    ```
+
+    Policy:
+
+    ```json
+    {
+        "Statement": [
+            {
+                "Action": [
+                    "secretsmanager:GetSecretValue",
+                    "secretsmanager:DescribeSecret"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "<SECRET_ARN>"
+                ]
+            }
+        ],
+        "Version": "2012-10-17"
+    }
+    ```
+
+3. Modify config to use ServiceAccount and SecretProviderClass
+
+    ```yaml
+    serviceAccount:
+      create: true
+      annotations:
+        eks.amazonaws.com/role-arn: "<ARN of the IAM role>"
+
+    secretProviderClass:
+      enabled: true
+      spec:
+        provider: aws
+        parameters:
+          objects: |
+            - objectName: "<ARN or Name of Secret>"
+              objectType: "secretsmanager"
+              jmesPath:
+                - path: nodekey
+                  objectAlias: nodekey
+                - path: key
+                  objectAlias: key
+    ```
+
 ## Values
 
 *Note:* Please scroll horizontally to show more columns (e.g. description)!
@@ -184,6 +276,9 @@ spec:
 | quorum.rpc.vHosts | string | `"*"` | The virtual hostnames for the RPC endpoint to listen for. If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local |
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
 | resources | object | `{}` | Pod resources |
+| secretProviderClass.apiVersion | string | `"secrets-store.csi.x-k8s.io/v1"` | API Version of the SecretProviderClass |
+| secretProviderClass.enabled | bool | `false` | Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret. |
+| secretProviderClass.spec | object | `{}` | Spec for the SecretProviderClass. Note: 1. The nodeKey must be mounted as objectAlias nodekey with path nodekey. 2. In case of a new network: The accountkey must be mounted as objectAlias key with path key. |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":10000,"runAsNonRoot":true,"runAsUser":10000}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | service.p2p.annotations | object | `{}` | Annotations for the P2P service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.p2p.enabled | bool | `true` | Whether to deploy the P2P service or not. |
@@ -195,6 +290,10 @@ spec:
 | service.rpc.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the RPC service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | service.rpc.port | int | `8545` | Port where the RPC service will be exposed. |
 | service.rpc.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer for RPC Service. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
+| serviceAccount.create | bool | `false` | Specifies whether a service account should be created. Must be true if secretProviderClass.enabled is true |
+| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | shared_repository_conventions.base_shareable_storage_path | string | `"networks"` | The repository base folder name where the shareable data to will be uploaded |
 | shared_repository_conventions.enode_address_file_name | string | `"enode.address"` | The name of the file that contains the Quorum Node real ip address or dns |
 | shared_repository_conventions.enode_address_port_file_name | string | `"enode.address.port"` | The name of the file that contains the Quorum Node port |
