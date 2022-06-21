@@ -130,10 +130,11 @@ Create the name of the service account to use
 
 
 {{/*
-  Name of the VolumeSnapshot for pre-upgrade
+  Name of the VolumeSnapshot for pre-upgrade.
+  Note: Go default time is "Mon Jan _2 15:04:05 2006". Thus the format string must use this date! YYYYMMDDHHMM
 */}}
 {{- define "epi.volumeSnapshot" -}}
-{{- printf "%s-upgrade-to-revision-%s-%s" (include "epi.fullname" .) (toString .Release.Revision) (now | unixEpoch) }}
+{{- printf "%s-upgrade-to-revision-%s-%s" (include "epi.fullname" .) (toString .Release.Revision) (now | date "200601021504") }}
 {{- end }}
 
 {{- define "epi.pvc" -}}
