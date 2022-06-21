@@ -1,76 +1,34 @@
-{{ template "chart.header" . }}
+# blockchain-explorer
 
-{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
-{{ template "chart.description" . }}
+A Helm chart for Kubernetes
 
 ## Requirements
 
 - [helm 3](https://helm.sh/docs/intro/install/)
 - These mandatory configuration values:
-  - Domain - The DID Domain - e.g. `traceability`
-  - subDomain - The Sub Domain - e.g. `traceability.my-company`
-  - vaultDomain - The Vault Domain - e.g. `vault.my-company`
-  - ethadapterUrl - The Full URL of the Ethadapter including protocol and port -  e.g. "https://ethadapter.my-company.com:3000" - if not specified, the local file storage will be used instead
-  - FGT API url - The url where your API is exposed to - e.g. "https://fgt-mah-api.pharma-company.com/traceability"
-  - bdnsHosts - The Centrally managed and provided BDNS Hosts Config
-  - credentials - Your secret credentials file which is used as a secret seed for access to all data
+  - quorumConfig - Configure the connection to your quorum node
+  - quorumEnvProduction - Configure environment details such as authentication services (e.g. Azure AD)
 
 Additional remarks:
 
-- We have experienced some issues when using an AWS ALB in combination with an AWS WAF - therefore please disable the following rules in your WAF in the AWS-AWSManagedRulesCommonRuleSet:
-  - CrossSiteScripting_BODY
-  - SizeRestrictions_BODY
-  - GenericLFI_BODY
-  - NoUserAgent_HEADER
-- In some environments the first startup runs in a rate limit for HTTP connections on load balancers or similar. Rate limits need to be adjusted to at least 50.000 requests per 5 minute period.
-- In some environments the long-polling HTTP requests between participant and traceability are interrupted by a timeout. In some cases this results in a inconsistent state and disables the shipment receive functionality.
+- The image is currently provided via DockerHub without any vulnerability scanning - it is best practice to pull the image to any scanning solution before using it
+- The image is currently build in GitHub based on a manual trigger as the Quorum Explorer repository (https://github.com/ConsenSys/quorum-explorer) does not provide any versioning yet
 
 ## Usage
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-- The [example configs](./config-examples/) show some useful configuration examples.
 
 ## Changelog
 
-- First official release v0.2.0
-  - Tested single MAH install on Kubernetes/EKS in AWS
-  - Tested multi-participant (MAH, WHS, PHA, Traceability) install on Kubernetes/EKS in AWS
-  - Not tested with a blockchain yet - all anchors are stored on file storage
-- Initial version 0.1.3
-  - For use with FGT in version v0.9.3
-  - Only tested locally with Minikube yet
-  - Ingress not tested yet
-
+- Initial version 0.1.2
+  - For initial beta use - application is still in development by ConsenSys
 
 ## Helm Lifecycle and Kubernetes Resources Lifetime
 
 This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in order to install, upgrade and manage the application and its resources.
-
-
-### Quick install with internal service of type ClusterIP
-
-1. Create configuration file, e.g. *example-config-mah.yaml*
-
-    ```yaml
-    config:
-      role: "mah"
-      domain: "domain_value"
-      subDomain: "subDomain_value"
-      vaultDomain: "vaultDomain_value"
-      credentials: |-
-        # ... content of the credentials json file ...
-
-    ```
-
-2. Install via helm to namespace `default`
-
-    ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version={{ template "chart.version" . }} \
-        --install \
-        --values my-config.yaml \
-    ```
 
 ### Expose Service via Load Balancer
 
@@ -149,7 +107,7 @@ ingress:
     hosts:
       -
         # -- The FQDN/hostname
-        host: fgt.some-pharma-company.com
+        host: explorer.some-pharma-company.com
         paths:
           -
             # -- The Ingress Path. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#examples](https://kubernetes.io/docs/concepts/services-networking/ingress/#examples)
@@ -178,7 +136,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version={{ template "chart.version" . }} \
+    helm upgrade my-release-name pharmaledger-imi/blockchain-explorer --version=0.1.2 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -189,7 +147,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version={{ template "chart.version" . }} \
+    helm upgrade my-release-name pharmaledger-imi/blockchain-explorer --version=0.1.2 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -213,11 +171,42 @@ Run `helm upgrade --helm` for full list of options.
 [helm-unittest](https://github.com/quintush/helm-unittest) is being used for testing the output of the helm chart.
 Tests can be found in [tests](./tests)
 
+## Values
 
-{{ template "chart.maintainersSection" . }}
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| autoscaling.enabled | bool | `false` |  |
+| autoscaling.maxReplicas | int | `100` |  |
+| autoscaling.minReplicas | int | `1` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"Always"` |  |
+| image.repository | string | `"lukasosterheider/quorum-explorer"` |  |
+| image.tag | string | `"latest"` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.className | string | `""` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts[0].host | string | `"chart-example.local"` |  |
+| ingress.hosts[0].paths[0].path | string | `"/"` |  |
+| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| ingress.tls | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| podAnnotations | object | `{}` |  |
+| podSecurityContext | object | `{}` |  |
+| quorumConfig | string | `"{\n  \"algorithm\": \"qbft\",\n  \"nodes\": [\n    {\n      \"name\": \"rpcnode\",\n      \"client\": \"goquorum\",\n      \"rpcUrl\": \"http://quorum-node-0-rpc.epi-poc-quorum:8545\",\n      \"privateTxUrl\": \"\"\n    }\n  ]\n}"` |  |
+| quorumEnvProduction | string | `"QE_BASEPATH=\"/explorer\"\nQE_CONFIG_PATH=\"/app/config.json\"\nNODE_ENV=production\n\nDISABLE_AUTH=true\n\nNEXTAUTH_URL=http://localhost:25000\nNEXTAUTH_URL_INTERNAL=http://localhost:25000\nNEXTAUTH_SECRET=\n# To generate NEXTAUTH_SECRET: `openssl rand -hex 32` or go to https://generate-secret.now.sh/32\n\nlocal_username=\nlocal_password=\n\nGITHUB_ID=\nGITHUB_SECRET=\n\nAUTH0_ID=\nAUTH0_SECRET=\nAUTH0_DOMAIN=\n\nFACEBOOK_ID=\nFACEBOOK_SECRET=\n\nGOOGLE_ID=\nGOOGLE_SECRET=\n\nTWITTER_ID=\nTWITTER_SECRET=\n\nGITLAB_CLIENT_ID=\nGITLAB_CLIENT_SECRET=\n\nAZURE_AD_CLIENT_ID=\nAZURE_AD_CLIENT_SECRET=\nAZURE_AD_TENANT_ID=\n\nATLASSIAN_CLIENT_ID=\nATLASSIAN_CLIENT_SECRET=\n\nCOGNITO_CLIENT_ID=\nCOGNITO_CLIENT_SECRET=\nCOGNITO_ISSUER=\n\nOKTA_CLIENT_ID=\nOKTA_CLIENT_SECRET=\nOKTA_ISSUER=\n\nSLACK_CLIENT_ID=\nSLACK_CLIENT_SECRET="` |  |
+| replicaCount | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext | object | `{}` |  |
+| service.port | int | `80` |  |
+| service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
+| tolerations | list | `[]` |  |
 
-{{ template "chart.requirementsSection" . }}
-
-{{ template "chart.valuesSection" . }}
-
-{{ template "helm-docs.versionFooter" . }}
+----------------------------------------------
+Autogenerated from chart metadata using [helm-docs v1.8.1](https://github.com/norwoodj/helm-docs/releases/v1.8.1)

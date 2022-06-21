@@ -1,0 +1,147 @@
+# Default values for blockchain-explorer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: lukasosterheider/quorum-explorer
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+quorumConfig: |-
+    {
+      "algorithm": "qbft",
+      "nodes": [
+        {
+          "name": "rpcnode",
+          "client": "goquorum",
+          "rpcUrl": "http://quorum-node-0-rpc.epi-poc-quorum:8545",
+          "privateTxUrl": ""
+        }
+      ]
+    }
+
+quorumEnvProduction: |-
+    QE_BASEPATH="/explorer"
+    QE_CONFIG_PATH="/app/config.json"
+    NODE_ENV=production
+
+    DISABLE_AUTH=true
+
+    NEXTAUTH_URL=http://localhost:25000
+    NEXTAUTH_URL_INTERNAL=http://localhost:25000
+    NEXTAUTH_SECRET=
+    # To generate NEXTAUTH_SECRET: `openssl rand -hex 32` or go to https://generate-secret.now.sh/32
+
+    local_username=
+    local_password=
+
+    GITHUB_ID=
+    GITHUB_SECRET=
+
+    AUTH0_ID=
+    AUTH0_SECRET=
+    AUTH0_DOMAIN=
+
+    FACEBOOK_ID=
+    FACEBOOK_SECRET=
+
+    GOOGLE_ID=
+    GOOGLE_SECRET=
+
+    TWITTER_ID=
+    TWITTER_SECRET=
+
+    GITLAB_CLIENT_ID=
+    GITLAB_CLIENT_SECRET=
+
+    AZURE_AD_CLIENT_ID=
+    AZURE_AD_CLIENT_SECRET=
+    AZURE_AD_TENANT_ID=
+
+    ATLASSIAN_CLIENT_ID=
+    ATLASSIAN_CLIENT_SECRET=
+
+    COGNITO_CLIENT_ID=
+    COGNITO_CLIENT_SECRET=
+    COGNITO_ISSUER=
+
+    OKTA_CLIENT_ID=
+    OKTA_CLIENT_SECRET=
+    OKTA_ISSUER=
+
+    SLACK_CLIENT_ID=
+    SLACK_CLIENT_SECRET=
