@@ -128,6 +128,14 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
+
+{{/*
+  Name of the VolumeSnapshot for pre-upgrade
+*/}}
+{{- define "epi.volumeSnapshot" -}}
+{{- printf "%s-upgrade-to-revision-%s-%s" (include "epi.fullname" .) (toString .Release.Revision) (now | unixEpoch) }}
+{{- end }}
+
 {{- define "epi.pvc" -}}
 {{- if .Values.persistence.existingClaim }}
 {{- .Values.persistence.existingClaim }}
