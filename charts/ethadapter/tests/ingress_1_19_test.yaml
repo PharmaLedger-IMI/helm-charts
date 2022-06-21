@@ -65,5 +65,5 @@ tests:
           path: spec.rules[0].http.paths[0].backend.service.name
           pattern: -ethadapter$
       - equal:
-          path: spec.rules[0].http.paths[0].backend.service.port
+          path: spec.rules[0].http.paths[0].backend.service.port.number
           value: 3000

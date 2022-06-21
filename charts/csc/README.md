@@ -1,6 +1,6 @@
 # csc
 
-![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: csc.0.0.3](https://img.shields.io/badge/AppVersion-csc.0.0.3-informational?style=flat-square)
+![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: csc.0.1.1](https://img.shields.io/badge/AppVersion-csc.0.1.1-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger csc application
 
@@ -122,7 +122,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.2 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.4.3 \
         --install \
         --values my-config.yaml \
     ```
@@ -222,7 +222,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.2 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.4.3 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -233,7 +233,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/csc --version=0.3.2 \
+    helm upgrade my-release-name pharmaledger-imi/csc --version=0.4.3 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -272,20 +272,21 @@ Tests can be found in [tests](./tests)
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | apiHubWorkingFolder | string | `"csc-workspace"` |  |
 | config.apihub | string | `"{\n  \"storage\": \"../apihub-root\",\n  \"port\": 8080,\n  \"preventRateLimit\": true,\n  \"activeComponents\": [\n    \"virtualMQ\",\n    \"messaging\",\n    \"notifications\",\n    \"filesManager\",\n    \"bdns\",\n    \"bricksLedger\",\n    \"bricksFabric\",\n    \"bricking\",\n    \"mq\",\n    \"anchoring\",\n    \"staticServer\"\n  ],\n  \"componentsConfig\": {\n    \"staticServer\": {\n                   \"excludedFiles\": [\n                       \".*.secret\"\n                   ]\n               },\n    \"bricking\": {},\n    \"anchoring\": {}\n  },\n  \"responseHeaders\": {\n             \"X-Frame-Options\": \"SAMEORIGIN\",\n             \"X-XSS-Protection\": \"1; mode=block\"\n         },\n  \"enableRequestLogger\": true,\n  \"enableJWTAuthorisation\": false,\n  \"enableLocalhostAuthorization\": false,\n  \"serverAuthentication\": false,\n  \"skipJWTAuthorisation\": [\n    \"/assets\",\n    \"/leaflet-wallet\",\n    \"/dsu-fabric-wallet\",\n    \"/directory-summary\",\n    \"/resources\",\n    \"/bdns\",\n    \"/anchor/epi\",\n    \"/anchor/default\",\n    \"/anchor/vault\",\n    \"/bricking\",\n    \"/bricksFabric\",\n    \"/bricksledger\",\n    \"/create-channel\",\n    \"/forward-zeromq\",\n    \"/send-message\",\n    \"/receive-message\",\n    \"/files\",\n    \"/notifications\",\n    \"/mq\"\n  ]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
-| config.bdnsHosts | string | `"{\n\"default\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"vault.my-company\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"csc.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n },\n\"csc\":{\n        \"replicas\":[],\n        \"brickStorages\":[\n           \"$ORIGIN\"\n        ],\n        \"anchoringServices\":[\n           \"$ORIGIN\"\n        ]\n     }\n}"` | Centrally managed and provided BDNS Hosts Config |
+| config.bdnsHosts | string | `"{\n\"default\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"vault.my-company\": {\n  \"replicas\": [],\n  \"brickStorages\": [\n    \"$ORIGIN\"\n  ],\n  \"anchoringServices\": [\n    \"$ORIGIN\"\n  ]\n},\n\"csc.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n },\n\"csc.did.my-company\":{\n    \"replicas\":[],\n    \"brickStorages\":[\n       \"$ORIGIN\"\n    ],\n    \"anchoringServices\":[\n       \"$ORIGIN\"\n    ]\n },\n\"csc\":{\n        \"replicas\":[],\n        \"brickStorages\":[\n           \"$ORIGIN\"\n        ],\n        \"anchoringServices\":[\n           \"$ORIGIN\"\n        ]\n     }\n}"` | Centrally managed and provided BDNS Hosts Config |
 | config.demiurgeMode | string | `"dev-secure"` |  |
+| config.didDomain | string | `"csc.did.my-company"` | The didDomain, should be domain.company, e.g. csc.rms |
 | config.domain | string | `"csc"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` |  |
 | config.ethadapterUrl | string | `"http://ethadapter.ethadapter:3000"` | The Full URL of the Ethadapter including protocol and port, e.g. "https://ethadapter.my-company.com:3000" |
 | config.sleepTime | string | `"10s"` |  |
-| config.subDomain | string | `"csc.my-company"` | The Subdomain, should be domain.company, e.g. epipoc.my-company |
+| config.subDomain | string | `"csc.my-company"` | The Subdomain, should be domain.company, e.g. csc.did.rms |
 | config.vaultDomain | string | `"vault.my-company"` | The Vault domain, should be vault.company, e.g. vault.my-company |
 | deploymentStrategy | object | `{"type":"Recreate"}` | The strategy of the deployment. Defaults to type: Recreate as a PVC is bound to it. See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) |
 | fullnameOverride | string | `""` | fullnameOverride completely replaces the generated name. From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image Pull Policy |
 | image.repository | string | `"mastaleru/csc-deployment"` | The repository of the container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
-| image.tag | string | `"0.0.3"` | Overrides the image tag whose default is the chart appVersion. |
+| image.tag | string | `"0.1.1"` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` | Ingress annotations. <br/> For AWS LB Controller, see [https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/) <br/> For Azure Application Gateway Ingress Controller, see [https://azure.github.io/application-gateway-kubernetes-ingress/annotations/](https://azure.github.io/application-gateway-kubernetes-ingress/annotations/) <br/> For NGINX Ingress Controller, see [https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/) <br/> For Traefik Ingress Controller, see [https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations](https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/#annotations) |
 | ingress.className | string | `""` | The className specifies the IngressClass object which is responsible for that class. See [https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class](https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-class) <br/> For Kubernetes >= 1.18 it is required to have an existing IngressClass object. If IngressClass object does not exists, omit className and add the deprecated annotation 'kubernetes.io/ingress.class' instead. <br/> For Kubernetes < 1.18 either use className or annotation 'kubernetes.io/ingress.class'. |

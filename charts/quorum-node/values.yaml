@@ -495,3 +495,64 @@ git:
     runAsNonRoot: true
     runAsUser: 65534
     runAsGroup: 65534
+
+# -- An array of extra resources that will be deployed.
+# This is useful e.g. for custom resources like SnapshotSchedule provided by [https://github.com/backube/snapscheduler](https://github.com/backube/snapscheduler).
+extraResources:
+# - |
+#   apiVersion: snapscheduler.backube/v1
+#   kind: SnapshotSchedule
+#   metadata:
+#     name: daily
+#   spec:
+#     retention:
+#       maxCount: 30
+#     schedule: 30 0 * * *
+#
+# - |
+#   apiVersion: snapscheduler.backube/v1
+#   kind: SnapshotSchedule
+#   metadata:
+#     name: hourly
+#   spec:
+#     retention:
+#       maxCount: 24
+#     schedule: 15 * * * *
+
+secretProviderClass:
+  # -- Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret.
+  enabled: false
+  # -- API Version of the SecretProviderClass
+  apiVersion: "secrets-store.csi.x-k8s.io/v1"
+  # -- Spec for the SecretProviderClass.
+  # Note: 1. The nodeKey must be mounted as objectAlias nodekey with path nodekey. 2. In case of a new network: The accountkey must be mounted as objectAlias key with path key.
+  spec: {}
+    ## Sample for AWS:
+    # provider: aws
+    # parameters:
+    #   objects: |
+    #     - objectName: "TODO: ARN or Name of Secret"
+    #       objectType: "secretsmanager"
+    #       jmesPath:
+    #         - path: nodekey
+    #           objectAlias: nodekey
+    #         # Key only required on new network
+    #         - path: key
+    #           objectAlias: key
+
+serviceAccount:
+  # -- Specifies whether a service account should be created.
+  # Must be true if secretProviderClass.enabled is true
+  create: false
+  # -- Annotations to add to the service account
+  annotations: {}
+    ## Sample for AWS if secretProviderClass.enabled is true
+    # eks.amazonaws.com/role-arn: "TODO: The ARN of the IAM role"
+
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+  # -- Whether automounting API credentials for a service account is enabled or not.
+  # See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35)
+  automountServiceAccountToken: false

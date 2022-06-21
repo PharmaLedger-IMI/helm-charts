@@ -42,6 +42,16 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "quorumNode.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "quorumNode.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
 
 {{/*
     The full image repository:tag[@sha256:sha] for kubectl

@@ -41,6 +41,17 @@ data:
       "enable": ["mq", "enclave"]
     }
 
+  {{ required "config.subDomain must be set" .Values.config.didDomain }}.json: |-
+    {
+      "anchoring": {
+        "type": "FS",
+         "option": {
+           "enableBricksLedger": false
+         }
+      },
+      "enable": ["mq", "enclave"]
+    }
+
   {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
     {
       "anchoring": {
