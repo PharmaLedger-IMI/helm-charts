@@ -16,40 +16,6 @@ deployment:
   # -- NAT (public IP address your node is sending from) (required on git upload) - e.g. "9.8.7.6"
   NAT: ""
 
-git_shared_configuration:
-  # -- shared github repository name (required on git upload) - e.g. "PharmaLedger-IMI/epi-shared-configuration"
-  repository_name: ""
-  # -- github read-write token (required on git upload) - See [https://github.com/settings/tokens](https://github.com/settings/tokens) for creating a personal access token with "Full control of private repositories".
-  read_write_token: ""
-
-git_upload:
-  # --  Enable the automatic upload to the use case shared repository of the shareable data
-  enabled: true
-  # -- The email used by the git in order to upload the data (required on git upload) - e.g. first.last@company.com
-  email: ""
-  # -- The user used by the git in order to upload the data (required on git upload) - e.g. "Firstname Lastname"
-  user: ""
-  # -- The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step - do not change
-  git_repo_clone_directory: "cloned-repo"
-  # -- The description associated with the commit into the use case shared repository of the shareable data
-  git_commit_description: "added genesis and node information"
-
-shared_repository_conventions:
-  # -- The repository base folder name where the shareable data to will be uploaded
-  base_shareable_storage_path: "networks"
-  # -- The name of the file that contains the genesis file
-  genesis_file_name: "genesis.json"
-  # -- The name of the file that contains the validators public key (aka address)
-  validator_file_name: "validator.keypub"
-  # -- The name of the file that contains the enode
-  enode_file_name: "enode"
-  # -- The name of the file that contains the Quorum Node real ip address or dns
-  enode_address_file_name: "enode.address"
-  # -- The name of the file that contains the Quorum Node port
-  enode_address_port_file_name: "enode.address.port"
-  # -- The name of the file that contains the NAT address
-  nat_file_name: "nat"
-
 image:
   # -- The repository of the Quorum container image
   repository: quorumengineering/quorum
