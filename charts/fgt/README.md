@@ -1,6 +1,6 @@
 # fgt
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.9.6](https://img.shields.io/badge/AppVersion-v0.9.6-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.9.6](https://img.shields.io/badge/AppVersion-v0.9.6-informational?style=flat-square)
 
 A Helm chart for a FGT deployment on Kubernetes
 
@@ -23,13 +23,14 @@ Additional remarks:
   - SizeRestrictions_BODY
   - GenericLFI_BODY
   - NoUserAgent_HEADER
-- For sandbox environments, please install the traceability instance first, wait for readiness and afterwards install the other three participants (mah, whs and pha)
+- In some environments the first startup runs in a rate limit for HTTP connections on load balancers or similar. Rate limits need to be adjusted to at least 50.000 requests per 5 minute period.
+- In some environments the long-polling HTTP requests between participant and traceability are interrupted by a timeout. In some cases this results in a inconsistent state and disables the shipment receive functionality.
 
 ## Usage
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-- The [example-my-config.yaml](./example-my-config.yaml) shows some useful configuration examples
+- The [example configs](./config-examples/) show some useful configuration examples.
 
 ## Changelog
 
@@ -48,7 +49,7 @@ This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in 
 
 ### Quick install with internal service of type ClusterIP
 
-1. Create configuration file, e.g. *my-config.yaml*
+1. Create configuration file, e.g. *example-config-mah.yaml*
 
     ```yaml
     config:
@@ -64,7 +65,7 @@ This helm chart uses Helm [hooks](https://helm.sh/docs/topics/charts_hooks/) in 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.2 \
         --install \
         --values my-config.yaml \
     ```
@@ -175,7 +176,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.2 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -186,7 +187,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.1 \
+    helm upgrade my-release-name pharmaledger-imi/fgt --version=0.2.2 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
