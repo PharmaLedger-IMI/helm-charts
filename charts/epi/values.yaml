@@ -434,7 +434,11 @@ affinity: {}
 # Config Settings for creating Kubernetes VolumeSnapshots on upgrades.
 volumeSnapshots:
   # -- Whether to create snapshots before helm upgrading or not.
+  # The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211"
   preUpgradeEnabled: false
+  # -- Whether to create final snapshot before delete.
+  # The name of the VolumeSnapshot will be "<helm release name>-final-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-final-202206221213"
+  finalSnapshotEnabled: false
   # -- API Version of the "snapshot.storage.k8s.io" resource.
   # See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/)
   apiVersion: "v1"
