@@ -10,6 +10,12 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
 
 ## Changelog
 
+- From 0.4.x to 0.5.x
+  - Support for creating VolumeSnapshot before upgrade and on deletion.
+
+- From 0.4.3 to 0.4.4
+  - Upload of config data to Git repo has been removed
+
 - From 0.3.x to 0.4.x
   - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
   - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
@@ -44,6 +50,21 @@ These samples demonstrate how to pass the configuration settings provided by the
 | **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
 | **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
 | **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+
+## Backup: Create VolumeSnapshot of data volume before upgrading and before deletion of helm release
+
+Note: Ensure Volume Snapshotting has been set up appropriately.
+
+```yaml
+persistence:
+  data:
+    (...)
+    volumeSnapshots:
+      preUpgradeEnabled: true
+      finalSnapshotEnabled: true
+      className: "<Name of the VolumeSnapshotClass>"
+
+```
 
 ### Expose Service via Load Balancer
 
