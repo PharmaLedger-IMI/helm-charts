@@ -198,6 +198,21 @@ entries:
   epi:
   - apiVersion: v2
     appVersion: 1.3.1
+    created: "2022-06-22T10:08:22.101787845Z"
+    description: A Helm chart for Pharma Ledger epi (electronic product information)
+      application
+    digest: d4dd102986665d962251d5a7cf075ae54d23d71a112a370bfbc0262761d8529f
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: epi
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/epi-0.5.0/epi-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: 1.3.1
     created: "2022-06-03T15:02:12.342590832Z"
     description: A Helm chart for Pharma Ledger epi (electronic product information)
       application
@@ -1114,4 +1129,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-06-21T17:21:21.758782587Z"
+generated: "2022-06-22T10:08:22.102066145Z"
