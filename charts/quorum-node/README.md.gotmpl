@@ -24,8 +24,8 @@
 |----------|--------|
 | **new-network** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
 | **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
-| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.plugin_data_common:` **Required**|
-| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.plugin_data_common:` **Required**|
+| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
+| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
 
 ## Usage
 
@@ -34,16 +34,16 @@
 
 ## Installing the Chart
 
-**Note:** It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.
+These samples demonstrate how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git). 
 
-The chart requires the execution of the plugin located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git). The details about operating the plugin can be found in the specific use case documentation.
+**Note:** In case you are using the plugin mechanism, read the details about operating the plugin which can be found in the specific use case documentation.
 
 | Use case | Installation type | Example of command |
 |----------|--------------------|-------------------|
-| **new-network** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json`|
-| **join-network** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json`|
-| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json`|
-| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |`helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json`|
+| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ template "chart.version" . }} \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
+| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ template "chart.version" . }} \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
+| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ template "chart.version" . }} \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ template "chart.version" . }} \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
 
 ### Expose Service via Load Balancer
 
