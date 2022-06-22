@@ -1,20 +1,6 @@
-# Default values for new-network usecase.
+# Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-deployment:
-  # -- The number of the deployed Quorum node
-  quorum_node_no: ""
-  # -- The name of the company that makes the deployment (required on git upload) - e.g. "bayer"
-  company: ""
-  # -- The name of the use case that is being deployed (required on git upload) - e.g. "dev"
-  network_name: ""
-  # -- The Quorum node public ip address (required on git upload) - e.g. "54.43.32.21"
-  enode_address: ""
-  # -- The Port of the Quorum node public address (required on git upload) - usually "30303" - e.g. "30303"
-  enode_address_port: "30303"
-  # -- NAT (public IP address your node is sending from) (required on git upload) - e.g. "9.8.7.6"
-  NAT: ""
 
 image:
   # -- The repository of the Quorum container image
@@ -89,7 +75,10 @@ use_case:
         "nodeKeyPublic": "newNetwork_NodeKeyPublic",
         "genesisAccount": "newNetwork_genesisAccount"
       }
-    # -- Sensitive data passed by plugin
+    # -- Sensitive data.
+    # A JSON object containing two attributes:
+    # 1. "genesisKeyStoreAccount" = a base64 encoded value.
+    # 2. "nodeKey" = The secret private node key.
     # <!-- pragma: allowlist secret -->
     plugin_data_secrets: >- # pragma: allowlist secret
       {
@@ -100,19 +89,28 @@ use_case:
   joinNetwork:
     # -- Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case
     enabled: false
+    # -- Non-sensitive data.
+    # A JSON object containing three attribute:
+    # 1. "enode" = The enode.
+    # 2. "nodeKeyPublic" = The public key of the node starting with "0x".
+    # 3. "genesis" = The genesis JSON file in JSON encoded format.
     plugin_data_common: >-
       {
         "enode": "joinNetwork_enode",
         "nodeKeyPublic": "joinNetwork_nodeKeyPublic",
         "genesis": "{ \"key\": \n"value\" }"
       }
+    # -- Sensitive data.
+    # A JSON object containing one attribute:
+    # 1. "nodeKey" = The secret private node key.
     plugin_data_secrets: >-
       {
         "nodeKey": "joinNetwork_nodeKey"
       }
 
   updatePartnersInfo:
-    # -- Enable the update-partners-info use case. Can only be used in collaboration with new-network pr join-network use case
+    # -- Enable the update-partners-info use case.
+    # Can only be used in collaboration with new-network or join-network use case.
     enabled: false
     plugin_data_common: >-
       {
@@ -131,8 +129,6 @@ use_case:
           }
         ]
       }
-    # -- List of company names who act as peers
-    peers: []
 
 # Persistence using Persistent Volume Claims
 # See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
