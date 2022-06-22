@@ -1,0 +1,168 @@
+{{- /*
+
+Description: This Job creates a VolumeSnapshot and optionally waits for it is ready to use.
+Hook-Weight: -50
+
+*/}}
+{{- if .Values.volumeSnapshots.preUpgradeEnabled -}}
+{{- $volumeSnapshot := ( include "epi.volumeSnapshot" . ) }}
+
+{{- /*
+1. Role, RoleBinding and ServiceAccount
+*/}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-50"
+rules:
+  # Create and get Snapshots
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["create"]
+  # Get information of current snapshot
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    resourceNames: [{{ $volumeSnapshot | quote }}]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-50"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+subjects:
+- kind: ServiceAccount
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+  namespace: {{ template "epi.namespace" . }}
+  labels:
+    {{- include "epi.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-50"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-weight": "-50"
+data:
+  volumesnapshot.yaml: |-
+    apiVersion: snapshot.storage.k8s.io/{{ .Values.volumeSnapshots.apiVersion }}
+    kind: VolumeSnapshot
+    metadata:
+      name: {{ $volumeSnapshot }}
+      namespace: {{ template "epi.namespace" . }}
+    spec:
+      source:
+        persistentVolumeClaimName: {{ include "epi.pvc" . }}
+      volumeSnapshotClassName: {{ .Values.volumeSnapshots.className }}
+
+---
+{{- /*
+2. This Job creates the VolumeSnapshot and optionally waits until ready to use
+*/}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "epi.fullname" . }}-volumesnapshot
+  namespace: {{ template "epi.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "-50"
+    "checkov.io/skip1": CKV_K8S_38=ServiceAccountToken needs to be mounted in order for kubectl to communicate to K8S API
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "epi.fullname" . }}-volumesnapshot
+      automountServiceAccountToken: true
+      {{- with .Values.kubectl.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+      - name: main
+        {{- with .Values.kubectl.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.kubectl.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: {{ include "epi.kubectl.image" . | quote }}
+        imagePullPolicy: {{ .Values.kubectl.image.pullPolicy | default "Always" }}
+        command:
+          - sh
+          - -c
+        args:
+          - |
+            # Exit on error
+            set -e
+            echo "1. Creating VolumeSnapshot"
+            kubectl apply -f /configmap/volumesnapshot.yaml
+            echo "     rc=$?"
+
+            {{- if eq (toString .Values.volumeSnapshots.waitForReadyToUse) "true" }}
+            echo "2. Waiting for VolumeSnapshot is ready to use"
+            readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+            while [ "$readyToUse" != "true" ]
+            do
+                echo "readyToUse=$readyToUse"
+                sleep 1s
+                readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+            done
+            echo "readyToUse=$readyToUse"
+            {{- end }}
+        volumeMounts:
+          - name: configmap
+            mountPath: /configmap/volumesnapshot.yaml
+            subPath: volumesnapshot.yaml
+            readOnly: true
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ include "epi.fullname" . }}-volumesnapshot
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- end -}}
