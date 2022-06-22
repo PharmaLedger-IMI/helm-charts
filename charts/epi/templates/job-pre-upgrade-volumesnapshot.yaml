@@ -5,7 +5,6 @@ Hook-Weight: -50
 
 */}}
 {{- if .Values.volumeSnapshots.preUpgradeEnabled -}}
-{{- $volumeSnapshot := ( include "epi.volumeSnapshot" . ) }}
 
 {{- /*
 1. Role, RoleBinding and ServiceAccount
@@ -23,12 +22,7 @@ rules:
   # Create and get Snapshots
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshots"]
-    verbs: ["create"]
-  # Get information of current snapshot
-  - apiGroups: ["snapshot.storage.k8s.io"]
-    resources: ["volumesnapshots"]
-    resourceNames: [{{ $volumeSnapshot | quote }}]
-    verbs: ["get"]
+    verbs: ["create", "get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -69,11 +63,11 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "-50"
 data:
-  volumesnapshot.yaml: |-
+  volumesnapshot.tpl: |-
     apiVersion: snapshot.storage.k8s.io/{{ .Values.volumeSnapshots.apiVersion }}
     kind: VolumeSnapshot
     metadata:
-      name: {{ $volumeSnapshot }}
+      name: REPLACE_VOLUME_SNAPSHOT_NAME
       namespace: {{ template "epi.namespace" . }}
     spec:
       source:
@@ -129,8 +123,14 @@ spec:
             # Exit on error
             set -e
 
-            echo "1. Creating VolumeSnapshot"
-            kubectl apply -f /configmap/volumesnapshot.yaml
+            # create timestamp in UTC
+            now=$(date -u "+%Y%m%d%H%M")
+            volumeSnapshot="{{- printf "%s-upgrade-to-revision-%s" (include "epi.fullname" .) (toString .Release.Revision) }}-${now}"
+            # Replace placeholder and write to temp location which is writeable
+            sed "s/REPLACE_VOLUME_SNAPSHOT_NAME/${volumeSnapshot}/g" "/configmap/volumesnapshot.tpl" > "/temp/volumesnapshot.yaml"
+
+            echo "1. Creating VolumeSnapshot $volumeSnapshot"
+            kubectl apply -f /temp/volumesnapshot.yaml
             rc=$?
             echo "   rc=$rc"
 
@@ -138,12 +138,12 @@ spec:
             if [ $rc -eq 0 ]
             then
               echo "2. Waiting for VolumeSnapshot is ready to use"
-              readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+              readyToUse=$(kubectl get volumesnapshot $volumeSnapshot -o='jsonpath={.status.readyToUse}')
               while [ "$readyToUse" != "true" ]
               do
                   echo "readyToUse=$readyToUse"
                   sleep 1s
-                  readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+                  readyToUse=$(kubectl get volumesnapshot $volumeSnapshot -o='jsonpath={.status.readyToUse}')
               done
               echo "readyToUse=$readyToUse"
             fi
@@ -153,13 +153,18 @@ spec:
             exit $rc
         volumeMounts:
           - name: configmap
-            mountPath: /configmap/volumesnapshot.yaml
-            subPath: volumesnapshot.yaml
+            mountPath: /configmap/volumesnapshot.tpl
+            subPath: volumesnapshot.tpl
             readOnly: true
+          - name: temp
+            mountPath: /temp
       volumes:
         - name: configmap
           configMap:
             name: {{ include "epi.fullname" . }}-volumesnapshot
+        - name: temp
+          emptyDir:
+            sizeLimit: "1Mi"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
