@@ -343,6 +343,17 @@ Sample for AWS:
                   objectAlias: apihub.json
     ```
 
+## Backup: Create VolumeSnapshot before upgrading
+
+Note: Ensure Volume Snapshotting has been setup appropriately
+
+```yaml
+volumeSnapshots:
+  preUpgradeEnabled: true
+  className: "<Name of the VolumeSnapshotClass>"
+
+```
+
 ## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
