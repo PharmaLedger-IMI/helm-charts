@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.4.6](https://img.shields.io/badge/Version-0.4.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -40,10 +40,10 @@ These samples demonstrate how to pass the configuration settings provided by the
 
 | Use case | Installation type | Example of command |
 |----------|--------------------|-------------------|
-| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.4.6 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
-| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.4.6 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
-| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.4.6 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
-| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.4.6 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
+| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
+| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
 
 ### Expose Service via Load Balancer
 
@@ -204,6 +204,11 @@ Sample for AWS:
 | persistence.data.selectorLabels | object | `{}` | Selector Labels for the data PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
 | persistence.data.size | string | `"3Gi"` | Size of the data PVC volume. |
 | persistence.data.storageClassName | string | `""` | Name of the storage class for data PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
+| persistence.data.volumeSnapshots.apiVersion | string | `"v1"` | API Version of the "snapshot.storage.k8s.io" resource. See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/) |
+| persistence.data.volumeSnapshots.className | string | `""` | The Volume Snapshot class name. See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/) |
+| persistence.data.volumeSnapshots.finalSnapshotEnabled | bool | `false` | Whether to create final snapshot before delete. The name of the VolumeSnapshot will be "<helm release name>-final-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-final-202206221213" |
+| persistence.data.volumeSnapshots.preUpgradeEnabled | bool | `false` | Whether to create snapshots before helm upgrading or not. The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211" |
+| persistence.data.volumeSnapshots.waitForReadyToUse | bool | `true` | Whether to wait until the VolumeSnapshot is ready to use. Note: On first snapshot this may take a while. |
 | persistence.logs.accessModes | list | `["ReadWriteOnce"]` | AccessModes for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) |
 | persistence.logs.annotations | object | `{}` | Annotations for the logs PVC. |
 | persistence.logs.dataSource | object | `{}` | DataSource option for cloning an existing volume or creating from a snapshot for logs PVC. Take a look at values.yaml for more details. |
@@ -213,6 +218,11 @@ Sample for AWS:
 | persistence.logs.selectorLabels | object | `{}` | Selector Labels for the logs PVC. See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector) |
 | persistence.logs.size | string | `"1Gi"` | Size of the logs PVC volume. |
 | persistence.logs.storageClassName | string | `""` | Name of the storage class for logs PVC. If empty or not set then storage class will not be set - which means that the default storage class will be used. |
+| persistence.logs.volumeSnapshots.apiVersion | string | `"v1"` | API Version of the "snapshot.storage.k8s.io" resource. See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/) |
+| persistence.logs.volumeSnapshots.className | string | `""` | The Volume Snapshot class name. See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/) |
+| persistence.logs.volumeSnapshots.finalSnapshotEnabled | bool | `false` | Whether to create final snapshot before delete. The name of the VolumeSnapshot will be "<helm release name>-final-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-final-202206221213" |
+| persistence.logs.volumeSnapshots.preUpgradeEnabled | bool | `false` | Whether to create snapshots before helm upgrading or not. The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211" |
+| persistence.logs.volumeSnapshots.waitForReadyToUse | bool | `true` | Whether to wait until the VolumeSnapshot is ready to use. Note: On first snapshot this may take a while. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
 | podSecurityContext | object | `{"fsGroup":10000,"runAsGroup":10000,"runAsUser":10000}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | quorum.dataDirPath | string | `"/quorum/home/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume. |
