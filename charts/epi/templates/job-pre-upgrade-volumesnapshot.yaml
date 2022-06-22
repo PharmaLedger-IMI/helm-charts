@@ -128,21 +128,29 @@ spec:
           - |
             # Exit on error
             set -e
+
             echo "1. Creating VolumeSnapshot"
             kubectl apply -f /configmap/volumesnapshot.yaml
-            echo "     rc=$?"
+            rc=$?
+            echo "   rc=$rc"
 
             {{- if eq (toString .Values.volumeSnapshots.waitForReadyToUse) "true" }}
-            echo "2. Waiting for VolumeSnapshot is ready to use"
-            readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
-            while [ "$readyToUse" != "true" ]
-            do
-                echo "readyToUse=$readyToUse"
-                sleep 1s
-                readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
-            done
-            echo "readyToUse=$readyToUse"
+            if [ $rc -eq 0 ]
+            then
+              echo "2. Waiting for VolumeSnapshot is ready to use"
+              readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+              while [ "$readyToUse" != "true" ]
+              do
+                  echo "readyToUse=$readyToUse"
+                  sleep 1s
+                  readyToUse=$(kubectl get volumesnapshot {{ $volumeSnapshot }} -o='jsonpath={.status.readyToUse}')
+              done
+              echo "readyToUse=$readyToUse"
+            fi
             {{- end }}
+
+            echo "3. Exiting ..."
+            exit $rc
         volumeMounts:
           - name: configmap
             mountPath: /configmap/volumesnapshot.yaml
