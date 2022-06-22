@@ -24,37 +24,8 @@
 |----------|--------|
 | **new-network** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
 | **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
-| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
-| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.peers:` **Required**|
-
-Configuration example for the field `use_case.updatePartnersInfo.peers:`
-
-```yaml
-use_case:
-  updatePartnersInfo:
-    peers: [
-       company1,
-       company2,
-       company3
-    ]
-```
-
-## Integration with shared repository
-
-| Integration with shared repository configuration|
-|-----------------------------------|
-| `git_shared_configuration.repository_name:` **Required** |
-| `git_shared_configuration.read_write_token:` **Required** |
-
-Configuration example for the shared repository:
-
-```yaml
-git_shared_configuration:
-  # -- shared github repository name eg. PharmaLedger-IMI/epi-shared-configuration
-  repository_name: "PharmaLedger-IMI/epi-shared-configuration"
-  # -- github read-write token
-  read_write_token: "git hub read write token"
-```
+| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.plugin_data_common:` **Required**|
+| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**<br/>`use_case.updatePartnersInfo.plugin_data_common:` **Required**|
 
 ## Usage
 
