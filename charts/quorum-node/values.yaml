@@ -76,7 +76,7 @@ use_case:
         "genesisAccount": "newNetwork_genesisAccount"
       }
     # -- Sensitive data.
-    # A JSON object containing two attributes: 
+    # A JSON object containing two attributes:
     # 1. "genesisKeyStoreAccount" = a base64 encoded value.
     # 2. "nodeKey" = The secret private node key.
     # <!-- pragma: allowlist secret -->
@@ -101,7 +101,7 @@ use_case:
         "genesis": "{ \"key\": \n"value\" }"
       }
     # -- Sensitive data.
-    # A JSON object containing one attribute: 
+    # A JSON object containing one attribute:
     # 1. "nodeKey" = The secret private node key.
     plugin_data_secrets: >-
       {
