@@ -169,6 +169,23 @@ persistence:
       # kind: VolumeSnapshot
       # apiGroup: snapshot.storage.k8s.io
 
+    volumeSnapshots:
+      # -- Whether to create snapshots before helm upgrading or not.
+      # The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211"
+      preUpgradeEnabled: false
+      # -- Whether to create final snapshot before delete.
+      # The name of the VolumeSnapshot will be "<helm release name>-final-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-final-202206221213"
+      finalSnapshotEnabled: false
+      # -- API Version of the "snapshot.storage.k8s.io" resource.
+      # See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/)
+      apiVersion: "v1"
+      # -- The Volume Snapshot class name.
+      # See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/)
+      className: ""
+      # -- Whether to wait until the VolumeSnapshot is ready to use.
+      # Note: On first snapshot this may take a while.
+      waitForReadyToUse: true
+
   # Settings for the logging PVC.
   logs:
     # -- Enables logging to a persistent volume.
@@ -207,6 +224,22 @@ persistence:
       # name: imported-aws-snapshot
       # kind: VolumeSnapshot
       # apiGroup: snapshot.storage.k8s.io
+    volumeSnapshots:
+      # -- Whether to create snapshots before helm upgrading or not.
+      # The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211"
+      preUpgradeEnabled: false
+      # -- Whether to create final snapshot before delete.
+      # The name of the VolumeSnapshot will be "<helm release name>-final-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-final-202206221213"
+      finalSnapshotEnabled: false
+      # -- API Version of the "snapshot.storage.k8s.io" resource.
+      # See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/)
+      apiVersion: "v1"
+      # -- The Volume Snapshot class name.
+      # See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/)
+      className: ""
+      # -- Whether to wait until the VolumeSnapshot is ready to use.
+      # Note: On first snapshot this may take a while.
+      waitForReadyToUse: true
 
 # -- Number of replicas for the quorum-node !! DO NOT CHANGE !!
 replicasCount: 1
