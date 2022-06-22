@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.4.5](https://img.shields.io/badge/Version-0.4.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -217,13 +217,6 @@ Sample for AWS:
 | git.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | git.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
 | git.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
-| git_shared_configuration.read_write_token | string | `""` | github read-write token (required on git upload) - See [https://github.com/settings/tokens](https://github.com/settings/tokens) for creating a personal access token with "Full control of private repositories". |
-| git_shared_configuration.repository_name | string | `""` | shared github repository name (required on git upload) - e.g. "PharmaLedger-IMI/epi-shared-configuration" |
-| git_upload.email | string | `""` | The email used by the git in order to upload the data (required on git upload) - e.g. first.last@company.com |
-| git_upload.enabled | bool | `true` | Enable the automatic upload to the use case shared repository of the shareable data |
-| git_upload.git_commit_description | string | `"added genesis and node information"` | The description associated with the commit into the use case shared repository of the shareable data |
-| git_upload.git_repo_clone_directory | string | `"cloned-repo"` | The folder name where the repository will be cloned when the upload procedure is initiated in the post-install step - do not change |
-| git_upload.user | string | `""` | The user used by the git in order to upload the data (required on git upload) - e.g. "Firstname Lastname" |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
@@ -294,13 +287,6 @@ Sample for AWS:
 | serviceAccount.automountServiceAccountToken | bool | `false` | Whether automounting API credentials for a service account is enabled or not. See [https://docs.bridgecrew.io/docs/bc_k8s_35](https://docs.bridgecrew.io/docs/bc_k8s_35) |
 | serviceAccount.create | bool | `false` | Specifies whether a service account should be created. Must be true if secretProviderClass.enabled is true |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| shared_repository_conventions.base_shareable_storage_path | string | `"networks"` | The repository base folder name where the shareable data to will be uploaded |
-| shared_repository_conventions.enode_address_file_name | string | `"enode.address"` | The name of the file that contains the Quorum Node real ip address or dns |
-| shared_repository_conventions.enode_address_port_file_name | string | `"enode.address.port"` | The name of the file that contains the Quorum Node port |
-| shared_repository_conventions.enode_file_name | string | `"enode"` | The name of the file that contains the enode |
-| shared_repository_conventions.genesis_file_name | string | `"genesis.json"` | The name of the file that contains the genesis file |
-| shared_repository_conventions.nat_file_name | string | `"nat"` | The name of the file that contains the NAT address |
-| shared_repository_conventions.validator_file_name | string | `"validator.keypub"` | The name of the file that contains the validators public key (aka address) |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | use_case.joinNetwork.enabled | bool | `false` | Enable the join-network use case. Can only be used in collaboration with updatePartnerInfo use case |
 | use_case.joinNetwork.plugin_data_common | string | `"{\n  \"enode\": \"joinNetwork_enode\",\n  \"nodeKeyPublic\": \"joinNetwork_nodeKeyPublic\",\n  \"genesis\": \"{ \\\"key\\\": \\n\"value\\\" }\"\n}"` |  |
