@@ -433,18 +433,15 @@ affinity: {}
 
 # Config Settings for creating Kubernetes VolumeSnapshots on upgrades.
 volumeSnapshots:
-  # -- Whether to create snapshots before upgrading or not.
+  # -- Whether to create snapshots before helm upgrading or not.
   preUpgradeEnabled: false
-  # -- Whether to create final snapshot before deletion of the helm chart or not.
-  #finalSnapshotEnabled: false
-
   # -- API Version of the "snapshot.storage.k8s.io" resource.
   # See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/)
   apiVersion: "v1"
   # -- The Volume Snapshot class name.
   # See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/)
   className: ""
-  # -- Whether to wait until the VolumeSnapshot is ready to use before upgrading.
+  # -- Whether to wait until the VolumeSnapshot is ready to use.
   # Note: On first snapshot this may take a while.
   waitForReadyToUse: true
 
