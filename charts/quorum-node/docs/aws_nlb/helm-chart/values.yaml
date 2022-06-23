@@ -1,0 +1,126 @@
+# Default values for echo-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: "ealen/echo-server"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.5.1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  port: 80
+  # Annotations for the Service, see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/
+  annotations:
+    # Let Kubernetes In-tree LoadBalancer controller NOT process this resource (but AWS LB controller 2.2 in this case)
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#configuration
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+
+    # We want the NLB to be Internet-facing (public)
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
+    # A custom name
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#load-balancer-name
+    service.beta.kubernetes.io/aws-load-balancer-name: echo-server
+
+    # Forward traffic to EC2 Instance (thus, a nodePort on the instance will be used)
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/#instance-mode_1
+    # and https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#nlb-target-type
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+
+    # IPv4 only
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#ip-address-type
+    service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
+
+    # Important: Preserve Client (public) IP address of caller on forwarding traffic to target
+    # See https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#target-group-attributes
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
+    
+    # Healthcheck setting - must be within [2, 10] - defaults to 3
+    # We use the mininum of 2 to add/remove targets faster from target group
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+    
+    # Use a static Elastic IP address - Elastic IP Allocation IDs required!
+    # From offical docs: Public Facing lb only. Length/order must match subnets
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-05bbd88e5c4fb7078
+    
+    # We put the NLB into a certain public subnet only - You can provide the subnet ID or the value of the 'Name' tag
+    # From offical docs: You must specify at least one subnet in any of the AZs, both subnetID or subnetName(Name tag on subnets) can be used.
+    # See: https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#subnets
+    service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1a
+    
+    # Only set to true if NLBs subnet is in a different availability zone than the zone affinity of the deployment.
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
+    
+    # 1. Load Balancer Proxy Protocol does not work for HTTP based workload!
+    # 2. We do not need the Load Balancer Proxy Protocol in our use case, therefore we do not enable it
+    # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+
+    # Do not use. Use spec.loadBalancerSourceRanges instead!
+    # service.beta.kubernetes.io/load-balancer-source-ranges: "185.125.224.20/32,4.4.4.4/32"
+  
+  #loadBalancerSourceRanges: []
+  # A list of CIDR ranges which can access the NLB target. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
+  loadBalancerSourceRanges:
+    - 8.8.8.8/32
+    - 8.8.4.4/32
+
+# Pod Affinity - we want to schedule the pod in a certain availability zone, here eu-west-1a
+# Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets
+# Please note, that your nodes must be labeled accordingly! 
+# See https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - eu-west-1a
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
