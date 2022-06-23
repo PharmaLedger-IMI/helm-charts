@@ -1,0 +1,51 @@
+# Deployment of the pod
+# Here: Deploys to availability zone eu-west-1b
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-server-yaml
+  labels:
+    app.kubernetes.io/name: echo-server-yaml
+    app.kubernetes.io/instance: echo-server-yaml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: echo-server-yaml
+      app.kubernetes.io/instance: echo-server-yaml
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: echo-server-yaml
+        app.kubernetes.io/instance: echo-server-yaml
+    spec:
+      serviceAccountName: echo-server-yaml
+      containers:
+        - name: echo-server
+          image: "ealen/echo-server:0.5.1"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+      # Pod Affinity - we want to schedule the pod in a certain availability zone, here eu-west-1b
+      # Must be the same zone as the NLB - see service annotation service.beta.kubernetes.io/aws-load-balancer-subnets
+      # Please note, that your nodes must be labeled accordingly! 
+      # See https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - eu-west-1b
