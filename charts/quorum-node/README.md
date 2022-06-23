@@ -24,7 +24,7 @@ See [Changelog](./CHANGELOG.md) for significant changes!
   - SecurityContext
   - Non-root user
   - readonly filesystem
-- Option to create VolumeSnapshots on *helm upgrade* or before deletion of the helm release.
+- Option to create VolumeSnapshots on *helm upgrade* or before deletion of the helm release. See [here](./docs/volumesnapshots/README.md) for details.
 - Option to mount sensitive/secret via *CSI Secrets Driver* from a vault solution like AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for details.
 - Option to provide `extraResources` like Network Policies. See [Network Policies](./docs/network_policies/README.md) for details.
 
@@ -52,25 +52,11 @@ These samples demonstrate how to pass the configuration settings provided by the
 
 ## Further configuration options
 
+- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
 - [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
 - [Network Policies](./docs/network_policies/README.md)
 <!-- - [Expose Service via Load Balancer](./docs/load_balancer/README.md) -->
 <!-- - [AWS Load Balancer Controller: Expose Service via Ingress](./docs/aws_lb_controller_ingress/README.md) -->
-
-## Backup: Create VolumeSnapshot of data volume before upgrading and before deletion of helm release
-
-Note: Ensure Volume Snapshotting has been set up appropriately.
-
-```yaml
-persistence:
-  data:
-    (...)
-    volumeSnapshots:
-      preUpgradeEnabled: true
-      finalSnapshotEnabled: true
-      className: "<Name of the VolumeSnapshotClass>"
-
-```
 
 ### Expose Service via Load Balancer
 
