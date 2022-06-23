@@ -1,6 +1,6 @@
 # AWS Load Balancer Controller: Expose Peer-to-Peer (P2P) Service via AWS Network Load Balancer (NLB)
 
-**Please read [this article](./../../../../docs/aws_nlb/README.md) first** which explains the major problem.
+**Please read [this article](./../aws_nlb_problem_statement/README.md) first** which explains the major problem.
 
 ## Prerequisites
 
