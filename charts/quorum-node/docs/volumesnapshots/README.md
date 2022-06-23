@@ -8,7 +8,7 @@ This helm chart provides the option to create a [VolumeSnapshot](https://kuberne
 
     - [AWS EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) and [AWS EBS CSI Driver for Volume Snapshots](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/examples/kubernetes/snapshot/README.md)
 
-2. Create `StorageClass` and `VolumeSnapshotClass`,sample for [AWS EKS](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/examples/kubernetes/snapshot/README.md#create-snapshot)
+2. Create `StorageClass` and `VolumeSnapshotClass`; here a sample for [AWS EKS](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/examples/kubernetes/snapshot/README.md#create-snapshot).
 
 ## Example
 
@@ -29,8 +29,3 @@ persistence:
       className: "<Name of the VolumeSnapshotClass>"
 
 ```
-
-## Links
-
-- [https://kubernetes.io/docs/concepts/services-networking/network-policies/](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
-- [Network Policy Editor](https://editor.cilium.io/)
