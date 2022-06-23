@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -10,19 +10,25 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
 
 ## Changelog
 
-- From 0.4.x to 0.5.x
-  - Support for creating VolumeSnapshot before upgrade and on deletion.
+See [Changelog](./CHANGELOG.md) for significant changes!
 
-- From 0.4.3 to 0.4.4
-  - Upload of config data to Git repo has been removed
+## Usage
 
-- From 0.3.x to 0.4.x
-  - Consolidation of ConfigMaps to one ConfigMap for settings and one for scripts.
-  - Storing account-key (on new network only) and node (private) key in Kubernetes Secret instead of storing in ConfigMap
-  - Security: Run as non root user with readonly filesystem by default
-  - Reacts to config changes and restart quorum node [https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments](https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments)
-  - Follows standard Helm naming conventions (e.g. use `fullnameOverride` to set fix names) and removed function "quorum-node.Identifier"
-  - Some minor fixes
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+<!-- - [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined. -->
+
+## Features
+
+- Security by default:
+  - SecurityContext
+  - Non-root user
+  - readonly filesystem
+- Option to create VolumeSnapshots on *helm upgrade* or before deletion of the helm release. See [here](./docs/volumesnapshots/README.md) for details.
+- Option to mount sensitive/secret via *CSI Secrets Driver* from a vault solution like AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for details.
+- Option to provide `extraResources` like
+  - [Network Policies](./docs/network_policies/README.md) for fine-grained control of network traffic
+  - [Scheduled VolumeSnapshots](./docs/scheduled_volumesnapshots/README.md) for creating regular data backups
 
 ## Deployment use case matrix
 
@@ -33,11 +39,6 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
 | **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
 | **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
 
-## Usage
-
-- [Here](./README.md#values) is a full list of all configuration values.
-- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-
 ## Installing the Chart
 
 These samples demonstrate how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git).
@@ -46,145 +47,18 @@ These samples demonstrate how to pass the configuration settings provided by the
 
 | Use case | Installation type | Example of command |
 |----------|--------------------|-------------------|
-| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
-| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
-| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
-| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.0 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
+| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
+| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
 
-## Backup: Create VolumeSnapshot of data volume before upgrading and before deletion of helm release
+## Further configuration options and samples
 
-Note: Ensure Volume Snapshotting has been set up appropriately.
-
-```yaml
-persistence:
-  data:
-    (...)
-    volumeSnapshots:
-      preUpgradeEnabled: true
-      finalSnapshotEnabled: true
-      className: "<Name of the VolumeSnapshotClass>"
-
-```
-
-### Expose Service via Load Balancer
-
-**Note:**
-By default, for AWS, the quorum node will be exposed by a service of type Classic Load Balancer. You can use [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/) instead to expose it as Network Load Balancer.
-
-Note: You need the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/) installed and configured properly.
-
-Example of configuration for Network Load Balancer in the **my-values.yaml** file:
-
-```yaml
-annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-    service.beta.kubernetes.io/aws-load-balancer-name: echo-server-yaml
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-    service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
-    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
-    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
-    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aa2e63a9a1551278
-    service.beta.kubernetes.io/aws-load-balancer-subnets: eks-ireland-1-vpc-public-eu-west-1b
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "false"
-spec:
-  loadBalancerSourceRanges:
-    - 8.8.8.8/32
-    - 8.8.4.4/32
-```
-
-## CSI Secrets Driver
-
-This enables storing the following secret values in one of the supported Secret stores (e.g. Azure Key Vault or AWS Secrets Manager) instead of using Kubernetes Secrets:
-
-- `nodekey` - The private node key
-- `key` - Only required on new network use case: The account key
-
-More information can be found here:
-
-- [https://secrets-store-csi-driver.sigs.k8s.io/](https://secrets-store-csi-driver.sigs.k8s.io/)
-- [https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/](https://aws.amazon.com/blogs/security/how-to-use-aws-secrets-configuration-provider-with-kubernetes-secrets-store-csi-driver/)
-
-Sample for AWS:
-
-1. Create a new Secret in Secrets Manager with keys `nodekey` (and only on new network use case: `key`). Note: If you want to create the secret as PlainText, then you must encode the values to JSON String each!
-
-    Sample for join network use case:
-
-    ```json
-    {
-        "nodekey": ""
-    }
-    ```
-
-2. Create IAM role with trust relationship to the Kubernetes Service Account and a policy that allows getting the secret value.
-
-    Trust relationship sample:
-
-    ```json
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Sid": "AssumeableByOIDC",
-              "Effect": "Allow",
-              "Principal": {
-                  "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>"
-              },
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": {
-                  "StringLike": {
-                      "oidc.eks.<REGION>.amazonaws.com/id/<OIDC_PROVIDER_ID>:sub": "system:serviceaccount:<K8S_NAMESPACE>:<NAME>"
-                  }
-              }
-          }
-      ]
-    }
-    ```
-
-    Policy:
-
-    ```json
-    {
-        "Statement": [
-            {
-                "Action": [
-                    "secretsmanager:GetSecretValue",
-                    "secretsmanager:DescribeSecret"
-                ],
-                "Effect": "Allow",
-                "Resource": [
-                    "<SECRET_ARN>"
-                ]
-            }
-        ],
-        "Version": "2012-10-17"
-    }
-    ```
-
-3. Modify config to use ServiceAccount and SecretProviderClass
-
-    ```yaml
-    serviceAccount:
-      create: true
-      annotations:
-        eks.amazonaws.com/role-arn: "<ARN of the IAM role>"
-
-    secretProviderClass:
-      enabled: true
-      spec:
-        provider: aws
-        parameters:
-          objects: |
-            - objectName: "<ARN or Name of Secret>"
-              objectType: "secretsmanager"
-              jmesPath:
-                - path: nodekey
-                  objectAlias: nodekey
-                - path: key
-                  objectAlias: key
-    ```
+- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
+- [Network Policies](./docs/network_policies/README.md)
+<!-- - [Expose Service via Load Balancer](./docs/load_balancer/README.md) -->
+- [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
 
 ## Values
 
