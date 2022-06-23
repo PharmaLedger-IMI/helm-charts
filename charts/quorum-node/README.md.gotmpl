@@ -52,7 +52,7 @@ These samples demonstrate how to pass the configuration settings provided by the
 
 ## Further configuration options
 
-<!-- - [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md) -->
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
 - [Network Policies](./docs/network_policies/README.md)
 <!-- - [Expose Service via Load Balancer](./docs/load_balancer/README.md) -->
 <!-- - [AWS Load Balancer Controller: Expose Service via Ingress](./docs/aws_lb_controller_ingress/README.md) -->
