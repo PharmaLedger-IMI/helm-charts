@@ -71,7 +71,7 @@ ingress:
     # Listen on HTTPS protocol at port 443 at the ALB
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
     # Use target type IP which is the case if the service type is ClusterIP
-    alb.ingress.kubernetes.io/target-type: ip   
+    alb.ingress.kubernetes.io/target-type: ip
   # -- A list of hostnames and path(s) to listen at the Ingress Controller
   hosts:
     -
