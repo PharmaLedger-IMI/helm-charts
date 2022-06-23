@@ -2,8 +2,6 @@
 
 **Please read [this article](./../../../../docs/aws_nlb/README.md) first** which explains the major problem.
 
-This sample demonstrates how you can use AWS Load Balancer Controller for exposing the service, but please note: This is still not recommended!
-
 ## Prerequisites
 
 - [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/)
@@ -24,7 +22,7 @@ service:
       # external-dns.alpha.kubernetes.io/hostname: "my-quorum.mycompany.com"
       service.beta.kubernetes.io/aws-load-balancer-name: "<todo: a nice for for the NLB>"
       service.beta.kubernetes.io/aws-load-balancer-eip-allocations: <todo: The EIP, e.g. eipallow-somevalue>
-      service.beta.kubernetes.io/aws-load-balancer-subnets: <todo: a single public subnet, must be the same AZ as in nodeAffinity, see below>
+      service.beta.kubernetes.io/aws-load-balancer-subnets: <todo: a single public subnet, must be the same AZ as in nodeAffinity, e.g. pl-fra-public-eu-central-1a>
       service.beta.kubernetes.io/aws-load-balancer-type: "external"
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
@@ -46,6 +44,6 @@ affinity:
         - key: topology.kubernetes.io/zone
           operator: In
           values:
-          - <todo: the same zone the subnet for the NLB, e.g. eu-central-1a>
+          - <todo: the same zone like the subnet for the NLB, e.g. eu-central-1a>
 
 ```
