@@ -2,16 +2,32 @@
 
 This solution uses the [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io/concepts.html) for mounting secrets from a vault solution like AWS Secrets Manager or HashiCorp Vault instead of storing secret values in a Kubernetes Secret and mounting that Kubernetes Secret.
 
+These sensitive values are mounted from vault:
+
+- `nodekey` - The private node key
+- `genesis_key_store_account` - Only required on new network use case: The account key
+
 ## Cluster prerequisites
 
 - [CSI Driver, provider and IAM solution](./../../../../docs/secrets_store_csi_driver_provider/README.md)
 
 ## Example for AWS
 
-Full terraform example, see [here](aws.tf)
+**A terraform example as available [here](aws.tf)**
 
 1. Optional: Create a KMS Key for encrypting the Secret
 2. Create the Secret in AWS Secrets Manager
+
+    Create a new Secret in Secrets Manager with keys `nodekey` (and only on new network use case: `key`). Note: If you want to create the secret as PlainText, then you must encode the values to JSON String each!
+
+    Sample for join network use case:
+
+    ```json
+    {
+        "nodekey": ""
+    }
+    ```
+
 3. Create an IAM Role (for Kubernetes Service Account) with appropriate permissions to get the secret value from Secrets Manager. The trust relationship must allow the K8S Service Account to assume the role. See links:
 
     - [https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html](https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html)
