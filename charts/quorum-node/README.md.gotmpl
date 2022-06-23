@@ -25,8 +25,8 @@ See [Changelog](./CHANGELOG.md) for significant changes!
   - Non-root user
   - readonly filesystem
 - Option to create VolumeSnapshots on *helm upgrade* or before deletion of the helm release.
-<!-- - Option to mount sensitive/secret via *CSI Secrets Driver* from a vault solution like AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for details. -->
-- Option to provide `extraResources` like Network Policies. See [here](./docs/network_policies/README.md) for details.
+- Option to mount sensitive/secret via *CSI Secrets Driver* from a vault solution like AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for details.
+- Option to provide `extraResources` like Network Policies. See [Network Policies](./docs/network_policies/README.md) for details.
 
 ## Deployment use case matrix
 
