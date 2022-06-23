@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: explorer-config
-  namespace: explorer
+  name: {{ include "blockchain-explorer.fullname" . }}
+  namespace: {{ default .Release.Namespace }}
   annotations:
     "description": "Configuration of Blockchain Explorer"
 data:
@@ -10,4 +10,4 @@ data:
 {{ required "quorumconfig must be set" .Values.quorumConfig | indent 4 }}
 
   .env.production: |-
-{{ required "quorumEnvProduction must be set" .Values.quorumEnvProduction | indent 4 }}
+{{ required "quorumEnvConfig must be set" .Values.quorumEnvConfig | indent 4 }}

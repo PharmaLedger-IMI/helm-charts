@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "blockchain-explorer.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "blockchain-explorer.selectorLabels" . | nindent 6 }}
@@ -38,20 +36,20 @@ spec:
               containerPort: 25000
               protocol: TCP
           volumeMounts:
-          - name: explorer-config-volume
+          - name: config-volume
             mountPath: /app/config.json
             subPath: config.json
             readOnly: true
-          - name: explorer-config-volume
+          - name: config-volume
             mountPath: /app/.env.production
             subPath: .env.production
             readOnly: true
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-      - name: explorer-config-volume
+      - name: config-volume
         configMap:
-          name: explorer-config
+          name: explorer-blockchain-explorer
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
