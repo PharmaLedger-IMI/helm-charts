@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -30,27 +30,109 @@ See [Changelog](./CHANGELOG.md) for significant changes!
   - [Network Policies](./docs/network_policies/README.md) for fine-grained control of network traffic
   - [Scheduled VolumeSnapshots](./docs/scheduled_volumesnapshots/README.md) for creating regular data backups
 
-## Deployment use case matrix
-
-| Use case | Configuration |
-|----------|--------|
-| **new-network** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
-| **join-network** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **false**|
-| **new-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **true**<br/>`use_case.joinNetwork.enabled:` **false**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
-| **join-network**<br/> continued by<br/> **update-partners-info** | `use_case.newNetwork.enabled:` **false**<br/>`use_case.joinNetwork.enabled:` **true**<br/>`use_case.updatePartnersInfo.enabled:` **true**|
-
 ## Installing the Chart
 
-These samples demonstrate how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git).
+These installation samples demonstrate how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git).
 
 **Note:** In case you are using the plugin mechanism, read the details about operating the plugin which can be found in the specific use case documentation.
 
-| Use case | Installation type | Example of command |
-|----------|--------------------|-------------------|
-| **new-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json</code>|
-| **join-network** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json</code>|
-| **new-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \\<br/>--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
-| **join-network**<br/> continued by<br/> **update-partners-info** | Install/Upgrade |<code>helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.1 \\<br/>-f ./my-values.yaml \\<br/>--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \\<br/>--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \\<br/>--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json</code>|
+### Join Network followed by updating the PartnerInfo
+
+The **most common case** is to [join an existing network](../../usecases/join-network/readme.md) and to [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
+
+```yaml
+use_case:
+  newNetwork:
+    enabled: false
+use_case:
+  joinNetwork:
+    enabled: true
+use_case:
+  updatePartnersInfo:
+    enabled: true
+```
+
+```shell
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
+--values ./my-values.yaml \
+--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
+--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
+--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+
+```
+
+### Only Join Network w/o updating PartnerInfos
+
+You can also simply [join an existing network](../../usecases/join-network/readme.md) and do **not** [update the PartnerInfo](../../usecases/update-partners-info/readme.md).
+
+```yaml
+use_case:
+  newNetwork:
+    enabled: false
+use_case:
+  joinNetwork:
+    enabled: true
+use_case:
+  updatePartnersInfo:
+    enabled: false
+```
+
+```shell
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
+--values ./my-values.yaml \
+--set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
+--set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
+
+```
+
+### New Network followed by updating the PartnerInfo
+
+Create a [New network](../../usecases/new-network/readme.md) and [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
+
+```yaml
+use_case:
+  newNetwork:
+    enabled: true
+use_case:
+  joinNetwork:
+    enabled: false
+use_case:
+  updatePartnersInfo:
+    enabled: true
+```
+
+```shell
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
+--values ./my-values.yaml \
+--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
+--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
+--set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+
+```
+
+### New Network
+
+Simply create a [New network](../../usecases/new-network/readme.md)
+
+```yaml
+use_case:
+  newNetwork:
+    enabled: true
+use_case:
+  joinNetwork:
+    enabled: false
+use_case:
+  updatePartnersInfo:
+    enabled: false
+```
+
+```shell
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
+--values ./my-values.yaml \
+--set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
+--set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
+
+```
 
 ## Further configuration options and samples
 
@@ -59,6 +141,42 @@ These samples demonstrate how to pass the configuration settings provided by the
 - [Network Policies](./docs/network_policies/README.md)
 <!-- - [Expose Service via Load Balancer](./docs/load_balancer/README.md) -->
 - [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
+
+## Additional helm options
+
+Run `helm upgrade --helm` for full list of options.
+
+1. Install to other namespace
+
+    You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
+
+    ```bash
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.2 \
+        --install \
+        --namespace=my-namespace \
+        --values my-values.yaml \
+    ```
+
+2. Wait until installation has finished successfully and the deployment is up and running.
+
+    Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
+
+    ```bash
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.2 \
+        --install \
+        --wait --timeout=600s \
+        --values my-values.yaml \
+    ```
+
+## Uninstalling the Helm Release
+
+To uninstall/delete the `quorum-node-0` release:
+
+```bash
+helm delete quorum-node-0 \
+  --namespace=my-namespace
+
+```
 
 ## Values
 
