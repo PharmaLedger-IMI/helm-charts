@@ -32,11 +32,14 @@ See [Changelog](./CHANGELOG.md) for significant changes!
 
 ## Installing the Chart
 
-These installation samples demonstrate how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git).
+These four installation samples demonstrate
+
+1. the different use case combinations
+2. how to pass the configuration settings provided by the plugin which is located [here](https://github.com/PharmaLedger-IMI/helm-pl-plugin.git).
 
 **Note:** In case you are using the plugin mechanism, read the details about operating the plugin which can be found in the specific use case documentation.
 
-### Join Network followed by updating the PartnerInfo
+### 1. Join Network followed by updating the PartnerInfo
 
 The **most common case** is to [join an existing network](../../usecases/join-network/readme.md) and to [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
 
@@ -61,7 +64,7 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.
 
 ```
 
-### Only Join Network w/o updating PartnerInfos
+### 2. Only Join Network w/o updating PartnerInfos
 
 You can also simply [join an existing network](../../usecases/join-network/readme.md) and do **not** [update the PartnerInfo](../../usecases/update-partners-info/readme.md).
 
@@ -85,7 +88,7 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.
 
 ```
 
-### New Network followed by updating the PartnerInfo
+### 3. New Network followed by updating the PartnerInfo
 
 Create a [New network](../../usecases/new-network/readme.md) and [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
 
@@ -110,7 +113,7 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.
 
 ```
 
-### New Network
+### 4. New Network
 
 Simply create a [New network](../../usecases/new-network/readme.md)
 
