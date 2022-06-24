@@ -154,7 +154,7 @@ image:
   repository: quorumengineering/quorum
   pullPolicy: Always
   tag: "21.7.1"
-  sha: "17fdaa26ae682bd7ba1ee0f9cc957fc07582b53aa6c2a6bc800f29c3ad28289e"
+  sha: "17fdaa26ae682bd7ba1ee0f9cc957fc07582b53aa6c2a6bc800f29c3ad28289e"  # pragma: allowlist secret
 
 use_case:
   newNetwork:
