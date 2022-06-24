@@ -4,8 +4,6 @@ It is recommended to do regular backups of your data. This can be achieved by re
 
 ## Cluster prerequisites
 
-You need a network policy enforcement engine, e.g.
-
 1. You need to install an appropriate [CSI Driver](https://kubernetes-csi.github.io/docs/drivers.html) for your Kubernetes distro to make use of VolumeSnapshots. You also may need to install the [external-snapshotter](https://github.com/kubernetes-csi/external-snapshotter), e.g. for AWS EKS.
 
     - [AWS EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) and [AWS EBS CSI Driver for Volume Snapshots](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/examples/kubernetes/snapshot/README.md)
