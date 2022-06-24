@@ -1,0 +1,164 @@
+# Default values for blockchain-explorer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: lukasosterheider/quorum-explorer
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+# -- Pod Security Context
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# -- Security Context
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  # -- Whether to create ingress or not.
+  enabled: false
+  # -- The className specifies the IngressClass object which is responsible for that class.
+  className: alb
+  # -- Ingress annotations.
+  annotations:
+    # The name of the ALB group, can be used to configure a single ALB by multiple ingress objects
+    alb.ingress.kubernetes.io/group.name: default
+    # Specifies the HTTP path when performing health check on targets.
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    # Specifies the port used when performing health check on targets.
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    # Specifies the HTTP status code that should be expected when doing health checks against the specified health check path.
+    alb.ingress.kubernetes.io/success-codes: "200"
+    # Listen on HTTPS protocol at port 443 at the ALB
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    # Use target type IP which is the case if the service type is ClusterIP
+    alb.ingress.kubernetes.io/target-type: ip
+  # -- A list of hostnames and path(s) to listen at the Ingress Controller
+  hosts:
+    -
+      # -- The FQDN/hostname
+      host: explorer.pharma-company.com
+      paths:
+        -
+          # -- The Ingress Path.
+          path: /*
+          # -- The type of path. This value is required since Kubernetes 1.18.
+          pathType: ImplementationSpecific
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+quorumConfig: |-
+    {
+      "algorithm": "qbft",
+      "nodes": [
+        {
+          "name": "rpcnode",
+          "client": "goquorum",
+          "rpcUrl": "http://<rpc-servicename>.<namespace-quorum-node>:8545",
+          "privateTxUrl": ""
+        }
+      ]
+    }
+
+quorumEnvConfig: |-
+    QE_BASEPATH="/explorer"
+    QE_CONFIG_PATH="/app/config.json"
+    NODE_ENV=production
+
+    DISABLE_AUTH=false
+
+    NEXTAUTH_URL=http://localhost:25000
+    NEXTAUTH_URL_INTERNAL=http://localhost:25000
+    NEXTAUTH_SECRET=<to be generated based on tools mentioned below>
+    # To generate NEXTAUTH_SECRET: `openssl rand -hex 32` or go to https://generate-secret.now.sh/32
+
+    local_username=admin
+    local_password=This1sSuchAS3curePassw0rd
+
+    GITHUB_ID=
+    GITHUB_SECRET=
+
+    AUTH0_ID=
+    AUTH0_SECRET=
+    AUTH0_DOMAIN=
+
+    FACEBOOK_ID=
+    FACEBOOK_SECRET=
+
+    GOOGLE_ID=
+    GOOGLE_SECRET=
+
+    TWITTER_ID=
+    TWITTER_SECRET=
+
+    GITLAB_CLIENT_ID=
+    GITLAB_CLIENT_SECRET=
+
+    AZURE_AD_CLIENT_ID=
+    AZURE_AD_CLIENT_SECRET=
+    AZURE_AD_TENANT_ID=
+
+    ATLASSIAN_CLIENT_ID=
+    ATLASSIAN_CLIENT_SECRET=
+
+    COGNITO_CLIENT_ID=
+    COGNITO_CLIENT_SECRET=
+    COGNITO_ISSUER=
+
+    OKTA_CLIENT_ID=
+    OKTA_CLIENT_SECRET=
+    OKTA_ISSUER=
+
+    SLACK_CLIENT_ID=
+    SLACK_CLIENT_SECRET=
