@@ -54,10 +54,10 @@ use_case:
 
 ```shell
 helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
---values ./my-values.yaml \
---set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
---set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
---set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+  --values ./my-values.yaml \
+  --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
+  --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
+  --set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
 
 ```
 
@@ -79,9 +79,9 @@ use_case:
 
 ```shell
 helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
---values ./my-values.yaml \
---set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
---set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
+  --values ./my-values.yaml \
+  --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
+  --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
 
 ```
 
@@ -103,10 +103,10 @@ use_case:
 
 ```shell
 helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
---values ./my-values.yaml \
---set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
---set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
---set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+  --values ./my-values.yaml \
+  --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
+  --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
+  --set-file use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
 
 ```
 
@@ -128,9 +128,9 @@ use_case:
 
 ```shell
 helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.2 \
---values ./my-values.yaml \
---set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
---set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
+  --values ./my-values.yaml \
+  --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
+  --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
 
 ```
 
@@ -152,9 +152,9 @@ Run `helm upgrade --helm` for full list of options.
 
     ```bash
     helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.2 \
-        --install \
-        --namespace=my-namespace \
-        --values my-values.yaml \
+      --install \
+      --namespace=my-namespace \
+      --values my-values.yaml \
     ```
 
 2. Wait until installation has finished successfully and the deployment is up and running.
@@ -163,9 +163,9 @@ Run `helm upgrade --helm` for full list of options.
 
     ```bash
     helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.2 \
-        --install \
-        --wait --timeout=600s \
-        --values my-values.yaml \
+      --install \
+      --wait --timeout=600s \
+      --values my-values.yaml \
     ```
 
 ## Uninstalling the Helm Release
