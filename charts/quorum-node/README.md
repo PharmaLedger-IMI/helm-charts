@@ -41,8 +41,9 @@ These four installation samples demonstrate
 
 ### Option 1: Join Network followed by updating the PartnerInfo
 
-The **most common case** is to [join an existing network](../../usecases/join-network/readme.md) and to [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
-Also see [Full Sample](./docs/full_sample/README.md).
+The **most common option** is to [join an existing network](../../usecases/join-network/readme.md) and to [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
+
+Also see **[Full Sample](./docs/full_sample/README.md)**.
 
 ```yaml
 use_case:
@@ -143,7 +144,6 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.
 - [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
 - [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
 - [Network Policies](./docs/network_policies/README.md)
-<!-- - [Expose Service via Load Balancer](./docs/load_balancer/README.md) -->
 - [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
 
 ## Additional helm options
