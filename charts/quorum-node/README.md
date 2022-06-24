@@ -16,7 +16,7 @@ See [Changelog](./CHANGELOG.md) for significant changes!
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-<!-- - [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined. -->
+- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
 
 ## Features
 
@@ -42,6 +42,7 @@ These four installation samples demonstrate
 ### Option 1: Join Network followed by updating the PartnerInfo
 
 The **most common case** is to [join an existing network](../../usecases/join-network/readme.md) and to [update the PartnerInfo](../../usecases/update-partners-info/readme.md) - which proposes PartnerNodes to Validators.
+Also see [Full Sample](./docs/full_sample/README.md).
 
 ```yaml
 use_case:
