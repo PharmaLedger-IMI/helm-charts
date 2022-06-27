@@ -142,6 +142,9 @@ spec:
                 --networkid {{ .Values.quorum.networkId }} \
             {{- if .Values.quorum.metrics.enabled }}
                 --metrics --metrics.addr {{ .Values.quorum.metrics.addr | quote }} --metrics.port {{ .Values.quorum.metrics.port | quote }} \
+            {{- if .Values.quorum.metrics.enabled }}
+                --metrics.expensive \
+            {{- end }}
             {{- end }}
                 --port 30303 \
                 --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
