@@ -182,6 +182,34 @@ helm delete quorum-node-0 \
 
 ```
 
+## Monitoring
+
+Prometheus is being used to scrape the metrics from the pods metrics endpoint and to store them in a timeseries database.
+Grafana is being used for visualization of the metrics. Grafana and Prometheus can also be used for alerting.
+On Kubernetes, it is easy to install both components via helm charts.
+
+- [Prometheus Helm Chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/README.md)
+- [Grafana Helm Chart](https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md)
+
+### GoQuorum Metrics
+
+The Quorum node provides several metrics by default in [Prometheus Metrics Format](https://github.com/prometheus/docs/blob/main/content/docs/instrumenting/exposition_formats.md). These metrics can be queried at Port `9545` at path `/debug/metrics/prometheus`. The pod configuration itself provides [appropriate annotations](https://www.weave.works/docs/cloud/latest/tasks/monitor/configuration-k8s/#per-pod-prometheus-annotations) for Prometheus to scrape these metrics. You can configure the metrics behaviour via the configuration section `quorum.metrics`.
+
+#### Grafana Dashboard
+
+In Grafana, install the [GoQuorum Overview Community Dashboard](https://grafana.com/grafana/dashboards/14360) to monitor Quorum Node metrics like number of peers.
+
+#### Links
+
+- [https://www.netdata.cloud/blog/how-to-monitor-the-geth-node-in-under-5-minutes/](https://www.netdata.cloud/blog/how-to-monitor-the-geth-node-in-under-5-minutes/)
+- [https://geth.ethereum.org/docs/interface/metrics](https://geth.ethereum.org/docs/interface/metrics)
+
+### Kubernetes Metrics
+
+todo: further metrics, dashbaord, metrics-server
+
+### AWS: VPC Flow logs
+
 ## Values
 
 *Note:* Please scroll horizontally to show more columns (e.g. description)!
