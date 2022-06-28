@@ -85,6 +85,15 @@ service:
   # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
+  # -- A list of CIDR ranges to whitelist for ingress traffic to the service if type is LoadBalancer.
+  # If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s)
+  loadBalancerSourceRanges:
+    # - 8.8.8.8/32
+    # - 8.8.4.4/32
+  # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+  # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+  # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+  loadBalancerIP: ""
 
 # -- The location of the smart contract info uploaded when the smart contract was deployed
 smart_contract_shared_configuration:

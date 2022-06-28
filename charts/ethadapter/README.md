@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.7.7](https://img.shields.io/badge/Version-0.7.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
+![Version: 0.7.8](https://img.shields.io/badge/Version-0.7.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -59,7 +59,7 @@ This is to prevent exposing the service to the internet by accident!**
 Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract Info from pre-existing ConfigMap created by helm chart *smartcontract*.
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.8 \
   --install \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
   --wait \
@@ -84,7 +84,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
 2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.8 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -95,7 +95,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
 3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.7 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.8 \
         --wait \
         --timeout 10m \
         --values my-config.yaml \
@@ -190,6 +190,8 @@ Tests can be found in [tests](./tests)
 | secrets.orgAccountJsonBase64 | string | `""` | Org Account in JSON format base64 encoded. This value must be set or orgAccountJson |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | service.annotations | object | `{}` | Annotations for the service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
+| service.loadBalancerIP | string | `""` | A static IP address for the LoadBalancer if type is LoadBalancer. Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip). [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer). |
+| service.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | service.port | int | `3000` | Port where the service will be exposed |
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |

@@ -12,6 +12,10 @@ tests:
         orgAccountJson: "{ \"key\": \"value\" }"
       service:
         type: LoadBalancer
+        loadBalancerIP: loadBalancerIP_value
+        loadBalancerSourceRanges:
+          - value_1
+          - value_2
         annotations:
           annotation_1: "annotation_1_test"
           annotation_2: "annotation_2_test"
@@ -24,6 +28,15 @@ tests:
       - equal:
           path: spec.type
           value: LoadBalancer
+      - equal:
+          path: spec.loadBalancerIP
+          value: loadBalancerIP_value
+      - equal:
+          path: spec.loadBalancerSourceRanges[0]
+          value: value_1
+      - equal:
+          path: spec.loadBalancerSourceRanges[1]
+          value: value_2
       - equal:
           path: metadata.annotations.annotation_1
           value: annotation_1_test
