@@ -10,10 +10,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end}}
 spec:
+{{- if eq .Values.service.p2p.type "LoadBalancer" }}
+  {{- if .Values.service.p2p.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.p2p.loadBalancerIP }}
+  {{- end }}
   {{- with .Values.service.p2p.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- end }}
   selector:
     {{- include "quorumNode.selectorLabels" . | nindent 4 }}
   type: {{ .Values.service.p2p.type }}

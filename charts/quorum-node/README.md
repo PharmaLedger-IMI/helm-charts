@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.5.4](https://img.shields.io/badge/Version-0.5.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.5.5](https://img.shields.io/badge/Version-0.5.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -58,7 +58,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.4 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
@@ -83,7 +83,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.4 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
@@ -107,7 +107,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.4 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
@@ -132,7 +132,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.4 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
@@ -155,7 +155,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.4 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.5 \
       --install \
       --namespace=my-namespace \
       --values my-values.yaml \
@@ -166,7 +166,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.4 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.5 \
       --install \
       --wait --timeout=600s \
       --values my-values.yaml \
@@ -267,11 +267,13 @@ helm delete quorum-node-0 \
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":10000,"runAsNonRoot":true,"runAsUser":10000}` | Security Context for the application container See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | service.p2p.annotations | object | `{}` | Annotations for the P2P service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.p2p.enabled | bool | `true` | Whether to deploy the P2P service or not. |
+| service.p2p.loadBalancerIP | string | `""` | A static IP address for the LoadBalancer if type is LoadBalancer. Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip). [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer). |
 | service.p2p.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the P2P service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | service.p2p.port | int | `30303` | Port where the P2P service will be exposed. |
 | service.p2p.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer for P2P Service. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | service.rpc.annotations | object | `{}` | Annotations for the RPC service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
 | service.rpc.enabled | bool | `true` | Whether to deploy the RPC service or not. |
+| service.rpc.loadBalancerIP | string | `""` | A static IP address for the LoadBalancer if type is LoadBalancer. Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip). [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer). |
 | service.rpc.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the RPC service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 to the Node Security Group(s) |
 | service.rpc.port | int | `8545` | Port where the RPC service will be exposed. |
 | service.rpc.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer for RPC Service. See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
