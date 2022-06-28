@@ -10,10 +10,15 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end}}
 spec:
+{{- if eq .Values.service.rpc.type "LoadBalancer" }}
+  {{- if .Values.service.rpc.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.rpc.loadBalancerIP }}
+  {{- end }}
   {{- with .Values.service.rpc.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- end }}
   selector:
     {{- include "quorumNode.selectorLabels" . | nindent 4 }}
   type: {{ .Values.service.rpc.type }}

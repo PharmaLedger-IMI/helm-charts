@@ -309,6 +309,10 @@ service:
     loadBalancerSourceRanges:
       # - 8.8.8.8/32
       # - 8.8.4.4/32
+    # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+    # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+    # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+    loadBalancerIP: ""
 
   rpc:
     # -- Whether to deploy the RPC service or not.
@@ -327,6 +331,10 @@ service:
     loadBalancerSourceRanges:
       # - 8.8.8.8/32
       # - 8.8.4.4/32
+    # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+    # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+    # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+    loadBalancerIP: ""
 
 # -- Affinity for scheduling a pod.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
