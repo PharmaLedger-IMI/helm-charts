@@ -85,7 +85,7 @@ spec:
             echo "=======> Copying seedsBackupOnStartup to seedsBackup ..."
             cp apihub-root/seedsBackupOnStartup apihub-root/seedsBackup
             echo "=======> Starting application in background process ..."
-            npm run iot-adaptor-server &
+            npm run iot-adapter-server &
             server_pid=$!
             echo "=======> Application running in background with PID=$server_pid"
             echo "=======> Build process successful - Writing file that application is ready ..."
