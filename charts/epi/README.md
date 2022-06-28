@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
+![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -158,7 +158,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.1 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.2 \
         --install \
         --values my-config.yaml \
     ```
@@ -364,7 +364,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.1 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.2 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -375,7 +375,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.1 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.2 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -483,6 +483,8 @@ Tests can be found in [tests](./tests)
 | secretProviderClass.enabled | bool | `false` | Whether to use CSI Secrets Store (e.g. Azure Key Vault) instead of "traditional" Kubernetes Secret. NOTE: DO ENABLE, NOT TESTED YET! |
 | secretProviderClass.spec | object | `{}` | Spec for the SecretProviderClass. Note: The orgAccountJson must be mounted as objectAlias orgAccountJson |
 | service.annotations | object | `{}` | Annotations for the service. See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws) For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations) |
+| service.loadBalancerIP | string | `""` | A static IP address for the LoadBalancer if type is LoadBalancer. Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip). [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer). |
+| service.loadBalancerSourceRanges | string | `nil` | A list of CIDR ranges to whitelist for ingress traffic to the service if type is LoadBalancer. If list is empty, Kubernetes allows traffic from 0.0.0.0/0 |
 | service.port | int | `80` | Port where the service will be exposed |
 | service.type | string | `"ClusterIP"` | Either ClusterIP, NodePort or LoadBalancer for the runner See [https://kubernetes.io/docs/concepts/services-networking/service/](https://kubernetes.io/docs/concepts/services-networking/service/) |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
