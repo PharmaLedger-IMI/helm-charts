@@ -863,6 +863,20 @@ entries:
   iot:
   - apiVersion: v2
     appVersion: v1.1.2
+    created: "2022-06-29T13:15:04.221953294Z"
+    description: A Helm chart for Pharma Ledger iot application
+    digest: 49b122be5eb0610a569273034b22cc50d5601b0174751fdf4468343aecb99772
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: iot
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/iot-0.0.5/iot-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: v1.1.2
     created: "2022-06-29T10:54:01.829811022Z"
     description: A Helm chart for Pharma Ledger iot application
     digest: ecba4247f8c0b76be7f38e8343355eebc3d88451f0eb257b93f6ef8f4d527a95
@@ -1340,4 +1354,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-06-29T10:57:43.103227564Z"
+generated: "2022-06-29T13:15:04.222273496Z"
