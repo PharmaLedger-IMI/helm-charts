@@ -123,14 +123,6 @@ spec:
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/default.json
             subPath: default.json
             readOnly: true
-          - name: iot-adapter-domains-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.json
-            subPath: eco.json
-            readOnly: true
-          - name: iot-adapter-domains-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.rms.json
-            subPath: eco.rms.json
-            readOnly: true
       restartPolicy: Always
       volumes:
         - name: iot-adapter-config-volume
