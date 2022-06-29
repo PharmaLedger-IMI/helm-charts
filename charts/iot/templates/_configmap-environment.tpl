@@ -81,6 +81,25 @@ data:
         ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }
 
+  sponsor-environment.js: |-
+      export default {
+        appName: 'sponsor-wallet',
+        vault: 'server',
+        agent: 'browser',
+        system: 'any',
+        browser: 'any',
+        mode: {{ .Values.config.demiurgeMode | quote }},
+        domain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+        didDomain: {{ required "config.domain must be set" .Values.config.domain | quote}},
+        vaultDomain: {{ required "config.domain must be set" .Values.config.vaultDomain | quote}},
+        enclaveType:"WalletDBEnclave",
+        sw: false,
+        pwa: false,
+        workspace: "iot",
+        'legenda for properties':
+          ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
+      }
+
   dsu-explorer-environment.js: |-
     export default {
       "appName": "DSU Explorer",
