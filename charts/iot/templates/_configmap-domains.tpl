@@ -66,19 +66,5 @@ data:
       "enable": ["mq", "enclave"]
     }
 
-  eco.json: |-
-    {
-      "anchoring": {
-        "type": "FS",
-        "option": {
-          "enableBricksLedger": false
-        },
-        "commands": {
-          "addAnchor": "anchor"
-        }
-      },
-      "enable": ["mq", "enclave"]
-    }
-
 {{- end }}
 {{- end }}
