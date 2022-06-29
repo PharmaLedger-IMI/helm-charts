@@ -20,6 +20,8 @@ In Grafana, install the [GoQuorum Overview Community Dashboard](https://grafana.
 Also, you may want to have an overview of peer node connections from and to your node.
 There are no metrics by default, thus a workaround is needed.
 
+### AWS
+
 At AWS, you can query the VPC flow logs to retrieve the required information:
 
 1. Activate VPC Flow logs to Cloudwatch
