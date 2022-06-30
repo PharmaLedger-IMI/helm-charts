@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.5.5](https://img.shields.io/badge/Version-0.5.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
+![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.7.1](https://img.shields.io/badge/AppVersion-21.7.1-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -11,12 +11,6 @@ A Helm chart for the deployment of the quorum node on Kubernetes supporting new-
 ## Changelog
 
 See [Changelog](./CHANGELOG.md) for significant changes!
-
-## Usage
-
-- [Here](./README.md#values) is a full list of all configuration values.
-- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
 
 ## Features
 
@@ -29,6 +23,16 @@ See [Changelog](./CHANGELOG.md) for significant changes!
 - Option to provide `extraResources` like
   - [Network Policies](./docs/network_policies/README.md) for fine-grained control of network traffic
   - [Scheduled VolumeSnapshots](./docs/scheduled_volumesnapshots/README.md) for creating regular data backups
+
+## Usage and samples
+
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
+- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
+- [Network Policies](./docs/network_policies/README.md)
+- [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
 
 ## Installing the Chart
 
@@ -58,7 +62,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.6 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
@@ -83,7 +87,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.6 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
@@ -107,7 +111,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.6 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
@@ -132,19 +136,16 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.5 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.5.6 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
 
 ```
 
-## Further configuration options and samples
+## Monitoring
 
-- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
-- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
-- [Network Policies](./docs/network_policies/README.md)
-- [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
+[See here](./docs/monitoring/README.md)
 
 ## Additional helm options
 
@@ -155,7 +156,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.5 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.6 \
       --install \
       --namespace=my-namespace \
       --values my-values.yaml \
@@ -166,7 +167,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.5 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.5.6 \
       --install \
       --wait --timeout=600s \
       --values my-values.yaml \

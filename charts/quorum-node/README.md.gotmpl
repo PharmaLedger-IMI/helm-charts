@@ -12,12 +12,6 @@
 
 See [Changelog](./CHANGELOG.md) for significant changes!
 
-## Usage
-
-- [Here](./README.md#values) is a full list of all configuration values.
-- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
-
 ## Features
 
 - Security by default:
@@ -29,6 +23,16 @@ See [Changelog](./CHANGELOG.md) for significant changes!
 - Option to provide `extraResources` like
   - [Network Policies](./docs/network_policies/README.md) for fine-grained control of network traffic
   - [Scheduled VolumeSnapshots](./docs/scheduled_volumesnapshots/README.md) for creating regular data backups
+
+## Usage and samples
+
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
+- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
+- [Network Policies](./docs/network_policies/README.md)
+- [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
 
 ## Installing the Chart
 
@@ -139,12 +143,9 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ t
 
 ```
 
-## Further configuration options and samples
+## Monitoring
 
-- [Auto-Create Volumesnapshots](./docs/volumesnapshots/README.md) on helm upgrade and before deletion of the helm release.
-- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
-- [Network Policies](./docs/network_policies/README.md)
-- [AWS Load Balancer Controller: Expose Service via Network Load Balancer](./docs/aws_lb_controller_service_nlb/README.md)
+[See here](./docs/monitoring/README.md)
 
 ## Additional helm options
 
