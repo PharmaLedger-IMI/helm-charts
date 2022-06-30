@@ -135,10 +135,6 @@ spec:
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             readOnly: true
           - name: iot-domains-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/eco.json
-            subPath: eco.json
-            readOnly: true
-          - name: iot-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/default.json
             subPath: default.json
             readOnly: true
@@ -153,6 +149,10 @@ spec:
           - name: iot-env-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/trial-participant-wallet/loader/environment.js
             subPath: trial-participant-environment.js
+            readOnly: true
+          - name: iot-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/sponsor-wallet/loader/environment.js
+            subPath: sponsor-environment.js
             readOnly: true
           - name: iot-env-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js

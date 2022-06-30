@@ -5,7 +5,7 @@
 # -- The number of replicas if autoscaling is false
 replicaCount: 1
 
-apiHubWorkingFolder: "iot-workspace"
+apiHubWorkingFolder: "iot-adapter"
 
 image:
   # -- The repository of the container image

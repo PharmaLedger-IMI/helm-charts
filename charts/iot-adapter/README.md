@@ -1,8 +1,8 @@
 # iot-adapter
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.2](https://img.shields.io/badge/AppVersion-v1.1.2-informational?style=flat-square)
+![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.2](https://img.shields.io/badge/AppVersion-v1.1.2-informational?style=flat-square)
 
-A Helm chart for Pharma Ledger iot-adapter application
+A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
 
 ## Requirements
 
@@ -121,7 +121,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.6 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.8 \
         --install \
         --values my-config.yaml \
     ```
@@ -221,7 +221,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.6 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.8 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -232,7 +232,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.6 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.8 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -269,7 +269,7 @@ Tests can be found in [tests](./tests)
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| apiHubWorkingFolder | string | `"iot-workspace"` |  |
+| apiHubWorkingFolder | string | `"iot-adapter"` |  |
 | config.apihub | string | `"{\n\t\"storage\": \"../apihub-root\",\n\t\"port\": 8080,\n\t\"preventRateLimit\": true,\n\t\"activeComponents\": [\n\t\t\"virtualMQ\",\n\t\t\"messaging\",\n\t\t\"notifications\",\n\t\t\"filesManager\",\n\t\t\"bdns\",\n\t\t\"bricksLedger\",\n\t\t\"bricksFabric\",\n\t\t\"bricking\",\n\t\t\"anchoring\",\n\t\t\"debugLogger\",\n\t\t\"mq\",\n\t\t\"staticServer\"\n\t],\n    \"componentsConfig\": {\n        \"staticServer\": {\n                       \"excludedFiles\": [\n                           \".*.secret\"\n                       ]\n                   },\n        \"bricking\": {},\n        \"anchoring\": {}\n      },\n      \"responseHeaders\": {\n                 \"X-Frame-Options\": \"SAMEORIGIN\",\n                 \"X-XSS-Protection\": \"1; mode=block\"\n             },\n\t\"enableRequestLogger\": true,\n\t\"enableJWTAuthorisation\": false,\n\t\"enableLocalhostAuthorization\": false,\n    \"serverAuthentication\": false,\n\t\"skipJWTAuthorisation\": [\n\t\t\"/assets\",\n\t\t\"/directory-summary\",\n\t\t\"/resources\",\n\t\t\"/bdns\",\n\t\t\"/anchor/epi\",\n\t\t\"/anchor/default\",\n\t\t\"/anchor/vault\",\n\t\t\"/bricking\",\n\t\t\"/bricksFabric\",\n\t\t\"/bricksledger\",\n\t\t\"/create-channel\",\n\t\t\"/forward-zeromq\",\n\t\t\"/send-message\",\n\t\t\"/receive-message\",\n\t\t\"/files\",\n\t\t\"/notifications\",\n\t\t\"/mq\"\n\t]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
 | config.bdnsHosts | string | `"{\n    \"default\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"vault.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"iot\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"iot.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"eco\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    },\n    \"eco.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    }\n  }"` | Centrally managed and provided BDNS Hosts Config |
 | config.demiurgeMode | string | `"dev-secure"` |  |

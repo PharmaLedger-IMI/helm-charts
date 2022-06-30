@@ -20,7 +20,7 @@ metadata:
 data:
   env.json: |
     {
-      "BDNS_ROOT_HOSTS": "http://iot:80",
+      "BDNS_ROOT_HOSTS": "http://eco-iot:80",
       "PSK_TMP_WORKING_DIR": "tmp",
       "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
       "DEV": false,
