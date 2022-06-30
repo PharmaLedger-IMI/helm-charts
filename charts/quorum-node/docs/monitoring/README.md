@@ -27,9 +27,11 @@ At AWS, you can query the VPC flow logs to retrieve the required information:
 1. Activate VPC Flow logs to Cloudwatch
 2. Provide IAM Role for Grafanas Kubernetes Service Account that allows Grafana to query Cloudmatch logs and configure Grafana (via helm chart) accordingly. See [here](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/) for the required permissions.
 3. In Grafana install the [AWS CloudWatch data source](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/).
-4. Take a look at [this Grafana dashboard](grafana_aws_vpc_flow_logs.json). It analyzes the traffic flow and assumes that the LoadBalancer is located in public subnets and the quorum node in a private subnet.
+4. Take a look at [this Grafana dashboard definition](grafana_aws_vpc_flow_logs.json). It analyzes the traffic flow and assumes that the LoadBalancer is located in public subnets and the quorum node in a private subnet.
     1. Replace all `todo` with appropriate values.
     2. Import the dashboard into Grafana.
+
+    ![Dashboard](grafana_aws_vpc_flow_logs.png)
 
 ## Links
 
