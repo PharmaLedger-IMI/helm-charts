@@ -193,13 +193,6 @@ helm delete quorum-node-0 \
 | deploymentStrategy.type | string | `"Recreate"` |  |
 | extraResources | string | `nil` | An array of extra resources that will be deployed. This is useful e.g. for custom resources like SnapshotSchedule provided by [https://github.com/backube/snapscheduler](https://github.com/backube/snapscheduler). |
 | fullnameOverride | string | `""` | Override the full name |
-| git.image.pullPolicy | string | `"Always"` | Image Pull Policy |
-| git.image.repository | string | `"alpine/git"` | The repository of the container image containing kubectl |
-| git.image.sha | string | `"b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"` | sha256 digest of the image. Do not add the prefix "@sha256:" <br/> Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/git/alpine/git/v2.32.0/images/sha256-b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3?context=explore](https://hub.docker.com/layers/git/alpine/git/v2.32.0/images/sha256-b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3?context=explore). <!-- # pragma: allowlist secret --> |
-| git.image.tag | string | `"v2.32.0"` | The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version. |
-| git.podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context for the pod running kubectl. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
-| git.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource constraints for the pre-builder and cleanup job |
-| git.securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` | Security Context for the container running kubectl See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
 | image.sha | string | `""` | sha256 digest of the image. Do not add the prefix "@sha256:" |
