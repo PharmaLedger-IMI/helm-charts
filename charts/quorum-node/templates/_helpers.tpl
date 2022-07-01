@@ -64,16 +64,6 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
-{{/*
-    The full image repository:tag[@sha256:sha] for git
-*/}}
-{{- define "quorumNode.git.image" -}}
-{{- if .Values.git.image.sha -}}
-{{ .Values.git.image.repository }}:{{ .Values.git.image.tag }}@sha256:{{ .Values.git.image.sha }}
-{{- else -}}
-{{ .Values.git.image.repository }}:{{ .Values.git.image.tag }}
-{{- end -}}
-{{- end -}}
 
 {{/*
 Selector labels

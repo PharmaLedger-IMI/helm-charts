@@ -409,62 +409,13 @@ kubectl:
     # -- Image Pull Policy
     pullPolicy: Always
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "1.21.8"
+    tag: "1.21.14"
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
     # <br/>
-    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # Defaults to image digest for "bitnami/kubectl:1.21.14", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
-
-  # -- Resource constraints for the pre-builder and cleanup job
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-
-  # -- Pod Security Context for the pod running kubectl.
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  podSecurityContext:
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
-    # -- The SecComp configuration.
-    # Not enabled by default as not every environment supports it.
-    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    # seccompProfile:
-    #   type: RuntimeDefault
-
-  # -- Security Context for the container running kubectl
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-  securityContext:
-    capabilities:
-      drop:
-      - ALL
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-
-# Settings for Containers with git installed used by Jobs "git-upload"
-git:
-  image:
-    # -- The repository of the container image containing kubectl
-    repository: alpine/git
-    # -- Image Pull Policy
-    pullPolicy: Always
-    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "v2.32.0"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # <br/>
-    # Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
-    # <!-- # pragma: allowlist secret -->
-    sha: "b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"  # pragma: allowlist secret
+    sha: "bba32da4e7d08ce099e40c573a2a5e4bdd8b34377a1453a69bbb6977a04e8825"  # pragma: allowlist secret
 
   # -- Resource constraints for the pre-builder and cleanup job
   resources:
