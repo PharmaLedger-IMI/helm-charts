@@ -147,6 +147,7 @@ runner:
   # -- Security Context for the runner container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
@@ -197,6 +198,7 @@ builder:
   # -- Security Context for the builder container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
@@ -247,6 +249,7 @@ kubectl:
   # -- Security Context for the container running kubectl
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
