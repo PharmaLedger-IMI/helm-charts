@@ -168,7 +168,9 @@ builder:
   forceRun: false
   # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
-
+  # -- Time to keep the Job after finished.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 600
   image:
     # -- The repository of the container image for the builder.
     repository: "pharmaledger/epi-builder"
@@ -209,8 +211,11 @@ builder:
     runAsGroup: 1000
     allowPrivilegeEscalation: false
 
-# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
+# Settings for Containers with kubectl installed used by Jobs "pre-builder", "pre-upgrade-volumesnapshot", "final-volumesnapshot" and "cleanup"
 kubectl:
+  # -- Time to keep the Job after finished in case of an error. If no error occured the Jobs will immediately by deleted.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 300
   image:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl
