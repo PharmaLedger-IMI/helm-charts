@@ -402,8 +402,12 @@ securityContext:
   runAsGroup: 10000
   allowPrivilegeEscalation: false
 
-# Settings for Containers with kubectl installed used by Jobs "propose-validators"
+# Settings for Containers with kubectl installed used by Jobs "pre-upgrade-volumesnapshot", "propose-validators" and "final-volumesnapshot"
 kubectl:
+  # -- Time to keep the Job after finished in case of an error. If no error occured the Jobs will immediately by deleted.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 300
+
   image:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl

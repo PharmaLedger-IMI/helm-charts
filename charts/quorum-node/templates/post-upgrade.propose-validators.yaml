@@ -9,12 +9,14 @@ metadata:
     app: {{ include "quorumNode.fullname" . }}-quorum-propose
   annotations:
     "helm.sh/hook": post-upgrade
-    # Keep job after completion in order to take look at logs
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     "helm.sh/hook-weight": "100"
 spec:
   backoffLimit: 4
   activeDeadlineSeconds: 120
+  {{- if .Values.kubectl.ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ .Values.kubectl.ttlSecondsAfterFinished }}
+  {{- end }}
   template:
     spec:
       {{- with .Values.imagePullSecrets }}
