@@ -222,6 +222,21 @@ entries:
   epi:
   - apiVersion: v2
     appVersion: 1.3.1
+    created: "2022-07-06T12:01:47.718740842Z"
+    description: A Helm chart for Pharma Ledger epi (electronic product information)
+      application
+    digest: 1cfacac7339fd120125f18e4a98bee2e9bf5051fb132e5ac1d6c2186237752ce
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: epi
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/epi-0.5.5/epi-0.5.5.tgz
+    version: 0.5.5
+  - apiVersion: v2
+    appVersion: 1.3.1
     created: "2022-07-06T09:52:12.379919443Z"
     description: A Helm chart for Pharma Ledger epi (electronic product information)
       application
@@ -1091,6 +1106,17 @@ entries:
   quorum-node:
   - apiVersion: v2
     appVersion: 21.7.1
+    created: "2022-07-06T12:01:47.881699068Z"
+    description: A Helm chart for the deployment of the quorum node on Kubernetes
+      supporting new-network, join-network and update-partners-info use cases.
+    digest: a03fb061b38741fb3cd74164bc13de014bf3f6a89da77dc33f01db465eb7e54d
+    name: quorum-node
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.5.9/quorum-node-0.5.9.tgz
+    version: 0.5.9
+  - apiVersion: v2
+    appVersion: 21.7.1
     created: "2022-07-06T09:52:12.733575488Z"
     description: A Helm chart for the deployment of the quorum node on Kubernetes
       supporting new-network, join-network and update-partners-info use cases.
@@ -1476,4 +1502,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-07-06T09:52:12.734035889Z"
+generated: "2022-07-06T12:01:47.882183693Z"
