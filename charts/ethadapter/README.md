@@ -1,6 +1,6 @@
 # ethadapter
 
-![Version: 0.7.9](https://img.shields.io/badge/Version-0.7.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
+![Version: 0.7.10](https://img.shields.io/badge/Version-0.7.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
@@ -80,7 +80,7 @@ Configuration for a connected environment. You will need at least these configur
     Either pass sensitive *Org Account JSON* (`secrets.orgAccountJson`) in JSON format as escaped string:
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
         --values my-values.yaml \
         --set-string secrets.orgAccountJson="\{ \"address\": \"0xabcdef1234567890\" \, \"privateKey\": \"0x1234567890abcdef\" \}"
 
@@ -89,7 +89,7 @@ Configuration for a connected environment. You will need at least these configur
     or pass the value in JSON format as base64 encoded string (`secrets.orgAccountJsonBase64`):
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
         --values my-values.yaml \
         --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9"
 
@@ -110,14 +110,14 @@ secrets:
 and install
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
     --values my-values.yaml
 ```
 
 or pass `secrets.orgAccountJson` as escaped string on the commandline:
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
   --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
 ```
 
@@ -130,7 +130,7 @@ Run `helm upgrade --helm` for full list of options.
 You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
   --namespace=my-namespace \
   --values my-values.yaml
 ```
@@ -140,7 +140,7 @@ helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
 Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
 ```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
   --wait --timeout=600s \
   --values my-values.yaml
 ```
