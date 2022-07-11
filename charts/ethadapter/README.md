@@ -1,32 +1,16 @@
 # ethadapter
 
-![Version: 0.7.9](https://img.shields.io/badge/Version-0.7.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
+![Version: 0.7.10](https://img.shields.io/badge/Version-0.7.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.2](https://img.shields.io/badge/AppVersion-1.0.2-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger Ethereum Adapter Service
 
 ## Requirements
 
 - [helm 3](https://helm.sh/docs/intro/install/)
-- At least these input parameters for helm:
-
-  | Configuration<br/>value | Description | Sandbox | Non-Sandbox<br/>connected blockchain |
-  |-------------------------|:-----------:|:-------:|:------------------------------------:|
-  | `config.rpcAddress`     | Address of<br/>Quorum node | **Not required** if helm chart<br/>*standalone-quorum* is used | **Required** |
-  | `config.smartContractInfo` | Info for SmartContract:<br/>Anchor address and <br/>Abi | **Not required** if helm chart<br/>*smartcontract* is used<br/>(autoconfiguration) | **Required** |
-  | `secrets.orgAccountJson`<br/>**or**<br/>`secrets.orgAccountJsonBase64` | ETH account and<br/>private key | **Required**<br/>(only if<br/>`secretProviderClass.enabled: false`) | **Required**(* see note below)<br/>(only if<br/>`secretProviderClass.enabled: false`)  |
-
-  <!-- # pragma: allowlist nextline secret -->
-  **Note about ETH account:**(*) For Sandbox environment (helm chart *standalone-quorum*) use `{"address": "0xb5ced4530d6ccbb31b2b542fd9b4558b52296784", "privateKey": "0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5"}`
 
 ## Changelog
 
 See [Changelog](./CHANGELOG.md) for significant changes!
-
-## Usage
-
-- [Here](./README.md#values) is a full list of all configuration values.
-- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
 
 ## Features
 
@@ -36,6 +20,16 @@ See [Changelog](./CHANGELOG.md) for significant changes!
   - readonly filesystem
 - Option to mount sensitive/secret via *CSI Secrets Driver* from a vault solution like AWS Secrets Manager, Azure Key Vault, GCP Secrets Manager or HashiCorp Vault instead of using *Kubernetes Secret*. See [here](./docs/secret_provider_class/README.md) for details.
 - Option to provide `extraResources` like Network Policies. See [here](./docs/network_policies/README.md) for details.
+
+## Usage and samples
+
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
+- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
+- [Network Policies](./docs/network_policies/README.md)
+- [Expose Service via Load Balancer](./docs/load_balancer/README.md)
+- [AWS Load Balancer Controller: Expose Service via Ingress](./docs/aws_lb_controller_ingress/README.md)
 
 ## How it works
 
@@ -52,75 +46,115 @@ This is to prevent exposing the service to the internet by accident!**
 
 ## Installing the Chart
 
-**Note:** It is recommended to put non-sensitive configuration values in an configuration file and pass sensitive/secret values via commandline.
+**Note:** It is recommended to put non-sensitive configuration values in an configuration file (e.g. `my-values.yaml`) and pass sensitive/secret values via commandline (`--set-string`).
 
-### Sandbox installation - Auto-configure Smart Contract Info
+### Non-Sandbox installation
 
-Install the chart with the release name `ethadapter` in namespace `ethadapter` and read SmartContract Info from pre-existing ConfigMap created by helm chart *smartcontract*.
+Configuration for a connected environment. You will need at least these configuration values:
 
-```bash
-helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
-  --install \
-  --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
-  --wait \
-  --timeout 10m
+- The URL of the Quorum RPC endpoint, e.g. `"http://quorum-validator1.quorum:8545"` - value of `config.rpcAddress`
+- The SmartContract address, e.g. `"0x1234567890abcdef1234567890abcdef01234567"` - value of key *address* in `config.smartContractInfo`
+- The sensitive *OrgAccountJson*, which consists of an address and private key. It is recommended to pass these values via commandline `--set-string` - value `secrets.orgAccountJson` or `secrets.orgAccountJsonBase64`.
 
-```
+    In case you do not want to pass *OrgAccountJson* to the helm chart and store it in a Kubernetes Secret but use a Vault solution like AWS Secrets Manager or Azure Key Vault, take a look [here](./docs/secret_provider_class/README.md).
 
-### Non-Sandbox installation - Provide required values
-
-1. Create configuration file, e.g. *my-config.yaml*
+1. Create configuration file, e.g. *my-values.yaml*
 
     ```yaml
     config:
+      # -- URL of the Quorum node RPC endpoint, e.g. "http://quorum-validator1.quorum:8545"
       rpcAddress: "rpcAddress_value"
+
+      # Note:
+      # 1. Replace 'address' value with the real address of the SmartContract.
+      # 2. Use the below value of 'abi' as this is the already the real Abi of the SmartContract.
       smartContractInfo: |-
         {
-          "address": "smartContractAddress_value",
+          "address": "0x1234567890abcdef1234567890abcdef01234567",
           "abi": "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"str\",\"type\":\"bool\"}],\"name\":\"BoolResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes1\",\"name\":\"str\",\"type\":\"bytes1\"}],\"name\":\"Bytes1Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"str\",\"type\":\"bytes32\"}],\"name\":\"Bytes32Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"statusCode\",\"type\":\"uint256\"}],\"name\":\"InvokeStatus\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"str\",\"type\":\"bytes\"}],\"name\":\"Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[2]\",\"name\":\"str\",\"type\":\"string[2]\"}],\"name\":\"StringArray2Result\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string[]\",\"name\":\"str\",\"type\":\"string[]\"}],\"name\":\"StringArrayResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"str\",\"type\":\"string\"}],\"name\":\"StringResult\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"str\",\"type\":\"uint256\"}],\"name\":\"UIntResult\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"newAnchorValue\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"createAnchor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"newAnchorValue\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"appendAnchor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"}],\"name\":\"getAllVersions\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"}],\"name\":\"getLastVersion\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"string[]\",\"name\":\"anchors\",\"type\":\"string[]\"}],\"name\":\"createOrUpdateMultipleAnchors\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"from\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"limit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxSize\",\"type\":\"uint256\"}],\"name\":\"dumpAnchors\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"anchorId\",\"type\":\"string\"},{\"internalType\":\"string[]\",\"name\":\"anchorValues\",\"type\":\"string[]\"}],\"internalType\":\"struct Anchoring.Anchor[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalNumberOfAnchors\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"},{\"internalType\":\"uint8\",\"name\":\"v\",\"type\":\"uint8\"}],\"name\":\"recover\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
         }
     ```
 
-2. Install via helm to namespace `ethadapter` either by passing sensitive *Org Account JSON* value in JSON format as escaped string
+2. Install via helm by passing sensitive *Org Account JSON* value in JSON format as escaped string
+
+    Either pass sensitive *Org Account JSON* (`secrets.orgAccountJson`) in JSON format as escaped string:
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
-        --wait \
-        --timeout 10m \
-        --values my-config.yaml \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+        --values my-values.yaml \
         --set-string secrets.orgAccountJson="\{ \"address\": \"0xabcdef1234567890\" \, \"privateKey\": \"0x1234567890abcdef\" \}"
 
     ```
 
-3. or pass sensitive *Org Account JSON* value in JSON format as base64 encoded string
+    or pass the value in JSON format as base64 encoded string (`secrets.orgAccountJsonBase64`):
 
     ```bash
-    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.9 \
-        --wait \
-        --timeout 10m \
-        --values my-config.yaml \
+    helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+        --values my-values.yaml \
         --set-string secrets.orgAccountJsonBase64="eyAia2V5IjogInZhbHVlIiB9"
 
     ```
 
-## Further configuration options
+### Sandbox installation
 
-- [Mount Secrets from Vault Solution via Secrets Store CSI Driver](./docs/secret_provider_class/README.md)
-- [Network Policies](./docs/network_policies/README.md)
-- [Expose Service via Load Balancer](./docs/load_balancer/README.md)
-- [AWS Load Balancer Controller: Expose Service via Ingress](./docs/aws_lb_controller_ingress/README.md)
+On a sandbox installation, you do not need to configure `config.smartContractInfo` as the *ethadapter* helm chart reads the SmartContractInfo from a pre-existing ConfigMap created by helm chart *smartcontract*. This approach is referred to as *Autoconfiguration*. **Note**: *smartcontract* and *ethadapter* must be installed to the same namespace.
 
-## Uninstalling the Chart
+Either create a config file `my-values.yaml` with this static *orgAccountJson* value which is used for all standalone quorum installations
 
-To uninstall/delete the `ethadapter` deployment:
+```yaml
+secrets:
+  orgAccountJson: |-
+    {"address": "0xb5ced4530d6ccbb31b2b542fd9b4558b52296784", "privateKey": "0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5"}
+```
+
+and install
 
 ```bash
-helm delete ethadapter \
-  --namespace=ethadapter
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+    --values my-values.yaml
+```
+
+or pass `secrets.orgAccountJson` as escaped string on the commandline:
+
+```bash
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+  --set secrets.orgAccountJson="\{\"address\": \"0xb5ced4530d6ccbb31b2b542fd9b4558b52296784\"\, \"privateKey\": \"0x6b93a268f68239d321981125ecf24488920c6b3d900043d56fef66adb776abd5\"\}"
+```
+
+## Additional helm options
+
+Run `helm upgrade --helm` for full list of options.
+
+### Install to other namespace
+
+You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
+
+```bash
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+  --namespace=my-namespace \
+  --values my-values.yaml
+```
+
+### Wait until installation has finished successfully and the deployment is up and running
+
+Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
+
+```bash
+helm upgrade --install ethadapter pharmaledger-imi/ethadapter --version=0.7.10 \
+  --wait --timeout=600s \
+  --values my-values.yaml
+```
+
+## Uninstalling the Helm Release
+
+To uninstall/delete the `ethadapter` relase:
+
+```bash
+helm delete ethadapter
 
 ```
 
-### Potential issues
+## Potential issues
 
 1. `Error: admission webhook "vingress.elbv2.k8s.aws" denied the request: invalid ingress class: IngressClass.networking.k8s.io "alb" not found`
 
