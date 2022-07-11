@@ -598,6 +598,20 @@ entries:
   ethadapter:
   - apiVersion: v2
     appVersion: 1.0.2
+    created: "2022-07-11T15:09:35.441124426Z"
+    description: A Helm chart for Pharma Ledger Ethereum Adapter Service
+    digest: b999493e3c900f0c98acce63cca07b079199bb61e25c06416a08588369b8ad42
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: ethadapter
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/ethadapter-0.7.10/ethadapter-0.7.10.tgz
+    version: 0.7.10
+  - apiVersion: v2
+    appVersion: 1.0.2
     created: "2022-07-06T09:52:12.578939769Z"
     description: A Helm chart for Pharma Ledger Ethereum Adapter Service
     digest: b4194cfc3e3dfab591463737156f2bd7b604dcc1f408d6c88ed0a4f37bbddace
@@ -1502,4 +1516,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-07-06T12:01:47.882183693Z"
+generated: "2022-07-11T15:09:35.441530425Z"
