@@ -1,6 +1,6 @@
 # epi
 
-![Version: 0.5.5](https://img.shields.io/badge/Version-0.5.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
+![Version: 0.5.6](https://img.shields.io/badge/Version-0.5.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.1](https://img.shields.io/badge/AppVersion-1.3.1-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger epi (electronic product information) application
 
@@ -158,7 +158,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.5 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.6 \
         --install \
         --values my-config.yaml \
     ```
@@ -364,7 +364,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.5 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.6 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -375,7 +375,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.5 \
+    helm upgrade my-release-name pharmaledger-imi/epi --version=0.5.6 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
