@@ -151,6 +151,30 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/csc-0.1.0/csc-0.1.0.tgz
     version: 0.1.0
+  dfm-backend:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-08-10T15:37:01.050116559Z"
+    description: A Helm chart for Kubernetes
+    digest: 9d35e3da47b1b8e1bfb21e01e9de34ca52343ada14bee39dddbc735c22f5106e
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    name: dfm-backend
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/dfm-backend-0.1.1/dfm-backend-0.1.1.tgz
+    version: 0.1.1
+  dfm-frontend:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-08-10T15:37:01.21093397Z"
+    description: A Helm chart for Kubernetes
+    digest: c04331c1a7f16aba4d4bff6e2e4aba3f2dc26fae9f916524c3a5e7a882039eb4
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    name: dfm-frontend
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/dfm-frontend-0.1.1/dfm-frontend-0.1.1.tgz
+    version: 0.1.1
   dummy:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -1618,4 +1642,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-08-04T09:59:06.605644465Z"
+generated: "2022-08-10T15:37:01.211400367Z"
