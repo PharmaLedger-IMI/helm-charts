@@ -36,7 +36,9 @@ data:
           "host": "postgresql.default.svc.cluster.local",
           "port": 5432,
           "username": "acdc",
-          "password": "acdc",
+          {{- /*
+            # pragma: allowlist nextline secret
+        */}}"password": "acdc",
           "database": "acdc",
           "entities": [
               "dist/acdc/*.entity.js"
