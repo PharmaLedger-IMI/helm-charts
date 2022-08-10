@@ -1,0 +1,5 @@
+{{- /*
+Create Configmaps from templates
+*/}}
+
+{{- include "dfm-backend.configmap-ormconfig" (list $ . "" (dict)) }}
