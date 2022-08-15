@@ -64,6 +64,12 @@ quorum:
     # -- Add annotations for Prometheus to discover metrics endpoint.
     prometheusAnnotationsEnabled: true
 
+  # Generic extra/additional arguments passed to geth.
+  # In case you are using Quorum v21, set --nousb
+  # For Quorum >= v22 do not set this option as USB wallets are disabled by default
+  extraArgs: |-
+#    --nousb
+
 use_case:
   newNetwork:
     # -- Enable the new-network use case. Can only be used in collaboration with updatePartnerInfo use case

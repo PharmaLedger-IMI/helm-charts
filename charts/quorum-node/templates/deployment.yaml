@@ -138,8 +138,11 @@ spec:
             {{- end }}
                 --gcmode archive \
                 --istanbul.blockperiod {{ .Values.quorum.miner.blockPeriod }} --mine --miner.threads {{ .Values.quorum.miner.threads }} \
-                --syncmode full --nousb \
+                --syncmode full \
                 --networkid {{ .Values.quorum.networkId }} \
+            {{- if .Values.quorum.extraArgs }}
+{{ .Values.quorum.extraArgs | indent 16 }} \
+            {{- end }}
             {{- if .Values.quorum.metrics.enabled }}
                 --metrics --metrics.addr {{ .Values.quorum.metrics.addr | quote }} --metrics.port {{ .Values.quorum.metrics.port | quote }} \
             {{- if .Values.quorum.metrics.expensive }}
@@ -147,8 +150,8 @@ spec:
             {{- end }}
             {{- end }}
                 --port 30303 \
-                --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpcapi {{ .Values.quorum.rpc.api | quote }} \
-                --rpccorsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --rpcvhosts {{ .Values.quorum.rpc.vHosts | quote }} \
+                --http --http.addr 0.0.0.0 --http.port 8545 --http.api {{ .Values.quorum.rpc.api | quote }} \
+                --http.corsdomain {{ .Values.quorum.rpc.corsDomain | quote }} --http.vhosts {{ .Values.quorum.rpc.vHosts | quote }} \
             {{- if not .Values.persistence.logs.enabled }}
                 2>&1
             {{- else }}
