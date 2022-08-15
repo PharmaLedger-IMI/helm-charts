@@ -65,9 +65,12 @@ quorum:
     prometheusAnnotationsEnabled: true
 
   # Generic extra/additional arguments passed to geth.
-  # In case you are using Quorum v21, set --nousb
-  # For Quorum >= v22 do not set this option as USB wallets are disabled by default
+  # 
+  # See https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#flag-deprecations
+  # For geth 1.9.x (Quorum v21), set --nousb
+  # For geth 1.10.x (Quorum v22) with high compatibility to 1.9.x (Quorum v21), set --snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs
   extraArgs: |-
+    --snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs
 #    --nousb
 
 use_case:
