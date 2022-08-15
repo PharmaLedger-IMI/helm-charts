@@ -1,5 +1,9 @@
 # CHANGELOG
 
+- From 0.5.x to 0.6.x
+  - Default Quorum version has changed from 21.7.1 (`geth 1.9.x`) to 22.7.0 (`geth 1.10.x`)
+  - Set as much compatibility to `geth 1.9.x` as possible: See [https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#compatibility](https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#compatibility) and value `quorum.extraArgs`
+
 - From 0.4.x to 0.5.x
   - Support for creating VolumeSnapshot before upgrade and on deletion.
 
