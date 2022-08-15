@@ -18,7 +18,7 @@ A Helm chart for Kubernetes
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"pharmaledger/backup-restore"` |  |
-| image.sha | string | `"361c33748a2a0bb6b532e656e4a2fa06617ca6ed55ac25c109eb3e3de88625ab"` |  |
+| image.sha | string | `"361c33748a2a0bb6b532e656e4a2fa06617ca6ed55ac25c109eb3e3de88625ab"` | <!-- # pragma: allowlist secret --> |
 | image.tag | string | `"1.0.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
