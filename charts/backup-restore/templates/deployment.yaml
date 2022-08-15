@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backup-restore.fullname" . }}
+  labels:
+    {{- include "backup-restore.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "backup-restore.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "backup-restore.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "backup-restore.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.sha }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}@sha256:{{ .Values.image.sha }}"
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+          # The OrgAccount is mounted as file but the process expects it as ENV variable.
+          args:
+            - |
+              export AWS_ACCESS_KEY_ID=$(cat /config/secrets/awsAccessKeyId)
+              export AWS_SECRET_ACCESS_KEY=$(cat /config/secrets/awsSecretKey)
+              export AWS_DEFAULT_REGION=$(cat /config/secrets/awsDefaultRegion)
+              exec node index.js
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+              - name: secrets
+                mountPath: "/config/secrets"
+                readOnly: true
+              - name: backup-restore-config-volume
+                mountPath: /backup-restore/config.json
+                subPath: config.json
+              - name: epi-external-volume
+                mountPath: /ePI-workspace/apihub-root/external-volume
+      volumes:
+        - name: backup-restore-config-volume
+          configMap:
+            name: {{ include "backup-restore.fullname" . }}-server-config
+        - name: epi-external-volume
+          persistentVolumeClaim:
+              claimName: {{ include "epi.pvc" . }}
+        - name: secrets
+          secret:
+            secretName: {{ include "backup-restore.fullname" . }}
+            defaultMode: 0400
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
