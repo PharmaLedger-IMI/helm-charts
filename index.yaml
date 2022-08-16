@@ -3,6 +3,17 @@ entries:
   backup-restore:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2022-08-16T09:50:35.872623936Z"
+    description: A Helm chart for Kubernetes
+    digest: 388ddbf7627ce09f8adcf58b52ce74a1797b4bba7eb37b32f33101b1a12833a5
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    name: backup-restore
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/backup-restore-0.1.1/backup-restore-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2022-08-15T09:19:39.885379351Z"
     description: A Helm chart for Kubernetes
     digest: e74cb1caee431fbb25a2de0670a2e224e969ed490394d1630539610904938ea4
@@ -1654,4 +1665,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-08-15T09:19:39.885966077Z"
+generated: "2022-08-16T09:50:35.873259446Z"
