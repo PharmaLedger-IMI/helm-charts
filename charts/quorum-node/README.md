@@ -195,7 +195,7 @@ helm delete quorum-node-0 \
 | fullnameOverride | string | `""` | Override the full name |
 | image.pullPolicy | string | `"Always"` | Image Pull Policy |
 | image.repository | string | `"quorumengineering/quorum"` | The repository of the Quorum container image |
-| image.sha | string | `"7614e22e0c27732973caca398184b42a013d87ed23b50c536cb21f709668b82d"` | sha256 digest of the image. Do not add the prefix "@sha256:". Defaults to the digest of tag "22.7.0" |
+| image.sha | string | `"7614e22e0c27732973caca398184b42a013d87ed23b50c536cb21f709668b82d"` | sha256 digest of the image. Do not add the prefix "@sha256:". Defaults to the digest of tag "22.7.0" <!-- # pragma: allowlist secret --> |
 | image.tag | string | `"22.7.0"` | Image tag |
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | kubectl.image.pullPolicy | string | `"Always"` | Image Pull Policy |

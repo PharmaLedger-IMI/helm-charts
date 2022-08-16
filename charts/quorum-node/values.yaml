@@ -12,6 +12,7 @@ image:
   # -- sha256 digest of the image.
   # Do not add the prefix "@sha256:".
   # Defaults to the digest of tag "22.7.0"
+  # <!-- # pragma: allowlist secret -->
   sha: "7614e22e0c27732973caca398184b42a013d87ed23b50c536cb21f709668b82d"
 
 ## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
