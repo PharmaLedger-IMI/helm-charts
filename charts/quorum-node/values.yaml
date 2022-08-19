@@ -8,10 +8,12 @@ image:
   # -- Image Pull Policy
   pullPolicy: Always
   # -- Image tag
-  tag: "21.7.1"
+  tag: "22.7.0"
   # -- sha256 digest of the image.
-  # Do not add the prefix "@sha256:"
-  sha: ""
+  # Do not add the prefix "@sha256:".
+  # Defaults to the digest of tag "22.7.0"
+  # <!-- # pragma: allowlist secret -->
+  sha: "7614e22e0c27732973caca398184b42a013d87ed23b50c536cb21f709668b82d"  # pragma: allowlist secret
 
 ## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
 ## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
@@ -63,6 +65,14 @@ quorum:
     port: 9545
     # -- Add annotations for Prometheus to discover metrics endpoint.
     prometheusAnnotationsEnabled: true
+
+  # -- Generic extra/additional arguments passed to geth.
+  # See https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#compatibility
+  # For geth 1.9.x (Quorum v21), set "--nousb"
+  # For geth 1.10.x (Quorum v22) with high compatibility to 1.9.x (Quorum v21), set "--snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs"
+  extraArgs: |-
+    --snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs
+#    --nousb
 
 use_case:
   newNetwork:
