@@ -123,7 +123,7 @@ spec:
 
             echo "=======> Boot FGT API ..."
             cd fgt-api
-            npm run boot-api-helm
+            npm run boot-api-helm &
             echo "=======> Boot FGT API DONE"
 
             sleep {{ .Values.config.sleepTime }}
