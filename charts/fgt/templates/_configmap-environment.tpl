@@ -35,7 +35,7 @@ data:
 
   fgt-mah-wallet-environment.js: |-
     export default {
-        "appName": "fgt-mah-ssapp",
+        "appName": "dashboard",
         "appVersion": "0.1.1",
         "vault": "server",
         "agent": "browser",
@@ -48,7 +48,7 @@ data:
         "enclaveType":"WalletDBEnclave",
         "sw": true,
         "pwa": true,
-        "basePath": "/fgt-mah-wallet/loader/",
+        "basePath": "/dashboard",
         "stripBasePathOnInstall": true,
         "theme": "pdm-theme",
         "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
@@ -56,7 +56,7 @@ data:
 
   fgt-pharmacy-wallet-environment.js: |-
     export default {
-        "appName": "fgt-pharmacy-ssapp",
+        "appName": "dashboard",
         "appVersion": "0.1.1",
         "vault": "server",
         "agent": "browser",
@@ -69,7 +69,7 @@ data:
         "enclaveType":"WalletDBEnclave",
         "sw": true,
         "pwa": true,
-        "basePath": "/fgt-pharmacy-wallet/loader/",
+        "basePath": "/dashboard",
         "stripBasePathOnInstall": true,
         "theme": "pdm-theme",
         "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
@@ -77,7 +77,7 @@ data:
 
   fgt-wholesaler-wallet-environment.js: |-
     export default {
-        "appName": "fgt-wholesaler-ssapp",
+        "appName": "dashboard",
         "appVersion": "0.1.1",
         "vault": "server",
         "agent": "browser",
@@ -90,7 +90,7 @@ data:
         "enclaveType":"WalletDBEnclave",
         "sw": true,
         "pwa": true,
-        "basePath": "/fgt-wholesaler-wallet/loader/",
+        "basePath": "/dashboard",
         "stripBasePathOnInstall": true,
         "theme": "pdm-theme",
         "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
