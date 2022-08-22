@@ -229,7 +229,7 @@ config:
         "mq":{
           "module": "./components/mqHub",
           "function": "MQHub",
-          "connectionTimeout": 1740000
+          "connectionTimeout": 150000
         },
         "bricking": {},
         "anchoring": {}
