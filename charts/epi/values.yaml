@@ -147,6 +147,7 @@ runner:
   # -- Security Context for the runner container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
@@ -167,7 +168,9 @@ builder:
   forceRun: false
   # -- The time to sleep between start of apihub (npm run server) and build process (npm run build-all)
   sleepTime: "10s"
-
+  # -- Time to keep the Job after finished.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 600
   image:
     # -- The repository of the container image for the builder.
     repository: "pharmaledger/epi-builder"
@@ -197,6 +200,7 @@ builder:
   # -- Security Context for the builder container
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
@@ -207,21 +211,24 @@ builder:
     runAsGroup: 1000
     allowPrivilegeEscalation: false
 
-# Settings for Containers with kubectl installed used by Jobs "pre-builder" and "cleanup"
+# Settings for Containers with kubectl installed used by Jobs "pre-builder", "pre-upgrade-volumesnapshot", "final-volumesnapshot" and "cleanup"
 kubectl:
+  # -- Time to keep the Job after finished in case of an error. If no error occured the Jobs will immediately by deleted.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 300
   image:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl
     # -- Image Pull Policy
     pullPolicy: Always
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "1.21.8"
+    tag: "1.21.14"
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
     # <br/>
-    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # Defaults to image digest for "bitnami/kubectl:1.21.14", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+    sha: "bba32da4e7d08ce099e40c573a2a5e4bdd8b34377a1453a69bbb6977a04e8825"  # pragma: allowlist secret
 
   # -- Resource constraints for the pre-builder and cleanup job
   resources:
@@ -247,6 +254,7 @@ kubectl:
   # -- Security Context for the container running kubectl
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL
@@ -330,6 +338,15 @@ service:
   # See AWS, see [https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws](https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws)
   # For Azure, see [https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations](https://kubernetes-sigs.github.io/cloud-provider-azure/topics/loadbalancer/#loadbalancer-annotations)
   annotations: {}
+  # -- A list of CIDR ranges to whitelist for ingress traffic to the service if type is LoadBalancer.
+  # If list is empty, Kubernetes allows traffic from 0.0.0.0/0
+  loadBalancerSourceRanges:
+    # - 8.8.8.8/32
+    # - 8.8.4.4/32
+  # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+  # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+  # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+  loadBalancerIP: ""
 
 # Settings for using SecretProviderClass (CSI Secrets driver) instead of Secret.
 secretProviderClass:

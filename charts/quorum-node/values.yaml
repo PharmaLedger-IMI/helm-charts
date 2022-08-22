@@ -8,10 +8,12 @@ image:
   # -- Image Pull Policy
   pullPolicy: Always
   # -- Image tag
-  tag: "21.7.1"
+  tag: "22.7.0"
   # -- sha256 digest of the image.
-  # Do not add the prefix "@sha256:"
-  sha: ""
+  # Do not add the prefix "@sha256:".
+  # Defaults to the digest of tag "22.7.0"
+  # <!-- # pragma: allowlist secret -->
+  sha: "7614e22e0c27732973caca398184b42a013d87ed23b50c536cb21f709668b82d"  # pragma: allowlist secret
 
 ## -- The strategy of the deployment. Defaults to Recreate as a PVC is bound to it.
 ## See `kubectl explain deployment.spec.strategy` for more and [https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
@@ -63,6 +65,14 @@ quorum:
     port: 9545
     # -- Add annotations for Prometheus to discover metrics endpoint.
     prometheusAnnotationsEnabled: true
+
+  # -- Generic extra/additional arguments passed to geth.
+  # See https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#compatibility
+  # For geth 1.9.x (Quorum v21), set "--nousb"
+  # For geth 1.10.x (Quorum v22) with high compatibility to 1.9.x (Quorum v21), set "--snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs"
+  extraArgs: |-
+    --snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs
+#    --nousb
 
 use_case:
   newNetwork:
@@ -309,6 +319,10 @@ service:
     loadBalancerSourceRanges:
       # - 8.8.8.8/32
       # - 8.8.4.4/32
+    # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+    # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+    # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+    loadBalancerIP: ""
 
   rpc:
     # -- Whether to deploy the RPC service or not.
@@ -327,6 +341,10 @@ service:
     loadBalancerSourceRanges:
       # - 8.8.8.8/32
       # - 8.8.4.4/32
+    # -- A static IP address for the LoadBalancer if type is LoadBalancer.
+    # Note: This only applies to certain Cloud providers like Google or [Azure](https://docs.microsoft.com/en-us/azure/aks/static-ip).
+    # [https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer](https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer).
+    loadBalancerIP: ""
 
 # -- Affinity for scheduling a pod.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
@@ -384,6 +402,7 @@ podSecurityContext:
 # -- Security Context for the application container
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
 securityContext:
+  privileged: false
   capabilities:
     drop:
     - ALL
@@ -393,21 +412,25 @@ securityContext:
   runAsGroup: 10000
   allowPrivilegeEscalation: false
 
-# Settings for Containers with kubectl installed used by Jobs "propose-validators"
+# Settings for Containers with kubectl installed used by Jobs "pre-upgrade-volumesnapshot", "propose-validators" and "final-volumesnapshot"
 kubectl:
+  # -- Time to keep the Job after finished in case of an error. If no error occured the Jobs will immediately by deleted.
+  # If value is not set, then 'ttlSecondsAfterFinished' will not be set.
+  ttlSecondsAfterFinished: 300
+
   image:
     # -- The repository of the container image containing kubectl
     repository: bitnami/kubectl
     # -- Image Pull Policy
     pullPolicy: Always
     # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "1.21.8"
+    tag: "1.21.14"
     # -- sha256 digest of the image.
     # Do not add the prefix "@sha256:"
     # <br/>
-    # Defaults to image digest for "bitnami/kubectl:1.21.8", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
+    # Defaults to image digest for "bitnami/kubectl:1.21.14", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.14/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
     # <!-- # pragma: allowlist secret -->
-    sha: "f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590"  # pragma: allowlist secret
+    sha: "bba32da4e7d08ce099e40c573a2a5e4bdd8b34377a1453a69bbb6977a04e8825"  # pragma: allowlist secret
 
   # -- Resource constraints for the pre-builder and cleanup job
   resources:
@@ -433,55 +456,7 @@ kubectl:
   # -- Security Context for the container running kubectl
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
   securityContext:
-    capabilities:
-      drop:
-      - ALL
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-
-# Settings for Containers with git installed used by Jobs "git-upload"
-git:
-  image:
-    # -- The repository of the container image containing kubectl
-    repository: alpine/git
-    # -- Image Pull Policy
-    pullPolicy: Always
-    # -- The Tag of the image containing kubectl. Minor Version should match to your Kubernetes Cluster Version.
-    tag: "v2.32.0"
-    # -- sha256 digest of the image.
-    # Do not add the prefix "@sha256:"
-    # <br/>
-    # Defaults to image digest for "alpine/git:v2.32.0", see [https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore](https://hub.docker.com/layers/kubectl/bitnami/kubectl/1.21.8/images/sha256-f9814e1d2f1be7f7f09addd1d877090fe457d5b66ca2dcf9a311cf1e67168590?context=explore)
-    # <!-- # pragma: allowlist secret -->
-    sha: "b24112a7b8524b87cc1d086459f5ce894d179dc63ffc27d9356cec45606e92e3"  # pragma: allowlist secret
-
-  # -- Resource constraints for the pre-builder and cleanup job
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-
-  # -- Pod Security Context for the pod running kubectl.
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
-  podSecurityContext:
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
-    # -- The SecComp configuration.
-    # Not enabled by default as not every environment supports it.
-    # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
-    # seccompProfile:
-    #   type: RuntimeDefault
-
-  # -- Security Context for the container running kubectl
-  # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
-  securityContext:
+    privileged: false
     capabilities:
       drop:
       - ALL

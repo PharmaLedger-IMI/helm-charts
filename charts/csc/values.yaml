@@ -154,8 +154,6 @@ config:
   sleepTime: "10s"
   # -- The Domain, e.g. "epipoc"
   domain: "csc"
-  # -- The didDomain, should be domain.company, e.g. csc.rms
-  didDomain: "csc.did.my-company"
   # -- The Subdomain, should be domain.company, e.g. csc.did.rms
   subDomain: "csc.my-company"
   # -- The Vault domain, should be vault.company, e.g. vault.my-company
@@ -197,7 +195,7 @@ config:
            "$ORIGIN"
         ]
      },
-    "csc.did.my-company":{
+    "csc":{
         "replicas":[],
         "brickStorages":[
            "$ORIGIN"
@@ -205,16 +203,7 @@ config:
         "anchoringServices":[
            "$ORIGIN"
         ]
-     },
-    "csc":{
-            "replicas":[],
-            "brickStorages":[
-               "$ORIGIN"
-            ],
-            "anchoringServices":[
-               "$ORIGIN"
-            ]
-         }
+     }
     }
 
   # -- Configuration file apihub.json.
@@ -239,6 +228,8 @@ config:
       "port": 8080,
       "preventRateLimit": true,
       "activeComponents": [
+        "admin",
+        "cloudWallet",
         "virtualMQ",
         "messaging",
         "notifications",
@@ -247,47 +238,36 @@ config:
         "bricksLedger",
         "bricksFabric",
         "bricking",
-        "mq",
         "anchoring",
+        "debugLogger",
+        "mq",
+        "secrets",
         "staticServer"
       ],
       "componentsConfig": {
         "staticServer": {
-                       "excludedFiles": [
-                           ".*.secret"
-                       ]
-                   },
+          "excludedFiles": [
+            ".*.secret"
+          ]
+        },
         "bricking": {},
         "anchoring": {}
       },
       "responseHeaders": {
-                 "X-Frame-Options": "SAMEORIGIN",
-                 "X-XSS-Protection": "1; mode=block"
-             },
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-XSS-Protection": "1; mode=block"
+      },
       "enableRequestLogger": true,
       "enableJWTAuthorisation": false,
+      "enableOAuth": false,
       "enableLocalhostAuthorization": false,
       "serverAuthentication": false,
-      "skipJWTAuthorisation": [
+      "skipOAuth": [
         "/assets",
-        "/leaflet-wallet",
-        "/dsu-fabric-wallet",
-        "/directory-summary",
-        "/resources",
         "/bdns",
-        "/anchor/epi",
-        "/anchor/default",
-        "/anchor/vault",
-        "/bricking",
-        "/bricksFabric",
-        "/bricksledger",
-        "/create-channel",
-        "/forward-zeromq",
-        "/send-message",
-        "/receive-message",
-        "/files",
-        "/notifications",
-        "/mq"
+        "/bundles",
+        "/getAuthorization",
+        "/external-volume/config/oauthConfig.js"
       ]
     }
 

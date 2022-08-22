@@ -1,9 +1,8 @@
 # iot-adapter
 
+![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.7](https://img.shields.io/badge/AppVersion-v1.1.7-informational?style=flat-square)
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: iot-adapter.0.0.1](https://img.shields.io/badge/AppVersion-iot--adapter.0.0.1-informational?style=flat-square) 
-
-A Helm chart for Pharma Ledger iot-adapter application
+A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
 
 ## Requirements
 
@@ -18,8 +17,6 @@ A Helm chart for Pharma Ledger iot-adapter application
 
 - [Here](./README.md#values) is a full list of all configuration values.
 - The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
-
-
 
 ## Helm Lifecycle and Kubernetes Resources Lifetime
 
@@ -61,7 +58,6 @@ The Init Job is required to run the build process and to store the SeedsBackup i
 - The Init Job will be executed on helm [hooks](https://helm.sh/docs/topics/charts_hooks/) `pre-install` and `pre-upgrade`.
 - It is only necessary to run/deploy the Init Job on installation and on subsequent software changes (=helm upgrade in combination with use of a different image than before).
 - Therefore the Init Job will only be deployed on installation and on helm upgrades if the image has changed.
-
 
 ### Init Job Details
 
@@ -125,7 +121,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
         --install \
         --values my-config.yaml \
     ```
@@ -225,7 +221,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -236,7 +232,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.3 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -260,14 +256,11 @@ Run `helm upgrade --helm` for full list of options.
 [helm-unittest](https://github.com/quintush/helm-unittest) is being used for testing the output of the helm chart.
 Tests can be found in [tests](./tests)
 
-
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
 | tgip-work |  | <https://github.com/tgip-work> |
-
-
 
 ## Values
 
@@ -276,7 +269,7 @@ Tests can be found in [tests](./tests)
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
-| apiHubWorkingFolder | string | `"iot-workspace"` |  |
+| apiHubWorkingFolder | string | `"iot-adapter"` |  |
 | config.apihub | string | `"{\n\t\"storage\": \"../apihub-root\",\n\t\"port\": 8080,\n\t\"preventRateLimit\": true,\n\t\"activeComponents\": [\n\t\t\"virtualMQ\",\n\t\t\"messaging\",\n\t\t\"notifications\",\n\t\t\"filesManager\",\n\t\t\"bdns\",\n\t\t\"bricksLedger\",\n\t\t\"bricksFabric\",\n\t\t\"bricking\",\n\t\t\"anchoring\",\n\t\t\"debugLogger\",\n\t\t\"mq\",\n\t\t\"staticServer\"\n\t],\n    \"componentsConfig\": {\n        \"staticServer\": {\n                       \"excludedFiles\": [\n                           \".*.secret\"\n                       ]\n                   },\n        \"bricking\": {},\n        \"anchoring\": {}\n      },\n      \"responseHeaders\": {\n                 \"X-Frame-Options\": \"SAMEORIGIN\",\n                 \"X-XSS-Protection\": \"1; mode=block\"\n             },\n\t\"enableRequestLogger\": true,\n\t\"enableJWTAuthorisation\": false,\n\t\"enableLocalhostAuthorization\": false,\n    \"serverAuthentication\": false,\n\t\"skipJWTAuthorisation\": [\n\t\t\"/assets\",\n\t\t\"/directory-summary\",\n\t\t\"/resources\",\n\t\t\"/bdns\",\n\t\t\"/anchor/epi\",\n\t\t\"/anchor/default\",\n\t\t\"/anchor/vault\",\n\t\t\"/bricking\",\n\t\t\"/bricksFabric\",\n\t\t\"/bricksledger\",\n\t\t\"/create-channel\",\n\t\t\"/forward-zeromq\",\n\t\t\"/send-message\",\n\t\t\"/receive-message\",\n\t\t\"/files\",\n\t\t\"/notifications\",\n\t\t\"/mq\"\n\t]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
 | config.bdnsHosts | string | `"{\n    \"default\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"vault.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"iot\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"iot.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"eco\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    },\n    \"eco.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    }\n  }"` | Centrally managed and provided BDNS Hosts Config |
 | config.demiurgeMode | string | `"dev-secure"` |  |
@@ -335,6 +328,5 @@ Tests can be found in [tests](./tests)
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 
-
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
+Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)

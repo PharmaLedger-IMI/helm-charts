@@ -1,0 +1,174 @@
+# Default values for backup-restore.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: "pharmaledger/backup-restore"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.0.0"
+
+  # <!-- # pragma: allowlist secret -->
+  sha: "361c33748a2a0bb6b532e656e4a2fa06617ca6ed55ac25c109eb3e3de88625ab"  # pragma: allowlist secret
+
+# -- Pod Security Context for the runner.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# -- Security Context for the runner container
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext:
+  privileged: false
+  capabilities:
+    drop:
+      - ALL
+  # Running as readonly filesystem is currently (May 2022 with epi v1.3.1) not possible.
+  # Error:
+  # API-HUB] Preparing to register middleware from path ./components/mqManager
+  # Caught event type [uncaughtException]. Shutting down... uncaughtException Error: ENOENT: no such file or directory, mkdir '/ePI-workspace/apihub-root/messaging'
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+
+config:
+  serverConfigJson: ""
+  epiReleaseName: "epi"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Persistence settings by using Persistent Volume Claims for the external volume of builder and runner.
+# See [http://kubernetes.io/docs/user-guide/persistent-volumes/](http://kubernetes.io/docs/user-guide/persistent-volumes/)
+persistence:
+  # -- The name of an existing PVC to use instead of creating a new one.
+  existingClaim: ""
+  # -- Name of the storage class for the new PVC.
+  # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+  storageClassName: ""
+  # -- Size of the volume for the new PVC
+  size: "20Gi"
+  # -- Boolean flag whether to delete the (new) PVC on uninstall or not.
+  deleteOnUninstall: true
+  # -- Finalizers for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection)
+  finalizers:
+    - kubernetes.io/pvc-protection
+  # -- AccessModes for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes)
+  accessModes:
+    - ReadWriteOnce
+  # -- Selector Labels for the new PVC.
+  # See [https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector)
+  selectorLabels: {}
+  # -- DataSource option for cloning an existing volume or creating from a snapshot for a new PVC.
+  # See [values.yaml](values.yaml) for more details.
+  dataSource: {}
+    # # For cloning from an existing volume
+    # # See [https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/](https://kubernetes.io/docs/concepts/storage/volume-pvc-datasource/)
+    # kind: PersistentVolumeClaim
+    # name: pvc-1
+
+    # # For creating from a snapshot (here AWS)
+    # # [https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/](https://aws.amazon.com/blogs/containers/migrating-amazon-eks-clusters-from-gp2-to-gp3-ebs-volumes/)
+    # name: imported-aws-snapshot
+    # kind: VolumeSnapshot
+  # apiGroup: snapshot.storage.k8s.io
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+service:
+  type: ClusterIP
+  port: 3100
+
+secrets:
+  awsAccessKeyId: ""
+  awsSecretKey: ""
+  awsDefaultRegion: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# -- Liveness probe.
+# Defaults to check if the server is listening.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+livenessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+# -- Readiness probe.
+# Defaults to check if server can query data.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
+readinessProbe:
+  httpGet:
+    path: /epi/check
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3

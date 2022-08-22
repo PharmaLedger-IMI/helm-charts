@@ -221,7 +221,12 @@ Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-
     "/bdns",
     "/bundles",
     "/getAuthorization",
-    "/external-volume/config/oauthConfig.js"
+    "/external-volume/config/oauthConfig.js",
+    "/leaflet-wallet/",
+    "/external-volume/wallets/leaflet-wallet/",
+    "/cloud-wallet/",
+    "/directory-summary/",
+    "/iframe/"
   ],
   "oauthConfig": {
     "issuer": {

@@ -34,11 +34,14 @@ data:
 {{- else }}
     {
       "anchoring": {
-        "type": "ETH",
+        "type": "OBA",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
       },
+      "skipOAuth": [
+        "/bricking/{{ required "config.domain must be set" .Values.config.domain }}/get-brick"
+      ],
 {{- /*
      "messagesEndpoint": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
 */}}
@@ -59,11 +62,14 @@ data:
 {{- else }}
     {
       "anchoring": {
-        "type": "ETH",
+        "type": "OBA",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
       },
+      "skipOAuth": [
+        "/bricking/{{ required "config.subDomain must be set" .Values.config.subDomain }}/get-brick"
+      ],
       "enable": ["mq", "enclave"]
     }
 {{- end }}
@@ -81,6 +87,9 @@ data:
            "enableBricksLedger": false
          }
       },
+      "skipOAuth": [
+        "/bricking/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}/get-brick"
+      ],
       "enable": ["mq", "enclave"]
     }
 {{- end }}
