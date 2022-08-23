@@ -25,6 +25,15 @@ entries:
     version: 0.1.0
   blockchain-explorer:
   - apiVersion: v2
+    created: "2022-08-23T14:49:41.356618458Z"
+    description: A Helm chart for Kubernetes
+    digest: d582657fa34b709680fe303871dc2d4de09c666267825ef3c4fc90fcf289fa1e
+    name: blockchain-explorer
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/blockchain-explorer-0.1.3/blockchain-explorer-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
     created: "2022-06-24T08:09:48.573340003Z"
     description: A Helm chart for Kubernetes
     digest: 7f32087b2d6bbb9f18069039a661a4fd974e553e3502b93110f872eb65da3bbe
@@ -999,6 +1008,16 @@ entries:
     version: 0.4.0
   fgt:
   - apiVersion: v2
+    appVersion: v0.10.4
+    created: "2022-08-23T14:49:41.515600007Z"
+    description: A Helm chart for a FGT deployment on Kubernetes
+    digest: cffae5436610153796600cd523df5bd6215dbc5d40239c70734d4170d29fdada
+    name: fgt
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/fgt-0.2.4/fgt-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
     appVersion: v0.9.7
     created: "2022-06-24T08:09:48.733500611Z"
     description: A Helm chart for a FGT deployment on Kubernetes
@@ -1676,4 +1695,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-08-19T10:45:41.151626351Z"
+generated: "2022-08-23T14:49:41.516090411Z"
