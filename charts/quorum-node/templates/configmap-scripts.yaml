@@ -26,10 +26,51 @@ data:
     #!/bin/ash
     #set -xe
 
-    for Addr in $( awk '/validators/,0' {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
-      echo "Proposing $Addr ..."
-      {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh $Addr true
+    echo "1. Retrieving current validator candidates"
+    echo "=========================================="
+    /geth-helpers/geth-exec.sh "istanbul.candidates"
+
+    echo ""
+    echo "2. Proposing to remove existing validators that are unknown nodes"
+    echo "================================================================="
+    echo "> Retrieving current validators via 'istanbul.getValidators()' ..."
+    # This will return ["0x....", "0x....", "0x...."]
+    # Sample: ["0x3257b9c9f66c6ca013def70cc075313d9adc9ed6", "0x601a483538f17126eb78a1bec95d2a297f2b89dd", "0x6f0c0b4f77d74d04673be303e376faa01f358db8", "0xaabf92868622b738b81fd4ee5a8706e1cb43af2d", "0xba0a4116eb16cfb5bbbe00204ba017dbf2f88ee4", "0xc1c6048ee3079fe87c36bce542672e85a19fe967", "0xce75491ea8e89826a87b9dd6efbaa20d0f5ec67a", "0xfc9dfe9d2c1fb15c7105e56d2b5c925034d1b1e4"]
+    validators=$(/geth-helpers/geth-exec.sh "istanbul.getValidators()")
+    echo "  Current validators:"
+    echo "    $validators"
+    for each_validator in $(echo ${validators} | grep "0x" | sed 's/,//g; s/"//g; s/\[//g; s/\]//g' ); do
+        echo ""
+        echo "> Checking if $each_validator is in a known node ..."
+        grep_result=$(grep -i "$each_validator" {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml)
+        if [[ "$grep_result" != "" ]]; then
+            echo "    WELL-KNOWN: Validator $each_validator is well-known. No need to propose removal."
+        else 
+            echo "    UNKNOWN: Validator $each_validator is unknown and not listed in validator whitelist. Proposing to remove validator."
+            {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh $each_validator false
+        fi
     done
+
+    echo ""
+    echo "3. Retrieving current validator candidates"
+    echo "=========================================="
+    /geth-helpers/geth-exec.sh "istanbul.candidates"
+
+    echo ""
+    echo "4. Proposing all known nodes as validators"
+    echo "=========================================="
+    for Addr in $( awk '/validators/,0' {{ .Values.quorum.homeMountPath }}/istanbul-validator-config.toml/istanbul-validator-config.toml | grep "0x" | sed 's/,//g; s/"//g' ); do
+        echo ""
+        echo "> Proposing $Addr as a validator ..."
+        {{ .Values.quorum.homeMountPath }}/node-management/ibft_propose.sh $Addr true
+    done
+
+
+    echo ""
+    echo "5. Retrieving current validator candidates"
+    echo "=========================================="
+    /geth-helpers/geth-exec.sh "istanbul.candidates"
+
   geth-attach.sh: |-
     #!/bin/sh
 
