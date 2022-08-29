@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 22.7.0](https://img.shields.io/badge/AppVersion-22.7.0-informational?style=flat-square)
+![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 22.7.0](https://img.shields.io/badge/AppVersion-22.7.0-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -62,7 +62,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.1 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.2 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
@@ -87,7 +87,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.1 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.2 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
@@ -111,7 +111,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.1 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.2 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
@@ -136,7 +136,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.1 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.2 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
@@ -156,7 +156,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.1 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.2 \
       --install \
       --namespace=my-namespace \
       --values my-values.yaml \
@@ -167,7 +167,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.1 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.2 \
       --install \
       --wait --timeout=600s \
       --values my-values.yaml \
@@ -252,7 +252,7 @@ helm delete quorum-node-0 \
 | quorum.miner.blockPeriod | int | `3` | Default minimum difference between two consecutive block's timestamps in seconds |
 | quorum.miner.threads | int | `1` | Number of CPU threads to use for mining |
 | quorum.networkId | int | `10` | Explicitly set network id |
-| quorum.rpc.api | string | `"admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul"` | The activated APIs at RPC endpoint. |
+| quorum.rpc.api | string | `"admin,eth,debug,miner,net,txpool,personal,web3,istanbul"` | The activated APIs at RPC endpoint. |
 | quorum.rpc.corsDomain | string | `"*"` |  |
 | quorum.rpc.vHosts | string | `"*"` | The virtual hostnames for the RPC endpoint to listen for. If you want to restrict it, use {name}-rpc,{name}-rpc.{namespace},{name}-rpc.{namespace}.svc.cluster.local |
 | replicasCount | int | `1` | Number of replicas for the quorum-node !! DO NOT CHANGE !! |
