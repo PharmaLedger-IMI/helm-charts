@@ -147,6 +147,11 @@ helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version={{ t
 
 [See here](./docs/monitoring/README.md)
 
+## Troubleshooting
+
+1. Determine your own public ip address: Open a shell in your quorum pod and run `wget -O - ifconfig.me/ip -q`
+2. Determine current TCP connections status of your quorum node: Open a shell in your quorum pod and run `netstat -atn`
+
 ## Additional helm options
 
 Run `helm upgrade --helm` for full list of options.
