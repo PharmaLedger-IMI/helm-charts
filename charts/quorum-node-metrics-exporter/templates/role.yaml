@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "quorum-node-metrics-exporter.fullname" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
+  labels:
+    {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
+rules:
+  # get details of the quorum node deployment
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get"]
+  # list all prod matching the selector labels from deployment and get pod details
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list","get"]
+  # exec within the pod
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    # https://github.com/kubernetes-client/python/issues/690
+    verbs: ["create","watch", "get"]
