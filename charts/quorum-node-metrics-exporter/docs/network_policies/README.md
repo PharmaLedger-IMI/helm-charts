@@ -108,13 +108,17 @@ extraResources:
         # The IP Address of the Kube API Service (see service kubernetes.default)
         - ipBlock:
             cidr: 172.20.0.1/32
-        # Determine Kube API Endpoint via
-        # kubectl get endpoints --namespace default kubernetes
+        # Determine Kube API Endpoint via 'kubectl get endpoints --namespace default kubernetes'
+        # = e.g. 10.0.17.52/32 and 10.0.58.124/32
+        # For AWS EKS, these addresses may change without further notice, 
+        # therefore you need to whitelist the subnets associated with your AWS EKS cluster
         # Also see https://pauldally.medium.com/accessing-kubernetes-api-server-when-there-is-an-egress-networkpolicy-af4435e005f9
         - ipBlock:
-            cidr: 10.0.17.52/32
+            cidr: 10.0.16.0/20
         - ipBlock:
-            cidr: 10.0.58.124/32
+            cidr: 10.0.32.0/20
+        - ipBlock:
+            cidr: 10.0.48.0/20
       podSelector:
         matchLabels:
           app.kubernetes.io/name: <todo: name of metrics exporter, take a look at labels, e.g. quorum-node-metrics-exporter>
