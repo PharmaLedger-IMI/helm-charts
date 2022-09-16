@@ -1,0 +1,264 @@
+# Default values for quorum-node-metrics-exporter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- The number of replicas - should be 1
+replicaCount: 1
+
+image:
+  # -- The repository of the container image
+  repository: ""
+  # -- Image Pull Policy
+  pullPolicy: Always
+  # -- The image tag
+  tag: ""
+  # -- sha256 digest of the image. If empty string the digest is not being used.
+  # Do not add the prefix "@sha256:"
+  # <!-- # pragma: allowlist secret -->
+  sha: ""  # pragma: allowlist secret
+
+# Application Configuration. Will be put in ConfigMap
+config:
+  # -- URL of the Quorum node RPC endpoint, e.g. "http://quorum-node-rpc.quorum:8545"
+  rpcUrl: ""
+  # -- The name of the K8S deployment of the Quorum node, e.g. "quorum-node"
+  deployment: ""
+  # -- The K8S namespace of the Quorum node, e.g "quorum"
+  namespace: ""
+  # -- A string containing an array of peers in JSON format
+  peers: |-
+  # [
+  #   {
+  #     "company-name": "company_a",
+  #     "enode": "4312d5056db7edf8b6...",
+  #     "enodeAddress": "1.2.3.4",
+  #     "enodeAddressPort": "30303"
+  #   },
+  #   {
+  #     "company-name": "company_b",
+  #     "enode": "bc03e0353fe10d0261...",
+  #     "enodeAddress": "2.3.4.5",
+  #     "enodeAddressPort": "30303"
+  #   },
+  #   {
+  #     "company-name": "company_c",
+  #     "enode": "b06bca847a8c27e7d...",
+  #     "enodeAddress": "4.5.6.7",
+  #     "enodeAddressPort": "30303"
+  #   }
+  # ]
+
+  # Option to fully provide an own config file
+  override: |-
+
+#
+# Overall settings
+#
+
+# -- Secret(s) for pulling an container image from a private registry.
+# Used for all images.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+imagePullSecrets: []
+
+# -- nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+nameOverride: ""
+
+# -- fullnameOverride completely replaces the generated name.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
+fullnameOverride: ""
+
+# -- Override the deployment namespace.
+# Very useful for multi-namespace deployments in combined charts
+namespaceOverride: ""
+
+# -- Annotations to add to the pod
+podAnnotations: {}
+
+# -- Node Selectors in order to assign pods to certain nodes.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+nodeSelector: {}
+
+# -- Tolerations for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+tolerations: []
+
+# -- Affinity for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+affinity: {}
+
+# -- Pod Security Context.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext:
+  fsGroup: 65534
+  runAsGroup: 65534
+  runAsUser: 65534
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# -- Security Context for container
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsGroup: 65534
+  runAsNonRoot: true
+  runAsUser: 65534
+
+# -- Resource constraints
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 5m
+    memory: 64Mi
+
+serviceAccount:
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Service configuration. Used for helm to test if application is running
+# See https://helm.sh/docs/topics/chart_tests/
+service:
+  # -- Whether to expose the metrics via a service or not. Usually not needed.
+  enabled: false
+  # -- Service type, should be ClusterIP
+  type: ClusterIP
+  # -- Service Port
+  port: 80
+  # -- If type is ClusterIP and clusterIP: "None" a headless service will be created
+  clusterIP: "None"
+
+ingress:
+  # -- Whether to expose the metrics via an ingress or not.
+  # Usually not needed. If you enable it, also set `service.enabled: true`
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- An array of extra resources that will be deployed.
+# This is useful e.g. network policies.
+extraResources:
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-ingress-from-prometheus
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     ingress:
+  #     - from:
+  #       - namespaceSelector:
+  #           matchLabels:
+  #             kubernetes.io/metadata.name: prometheus
+  #         podSelector:
+  #           matchLabels:
+  #             app: prometheus
+  #       ports:
+  #       - port: 8000
+  #         protocol: TCP
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Ingress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-quorum
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 8545
+  #         protocol: TCP
+  #       to:
+  #       - namespaceSelector:
+  #           matchLabels:
+  #             kubernetes.io/metadata.name: epi-poc-quorum
+  #         podSelector:
+  #           matchLabels:
+  #             app.kubernetes.io/name: quorum-node-0
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-dns
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 53
+  #         protocol: UDP
+  #       to:
+  #       - namespaceSelector: {}
+  #         podSelector:
+  #           matchLabels:
+  #             k8s-app: kube-dns
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-kubeapi
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 443
+  #         protocol: TCP
+  #       to:
+  #       # The IP Address of the Kube API Service (see service kubernetes.default)
+  #       - ipBlock:
+  #           cidr: 172.20.0.1/32
+  #       # Determine Kube API Endpoint via 'kubectl get endpoints --namespace default kubernetes'
+  #       # = e.g. 10.0.17.52/32 and 10.0.58.124/32
+  #       # For AWS EKS, these addresses may change without further notice,
+  #       # therefore you need to whitelist the subnets associated with your AWS EKS cluster
+  #       # Also see https://pauldally.medium.com/accessing-kubernetes-api-server-when-there-is-an-egress-networkpolicy-af4435e005f9
+  #       - ipBlock:
+  #           cidr: 10.0.16.0/20
+  #       - ipBlock:
+  #           cidr: 10.0.32.0/20
+  #       - ipBlock:
+  #           cidr: 10.0.48.0/20
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress

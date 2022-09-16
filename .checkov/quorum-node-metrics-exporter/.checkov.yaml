@@ -1,0 +1,12 @@
+compact: true
+directory:
+- charts/quorum-node-metrics-exporter
+download-external-modules: false
+evaluate-variables: true
+external-modules-download-path: .external_modules
+framework:
+- helm
+quiet: true
+var-file:
+- .checkov/quorum-node-metrics-exporter/values.yaml
+output: cli

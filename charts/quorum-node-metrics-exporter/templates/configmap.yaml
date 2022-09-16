@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "quorum-node-metrics-exporter.fullname" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
+  labels:
+    {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
+data:
+  # The config.
+  # Required attributes:
+  # "namespace"  = The name of the k8s namespace where the Quorum deployment is located
+  # "deployment" = The name of the Quorum k8s deployment
+  # "rpc_url"    = The full URL of the RPC endpoint of the quorum node, e.g. "http://quorum-node-0-rpc.quorum:8545"
+  # "peers"      = A list of all known peers via their "enode".#
+  #                "peers" contains an array of objects.
+  #                Each object must have attributes "company-name", "enode", "enodeAddress" and "enodeAddressPort"
+  #                Note: If there are no known peers, provide an empty array/list of peers.
+  config.json: |-
+{{- if .Values.config.override }}
+{{ .Values.config.override | indent 4 }}
+{{- else }}
+    {
+      "rpc_url": {{ required "config.rpcUrl must be set" .Values.config.rpcUrl | quote }},
+      "deployment": {{ required "config.deployment must be set" .Values.config.deployment | quote }},
+      "namespace": {{ required "config.namespace must be set" .Values.config.namespace | quote }},
+      "peers": {{ required "config.peers must be set" .Values.config.peers | nindent 6 }}
+    }
+{{- end }}

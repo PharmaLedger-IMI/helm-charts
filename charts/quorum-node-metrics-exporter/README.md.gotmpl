@@ -1,0 +1,116 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## Requirements
+
+- [helm 3](https://helm.sh/docs/intro/install/)
+
+## Features
+
+- Security by default:
+  - SecurityContext
+  - Non-root user
+  - readonly filesystem
+- Ready-to-use [Prometheus pod-annotations](https://www.weave.works/docs/cloud/latest/tasks/monitor/configuration-k8s/#per-pod-prometheus-annotations)
+- Option to provide `extraResources` like
+  - [Network Policies](./docs/network_policies/README.md) for fine-grained control of network traffic
+
+## Usage and samples
+
+- [Here](./README.md#values) is a full list of all configuration values.
+- The [values.yaml file](./values.yaml) shows the raw view of all configuration values.
+- [**FULL SAMPLE**](./docs/full_sample/README.md) with multiple features combined.
+- [Network Policies](./docs/network_policies/README.md)
+
+## Installing the Chart
+
+1. Build a container image for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-IMI/quorum-node-metrics-exporter)
+2. Push the image to repository
+3. Prepare the `my-values.yaml`
+
+    ```yaml
+    image:
+      repository: "my-repo"
+      tag: "my-tag"
+    config:
+      # -- URL of the Quorum node RPC endpoint, e.g. 
+      rpcUrl: "http://quorum-node-rpc.quorum:8545"
+      # -- The name of the K8S deployment of the Quorum node, e.g. 
+      deployment: "quorum-node"
+      # -- The K8S namespace of the Quorum node, e.g 
+      namespace: "quorum"
+      # -- A string containing an array of peers in JSON format
+      peers: |-
+        [
+          {
+            "company-name": "company_a",
+            "enode": "4312d5056db7edf8b6...",
+            "enodeAddress": "1.2.3.4",
+            "enodeAddressPort": "30303"
+          },
+          {
+            "company-name": "company_b",
+            "enode": "bc03e0353fe10d0261...",
+            "enodeAddress": "2.3.4.5",
+            "enodeAddressPort": "30303"
+          },
+          {
+            "company-name": "company_c",
+            "enode": "b06bca847a8c27e7d...",
+            "enodeAddress": "4.5.6.7",
+            "enodeAddressPort": "30303"
+          }
+        ]
+
+    ```
+
+4. Install the helm release - **IMPORTANT** You must install the metrics into the same namespace like the Quorum node.
+
+    ```shell
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version={{ template "chart.version" . }} \
+      --install \
+      --namespace=quorum \
+      --values ./my-values.yaml
+
+    ```
+
+## Additional helm options
+
+Run `helm upgrade --helm` for full list of options.
+
+- Wait until installation has finished successfully and the deployment is up and running.
+
+    Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
+
+    ```bash
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version={{ template "chart.version" . }} \
+      --install \
+      --wait --timeout=600s \
+      --namespace=quorum \
+      --values my-values.yaml \
+    ```
+
+## Uninstalling the Helm Release
+
+To uninstall/delete the `metrics-exporter` release:
+
+```bash
+helm delete metrics-exporter \
+  --namespace=quorum
+
+```
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesHeader" . }}
+
+*Note:* Please scroll horizontally to show more columns (e.g. description)!
+
+{{ template "chart.valuesTable" . }}
+
+{{ template "helm-docs.versionFooter" . }}
