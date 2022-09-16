@@ -2,19 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "quorum-node-metrics-exporter.fullname" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
   labels:
     {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "quorum-node-metrics-exporter.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        prometheus.io/path: /
+        prometheus.io/port: "8000"
+        prometheus.io/scrape: "true"
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -31,22 +33,37 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "quorum-node-metrics-exporter.image" . | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8000
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
               port: http
+            timeoutSeconds: 1
           readinessProbe:
+            failureThreshold: 3
             httpGet:
               path: /
               port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: cm-settings
+              mountPath: /config.json
+              subPath: config.json
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -59,3 +76,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: cm-settings
+          configMap:
+            name: quorum-node-metrics-exporter
+            defaultMode: 0440  # mount as r
+            items:
+              - key: config.json
+                path: config.json

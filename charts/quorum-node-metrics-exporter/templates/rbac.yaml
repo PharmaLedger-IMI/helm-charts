@@ -1,0 +1,49 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "quorum-node-metrics-exporter.fullname" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
+  labels:
+    {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
+rules:
+  # get details of the quorum node deployment
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get"]
+  # list all prod matching the selector labels from deployment and get pod details
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list","get"]
+  # exec within the pod
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    # https://github.com/kubernetes-client/python/issues/690
+    verbs: ["create","watch", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "quorum-node-metrics-exporter.fullname" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
+  labels:
+    {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: quorum-node-metrics-exporter
+subjects:
+- kind: ServiceAccount
+  name: quorum-node-metrics-exporter
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "quorum-node-metrics-exporter.serviceAccountName" . }}
+  namespace: {{ template "quorum-node-metrics-exporter.namespace" . }}
+  labels:
+    {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---

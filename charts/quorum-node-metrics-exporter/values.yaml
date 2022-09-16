@@ -2,81 +2,91 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- The number of replicas - should be 1
 replicaCount: 1
 
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  # -- The repository of the container image
+  repository: "TODO: Your Repository"
+  # -- Image Pull Policy
+  pullPolicy: Always
+  # -- The image tag
+  tag: "TODO: Your image tag"
+  # -- sha256 digest of the image. If empty string the digest is not being used.
+  # Do not add the prefix "@sha256:"
+  # <!-- # pragma: allowlist secret -->
+  sha: ""  # pragma: allowlist secret
 
+#
+# Overall settings
+#
+
+# -- Secret(s) for pulling an container image from a private registry.
+# Used for all images.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
 imagePullSecrets: []
+
+# -- nameOverride replaces the name of the chart in the Chart.yaml file, when this is used to construct Kubernetes object names.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
 nameOverride: ""
+
+# -- fullnameOverride completely replaces the generated name.
+# From [https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm](https://stackoverflow.com/questions/63838705/what-is-the-difference-between-fullnameoverride-and-nameoverride-in-helm)
 fullnameOverride: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+# -- Override the deployment namespace.
+# Very useful for multi-namespace deployments in combined charts
+namespaceOverride: ""
 
+# -- Annotations to add to the pod
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
+# -- Node Selectors in order to assign pods to certain nodes.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 nodeSelector: {}
 
+# -- Tolerations for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
 tolerations: []
 
+# -- Affinity for scheduling a pod.
+# See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 affinity: {}
+
+# -- Pod Security Context.
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
+podSecurityContext:
+  fsGroup: 65534
+  runAsGroup: 65534
+  runAsUser: 65534
+  # -- The SecComp configuration.
+  # Not enabled by default as not every environment supports it.
+  # [https://kubernetes.io/docs/tutorials/security/seccomp/](https://kubernetes.io/docs/tutorials/security/seccomp/)
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# -- Security Context for container
+# See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  privileged: false
+  readOnlyRootFilesystem: true
+  runAsGroup: 65534
+  runAsNonRoot: true
+  runAsUser: 65534
+
+# -- Resource constraints
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 5m
+    memory: 64Mi
+
+serviceAccount:
+  # -- Annotations to add to the service account
+  annotations: {}

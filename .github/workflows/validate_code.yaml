@@ -78,3 +78,11 @@ jobs:
           # we need to override these values as they will always set by the github action
           directory: 'charts/fgt' # we need to set this value! - see https://github.com/bridgecrewio/checkov-action/issues/77
           output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37
+
+      - uses: bridgecrewio/checkov-action@85bd3080490ce5978dce5f754a993c42b1ef1d2b # v12.1469.0
+        name: Checkov quorum-node-metrics-exporter
+        with:
+          config_file: .checkov/quorum-node-metrics-exporter/.checkov.yaml
+          # we need to override these values as they will always set by the github action
+          directory: 'charts/quorum-node-metrics-exporter' # we need to set this value! - see https://github.com/bridgecrewio/checkov-action/issues/77
+          output_format: 'cli' # override default value 'sarif'  - https://github.com/bridgecrewio/checkov-action/blob/v12.1469.0/action.yml#L37

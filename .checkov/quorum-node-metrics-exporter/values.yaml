@@ -1,0 +1,11 @@
+# Set Image SHA as this is not set by default
+image:
+  sha: "somedigest"
+
+# Set namespace via values
+namespaceOverride: "quorum-node-metrics-exporter"
+
+# Set seccompProfile as this is not set by default
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
