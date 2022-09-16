@@ -90,3 +90,13 @@ resources:
 serviceAccount:
   # -- Annotations to add to the service account
   annotations: {}
+
+# Service configuration. Used for helm to test if application is running
+# See https://helm.sh/docs/topics/chart_tests/
+service:
+  # -- Service type, should be ClusterIP
+  type: ClusterIP
+  # -- Service Port
+  port: 80
+  # -- If type is ClusterIP and clusterIP: "None" a headless service will be created
+  clusterIP: "None"
