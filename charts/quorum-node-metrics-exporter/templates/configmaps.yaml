@@ -7,54 +7,22 @@ metadata:
     {{- include "quorum-node-metrics-exporter.labels" . | nindent 4 }}
 data:
   # The config.
-  # Required attributes: "rpc_url" and "peers"
-  # - "namespace" = The name of the k8s namespace where the Quorum deployment is located
-  # - "deployment" = The name of the Quorum k8s deployment
-  # - "rpc_url" = The full URL of the RPC endpoint of the quorum node, e.g. "http://quorum-node-0-rpc.quorum:8545"
-  # - "peers" = A list of all known peers via their "enode".#
-  #             "peers" contains an array of objects. Each object must have attributes "company-name", "enode", "enodeAddress" and "enodeAddressPort"
-  #             Note: If there are no known peers, provide an empty array/list of peers.
+  # Required attributes:
+  # "namespace"  = The name of the k8s namespace where the Quorum deployment is located
+  # "deployment" = The name of the Quorum k8s deployment
+  # "rpc_url"    = The full URL of the RPC endpoint of the quorum node, e.g. "http://quorum-node-0-rpc.quorum:8545"
+  # "peers"      = A list of all known peers via their "enode".#
+  #                "peers" contains an array of objects.
+  #                Each object must have attributes "company-name", "enode", "enodeAddress" and "enodeAddressPort"
+  #                Note: If there are no known peers, provide an empty array/list of peers.
   config.json: |-
+{{- if .Values.config.override }}
+{{ .Values.config.override | indent 4 }}
+{{- else }}
     {
-      "namespace": "epi-poc-quorum",
-      "deployment": "quorum-node-0",
-      "rpc_url": "http://quorum-node-0-rpc.epi-poc-quorum:8545",
-      "peers": [
-        {
-          "company-name": "company_a",
-          "enode": "4312d5056db7edf8b6...",
-          "enodeAddress": "1.2.3.4",
-          "enodeAddressPort": "30303"
-        },
-        {
-          "company-name": "company_a",
-          "enode": "a36ceb6ccdf5ff8a7c...",
-          "enodeAddress": "2.3.4.5",
-          "enodeAddressPort": "30303"
-        },
-        {
-          "company-name": "company_a",
-          "enode": "4801af270f75e9352b...",
-          "enodeAddress": "3.4.5.6",
-          "enodeAddressPort": "30303"
-        },
-        {
-          "company-name": "company_a",
-          "enode": "456a860cb1275dd23...",
-          "enodeAddress": "4.5.6.7",
-          "enodeAddressPort": "30303"
-        },
-        {
-          "company-name": "company_b",
-          "enode": "bc03e0353fe10d0261...",
-          "enodeAddress": "5.6.7.8",
-          "enodeAddressPort": "30303"
-        },
-        {
-          "company-name": "company_c",
-          "enode": "b06bca847a8c27e7d...",
-          "enodeAddress": "6.7.8.9",
-          "enodeAddressPort": "30303"
-        },
-      ]
+      "rpc_url": {{ required "config.rpcUrl must be set" .Values.config.rpcUrl | quote }},
+      "deployment": {{ required "config.deployment must be set" .Values.config.deployment | quote }},
+      "namespace": {{ required "config.namespace must be set" .Values.config.namespace | quote }},
+      "peers": {{ required "config.peers must be set" .Values.config.peers | nindent 6 }}
     }
+{{- end }}
