@@ -141,7 +141,7 @@ service:
   clusterIP: "None"
 
 ingress:
-  # -- Whether to expose the metrics via an ingress or not. 
+  # -- Whether to expose the metrics via an ingress or not.
   # Usually not needed. If you enable it, also set `service.enabled: true`
   enabled: false
   className: ""
@@ -248,7 +248,7 @@ extraResources:
   #           cidr: 172.20.0.1/32
   #       # Determine Kube API Endpoint via 'kubectl get endpoints --namespace default kubernetes'
   #       # = e.g. 10.0.17.52/32 and 10.0.58.124/32
-  #       # For AWS EKS, these addresses may change without further notice, 
+  #       # For AWS EKS, these addresses may change without further notice,
   #       # therefore you need to whitelist the subnets associated with your AWS EKS cluster
   #       # Also see https://pauldally.medium.com/accessing-kubernetes-api-server-when-there-is-an-egress-networkpolicy-af4435e005f9
   #       - ipBlock:
