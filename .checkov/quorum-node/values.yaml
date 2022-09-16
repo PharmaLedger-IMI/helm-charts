@@ -1,6 +1,4 @@
 image:
-  repository: "my-repo"
-  tag: "my-tag"
   sha: "somedigest"
 
 resources:
@@ -11,32 +9,3 @@ resources:
     cpu: 5m
     memory: 128Mi
 
-config:
-  # -- URL of the Quorum node RPC endpoint, e.g.
-  rpcUrl: "http://quorum-node-rpc.quorum:8545"
-  # -- The name of the K8S deployment of the Quorum node, e.g.
-  deployment: "quorum-node"
-  # -- The K8S namespace of the Quorum node, e.g
-  namespace: "quorum"
-  # -- A string containing an array of peers in JSON format
-  peers: |-
-    [
-      {
-        "company-name": "company_a",
-        "enode": "4312d5056db7edf8b6...",
-        "enodeAddress": "1.2.3.4",
-        "enodeAddressPort": "30303"
-      },
-      {
-        "company-name": "company_b",
-        "enode": "bc03e0353fe10d0261...",
-        "enodeAddress": "2.3.4.5",
-        "enodeAddressPort": "30303"
-      },
-      {
-        "company-name": "company_c",
-        "enode": "b06bca847a8c27e7d...",
-        "enodeAddress": "4.5.6.7",
-        "enodeAddressPort": "30303"
-      }
-    ]
