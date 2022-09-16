@@ -94,6 +94,8 @@ serviceAccount:
 # Service configuration. Used for helm to test if application is running
 # See https://helm.sh/docs/topics/chart_tests/
 service:
+  # -- Whether to expose the metrics via a service or not. Usually not needed.
+  enabled: false
   # -- Service type, should be ClusterIP
   type: ClusterIP
   # -- Service Port
@@ -102,7 +104,8 @@ service:
   clusterIP: "None"
 
 ingress:
-  # -- Whether to expose the metrics via an ingress or not. Usually not needed
+  # -- Whether to expose the metrics via an ingress or not. 
+  # Usually not needed. If you enable it, also set `service.enabled: true`
   enabled: false
   className: ""
   annotations: {}
