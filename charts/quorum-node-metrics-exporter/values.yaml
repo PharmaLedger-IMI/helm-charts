@@ -123,3 +123,104 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+# -- An array of extra resources that will be deployed.
+# This is useful e.g. network policies.
+extraResources:
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-ingress-from-prometheus
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     ingress:
+  #     - from:
+  #       - namespaceSelector:
+  #           matchLabels:
+  #             kubernetes.io/metadata.name: prometheus
+  #         podSelector:
+  #           matchLabels:
+  #             app: prometheus
+  #       ports:
+  #       - port: 8000
+  #         protocol: TCP
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Ingress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-quorum
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 8545
+  #         protocol: TCP
+  #       to:
+  #       - namespaceSelector:
+  #           matchLabels:
+  #             kubernetes.io/metadata.name: epi-poc-quorum
+  #         podSelector:
+  #           matchLabels:
+  #             app.kubernetes.io/name: quorum-node-0
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-dns
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 53
+  #         protocol: UDP
+  #       to:
+  #       - namespaceSelector: {}
+  #         podSelector:
+  #           matchLabels:
+  #             k8s-app: kube-dns
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress
+
+  # - |
+  #   apiVersion: networking.k8s.io/v1
+  #   kind: NetworkPolicy
+  #   metadata:
+  #     name: quorum-node-metrics-exporter-egress-to-kubeapi
+  #     namespace: epi-poc-quorum
+  #   spec:
+  #     egress:
+  #     - ports:
+  #       - port: 443
+  #         protocol: TCP
+  #       to:
+  #       # The IP Address of the Kube API Service (see service kubernetes.default)
+  #       - ipBlock:
+  #           cidr: 172.20.0.1/32
+  #       # Determine Kube API Endpoint via
+  #       # kubectl get endpoints --namespace default kubernetes
+  #       # Also see https://pauldally.medium.com/accessing-kubernetes-api-server-when-there-is-an-egress-networkpolicy-af4435e005f9
+  #       - ipBlock:
+  #           cidr: 10.0.17.52/32
+  #       - ipBlock:
+  #           cidr: 10.0.58.124/32
+  #     podSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: quorum-node-metrics-exporter
+  #     policyTypes:
+  #     - Egress
