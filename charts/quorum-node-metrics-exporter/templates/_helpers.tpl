@@ -46,9 +46,9 @@ Allow the release namespace to be overridden for multi-namespace deployments in 
 */}}
 {{- define "quorum-node-metrics-exporter.image" -}}
 {{- if .Values.image.sha -}}
-{{ .Values.image.repository }}:{{ .Values.image.tag }}@sha256:{{ .Values.image.sha }}
+{{ required "image.repository must be set" .Values.image.repository }}:{{ required "image.tag must be set" .Values.image.tag }}@sha256:{{ .Values.image.sha }}
 {{- else -}}
-{{ .Values.image.repository }}:{{ .Values.image.tag }}
+{{ required "image.repository must be set" .Values.image.repository }}:{{ required "image.tag must be set" .Values.image.tag }}
 {{- end -}}
 {{- end -}}
 
