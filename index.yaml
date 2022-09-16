@@ -1638,6 +1638,17 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-0.1.0/quorum-node-0.1.0.tgz
     version: 0.1.0
+  quorum-node-metrics-exporter:
+  - apiVersion: v2
+    appVersion: v0.2
+    created: "2022-09-16T15:45:56.159534732Z"
+    description: A Helm chart for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-IMI/quorum-node-metrics-exporter)
+    digest: b97108d1fcd4a22eca9ae839ce78018fd3991287013de6b85d8c9ffc008499b3
+    name: quorum-node-metrics-exporter
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/quorum-node-metrics-exporter-0.1.0/quorum-node-metrics-exporter-0.1.0.tgz
+    version: 0.1.0
   smartcontract:
   - apiVersion: v2
     appVersion: latest
@@ -1728,4 +1739,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-08-30T12:21:16.980587112Z"
+generated: "2022-09-16T15:45:56.160223842Z"
