@@ -1,6 +1,6 @@
 # quorum-node-metrics-exporter
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2](https://img.shields.io/badge/AppVersion-v0.2-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2](https://img.shields.io/badge/AppVersion-v0.2-informational?style=flat-square)
 
 A Helm chart for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-IMI/quorum-node-metrics-exporter)
 
@@ -70,7 +70,7 @@ A Helm chart for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-
 4. Install the helm release - **IMPORTANT** You must install the metrics into the same namespace like the Quorum node.
 
     ```shell
-    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.1.0 \
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.0 \
       --install \
       --namespace=quorum \
       --values ./my-values.yaml
@@ -86,7 +86,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.1.0 \
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.0 \
       --install \
       --wait --timeout=600s \
       --namespace=quorum \
@@ -124,7 +124,7 @@ helm delete metrics-exporter \
 | imagePullSecrets | list | `[]` | Secret(s) for pulling an container image from a private registry. Used for all images. See [https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` | Whether to expose the metrics via an ingress or not.  Usually not needed. If you enable it, also set `service.enabled: true` |
+| ingress.enabled | bool | `false` | Whether to expose the metrics via an ingress or not. Usually not needed. If you enable it, also set `service.enabled: true` |
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
