@@ -107,6 +107,10 @@ spec:
             mountPath: /{{ .Values.apiHubWorkingFolder }}/env.json
             subPath: env.json
             readOnly: true
+          - name: iot-adapter-config-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/credentials-service.json
+            subPath: credentials-service.json
+            readOnly: true
           - name: iot-adapter-domains-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.domain must be set" .Values.config.domain }}.json
             subPath: {{ required "config.domain must be set" .Values.config.domain }}.json
