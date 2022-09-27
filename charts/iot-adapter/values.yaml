@@ -167,6 +167,7 @@ config:
     BUILD_SECRET_KEY: "BUILD_SECRET_KEY"  # pragma: allowlist secret
     IOT_ADAPTOR_DID: "IOT_ADAPTOR_DID"
     IOT_ADAPTOR_PORT: "4500"
+    FITBIT_UPDATE_INTERVAL: "300000"
     STORAGE_API_BASE_URL: "STORAGE_API_BASE_URL"
     STORAGE_API_APP_ID: "STORAGE_API_APP_ID"
     STORAGE_API_REST_API_KEY: "STORAGE_API_REST_API_KEY"  # pragma: allowlist secret
@@ -242,6 +243,19 @@ config:
         }
       }
 
+  credentialsService: |-
+    {
+      "type": "service_account",
+      "project_id": "",
+      "private_key_id": "",
+      "private_key": "",
+      "client_email": "",
+      "client_id": "",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/pharmaledger%40csvfromgd.iam.gserviceaccount.com"
+    }
   # -- Configuration file apihub.json.
   # Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3)
   # <br/>
