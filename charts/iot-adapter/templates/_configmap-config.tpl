@@ -18,7 +18,7 @@ metadata:
   labels:
     {{- include "iot-adapter.labels" . | nindent 4 }}
 data:
-  env.json: |-
+  env.json: |
     {
       "BDNS_ROOT_HOSTS": "http://eco-iot:80",
       "PSK_TMP_WORKING_DIR": "tmp",
