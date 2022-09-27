@@ -1,6 +1,6 @@
 # iot-adapter
 
-![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.8](https://img.shields.io/badge/AppVersion-v1.1.8-informational?style=flat-square)
+![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.18](https://img.shields.io/badge/AppVersion-v1.1.18-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
 
@@ -121,7 +121,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.11 \
         --install \
         --values my-config.yaml \
     ```
@@ -221,7 +221,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.11 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -232,7 +232,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.11 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
