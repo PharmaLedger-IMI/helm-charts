@@ -1,6 +1,6 @@
 # iot-adapter
 
-![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.7](https://img.shields.io/badge/AppVersion-v1.1.7-informational?style=flat-square)
+![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.8](https://img.shields.io/badge/AppVersion-v1.1.8-informational?style=flat-square)
 
 A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
 
@@ -121,7 +121,7 @@ It is recommended to put non-sensitive configuration values in an configuration 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
         --install \
         --values my-config.yaml \
     ```
@@ -221,7 +221,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
         --install \
         --namespace=my-namespace \
         --values my-config.yaml \
@@ -232,7 +232,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.9 \
+    helm upgrade my-release-name pharmaledger-imi/iot-adapter --version=0.0.10 \
         --install \
         --wait --timeout=600s \
         --values my-config.yaml \
@@ -272,10 +272,12 @@ Tests can be found in [tests](./tests)
 | apiHubWorkingFolder | string | `"iot-adapter"` |  |
 | config.apihub | string | `"{\n\t\"storage\": \"../apihub-root\",\n\t\"port\": 8080,\n\t\"preventRateLimit\": true,\n\t\"activeComponents\": [\n\t\t\"virtualMQ\",\n\t\t\"messaging\",\n\t\t\"notifications\",\n\t\t\"filesManager\",\n\t\t\"bdns\",\n\t\t\"bricksLedger\",\n\t\t\"bricksFabric\",\n\t\t\"bricking\",\n\t\t\"anchoring\",\n\t\t\"debugLogger\",\n\t\t\"mq\",\n\t\t\"staticServer\"\n\t],\n    \"componentsConfig\": {\n        \"staticServer\": {\n                       \"excludedFiles\": [\n                           \".*.secret\"\n                       ]\n                   },\n        \"bricking\": {},\n        \"anchoring\": {}\n      },\n      \"responseHeaders\": {\n                 \"X-Frame-Options\": \"SAMEORIGIN\",\n                 \"X-XSS-Protection\": \"1; mode=block\"\n             },\n\t\"enableRequestLogger\": true,\n\t\"enableJWTAuthorisation\": false,\n\t\"enableLocalhostAuthorization\": false,\n    \"serverAuthentication\": false,\n\t\"skipJWTAuthorisation\": [\n\t\t\"/assets\",\n\t\t\"/directory-summary\",\n\t\t\"/resources\",\n\t\t\"/bdns\",\n\t\t\"/anchor/epi\",\n\t\t\"/anchor/default\",\n\t\t\"/anchor/vault\",\n\t\t\"/bricking\",\n\t\t\"/bricksFabric\",\n\t\t\"/bricksledger\",\n\t\t\"/create-channel\",\n\t\t\"/forward-zeromq\",\n\t\t\"/send-message\",\n\t\t\"/receive-message\",\n\t\t\"/files\",\n\t\t\"/notifications\",\n\t\t\"/mq\"\n\t]\n}"` | Configuration file apihub.json. Settings: [https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3](https://docs.google.com/document/d/1mg35bb1UBUmTpL1Kt4GuZ7P0K_FMqt2Mb8B3iaDf52I/edit#heading=h.z84gh8sclah3) <br/> For epi <= v1.1.2: Replace "module": "./../../gtin-resolver" with "module": "./../../epi-utils" <br/> For SSO (not enabled by default!): <br/> 1. "enableOAuth": true <br/> 2. "serverAuthentication": true <br/> 3. For SSO via OAuth with Azure AD, replace <TODO_*> with appropriate values.    For other identity providers (IdP) (e.g. Google, Ping, 0Auth), refer to documentation.    "redirectPath" must match the redirect URL configured at IdP <br/> 4. Add these values to "skipOAuth": "/leaflet-wallet/", "/directory-summary/", "/iframe/" |
 | config.bdnsHosts | string | `"{\n    \"default\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"vault.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"$ORIGIN\"\n      ],\n      \"anchoringServices\": [\n        \"$ORIGIN\"\n      ]\n    },\n    \"iot\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"iot.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://iot:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://iot:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://iot:80\"\n      ]\n    },\n    \"eco\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    },\n    \"eco.rms\": {\n      \"replicas\": [],\n      \"brickStorages\": [\n        \"http://eco:80\"\n      ],\n      \"anchoringServices\": [\n        \"http://eco:80\"\n      ],\n      \"mqEndpoints\": [\n        \"http://eco:80\"\n      ]\n    }\n  }"` | Centrally managed and provided BDNS Hosts Config |
+| config.credentialsService | string | `"{\n  \"type\": \"service_account\",\n  \"project_id\": \"\",\n  \"private_key_id\": \"\",\n  \"private_key\": \"\",\n  \"client_email\": \"\",\n  \"client_id\": \"\",\n  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n  \"client_x509_cert_url\": \"https://www.googleapis.com/robot/v1/metadata/x509/pharmaledger%40csvfromgd.iam.gserviceaccount.com\"\n}"` |  |
 | config.demiurgeMode | string | `"dev-secure"` |  |
 | config.domain | string | `"iot"` | The Domain, e.g. "epipoc" |
 | config.dsuFabricMode | string | `"dev-secure"` |  |
 | config.iotAdapter.BUILD_SECRET_KEY | string | `"BUILD_SECRET_KEY"` |  |
+| config.iotAdapter.FITBIT_UPDATE_INTERVAL | string | `"300000"` |  |
 | config.iotAdapter.IOT_ADAPTOR_DID | string | `"IOT_ADAPTOR_DID"` |  |
 | config.iotAdapter.IOT_ADAPTOR_PORT | string | `"4500"` |  |
 | config.iotAdapter.STORAGE_API_APP_ID | string | `"STORAGE_API_APP_ID"` |  |
@@ -329,4 +331,4 @@ Tests can be found in [tests](./tests)
 | tolerations | list | `[]` | Tolerations for scheduling a pod. See [https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
+Autogenerated from chart metadata using [helm-docs v1.10.0](https://github.com/norwoodj/helm-docs/releases/v1.10.0)
