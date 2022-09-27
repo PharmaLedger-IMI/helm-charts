@@ -1160,6 +1160,20 @@ entries:
     version: 0.0.1
   iot-adapter:
   - apiVersion: v2
+    appVersion: v1.1.8
+    created: "2022-09-27T13:56:38.995435381Z"
+    description: A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
+    digest: 30b17ec895040db68077dd9888d4c48a9a9fbea7399092f23489328f08f1a137
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: iot-adapter
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/iot-adapter-0.0.10/iot-adapter-0.0.10.tgz
+    version: 0.0.10
+  - apiVersion: v2
     appVersion: v1.1.7
     created: "2022-07-28T13:34:54.048936685Z"
     description: A Helm chart for Pharma Ledger iot-adapter part of eco-iot-pmed workspace
@@ -1749,4 +1763,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-09-19T08:59:40.9183526Z"
+generated: "2022-09-27T13:56:38.996016184Z"
