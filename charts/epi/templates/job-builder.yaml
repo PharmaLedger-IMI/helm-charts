@@ -87,6 +87,7 @@ spec:
             cd /ePI-workspace
             echo "=======> Not build yet!"
             echo "=======> Starting application in background process ..."
+            export ENABLE_SSO=false
             npm run server &
             server_pid=$!
             echo "=======> Application running in background with PID=$server_pid"
