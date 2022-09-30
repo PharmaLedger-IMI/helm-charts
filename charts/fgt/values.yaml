@@ -45,6 +45,9 @@ serviceAccount:
 # -- Annotations added to the pod
 podAnnotations: {}
 
+# -- Labels to add to the pod
+podLabels: {}
+
 # -- Security Context for the pod.
 # IMPORTANT: Take a look at values.yaml file for configuration for non-root user!
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
