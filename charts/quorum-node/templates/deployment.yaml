@@ -34,6 +34,9 @@ spec:
       name: {{ include "quorumNode.fullname" . }}
       labels:
         {{- include "quorumNode.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       # https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
       annotations:
       {{- if .Values.secretProviderClass.enabled }}

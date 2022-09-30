@@ -1,6 +1,6 @@
 # quorum-node
 
-![Version: 0.6.3](https://img.shields.io/badge/Version-0.6.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 22.7.0](https://img.shields.io/badge/AppVersion-22.7.0-informational?style=flat-square)
+![Version: 0.6.4](https://img.shields.io/badge/Version-0.6.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 22.7.0](https://img.shields.io/badge/AppVersion-22.7.0-informational?style=flat-square)
 
 A Helm chart for the deployment of the quorum node on Kubernetes supporting new-network, join-network and update-partners-info use cases.
 
@@ -62,7 +62,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.3 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.4 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json \
@@ -87,7 +87,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.3 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.4 \
   --values ./my-values.yaml \
   --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json \
   --set-file use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
@@ -111,7 +111,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.3 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.4 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json \
@@ -136,7 +136,7 @@ use_case:
 ```
 
 ```shell
-helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.3 \
+helm upgrade --install quorum-node-0 pharmaledger-imi/quorum-node --version=0.6.4 \
   --values ./my-values.yaml \
   --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json \
   --set-file use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
@@ -161,7 +161,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.3 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.4 \
       --install \
       --namespace=my-namespace \
       --values my-values.yaml \
@@ -172,7 +172,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.3 \
+    helm upgrade my-release-name pharmaledger-imi/quorum-node --version=0.6.4 \
       --install \
       --wait --timeout=600s \
       --values my-values.yaml \
@@ -241,6 +241,7 @@ helm delete quorum-node-0 \
 | persistence.logs.volumeSnapshots.preUpgradeEnabled | bool | `false` | Whether to create snapshots before helm upgrading or not. The name of the VolumeSnapshot will be "<helm release name>-upgrade-to-revision-<helm revision>-<UTC timestamp YYYYMMDDHHMM>", e.g. "epi-upgrade-to-revision-19-202206221211" |
 | persistence.logs.volumeSnapshots.waitForReadyToUse | bool | `true` | Whether to wait until the VolumeSnapshot is ready to use. Note: On first snapshot this may take a while. |
 | podAnnotations | object | `{}` | Annotations added to the pod |
+| podLabels | object | `{}` | Labels to add to the pod |
 | podSecurityContext | object | `{"fsGroup":10000,"runAsGroup":10000,"runAsUser":10000}` | Security Context for the pod. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | quorum.dataDirPath | string | `"/quorum/home/dd"` | Directory path to the Quorum Data Dir. Must be beyond 'homeMountPath' in order to store data on the persistent volume. |
 | quorum.extraArgs | string | `"--snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs"` | Generic extra/additional arguments passed to geth. See https://blog.ethereum.org/2021/03/03/geth-v1-10-0/#compatibility For geth 1.9.x (Quorum v21), set "--nousb" For geth 1.10.x (Quorum v22) with high compatibility to 1.9.x (Quorum v21), set "--snapshot=false --txlookuplimit=0 --cache.preimages --rpc.allow-unprotected-txs" |

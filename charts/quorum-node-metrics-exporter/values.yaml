@@ -75,6 +75,9 @@ namespaceOverride: ""
 # -- Annotations to add to the pod
 podAnnotations: {}
 
+# -- Labels to add to the pod
+podLabels: {}
+
 # -- Node Selectors in order to assign pods to certain nodes.
 # See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 nodeSelector: {}

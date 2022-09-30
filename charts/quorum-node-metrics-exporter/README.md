@@ -1,6 +1,6 @@
 # quorum-node-metrics-exporter
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2](https://img.shields.io/badge/AppVersion-v0.2-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2](https://img.shields.io/badge/AppVersion-v0.2-informational?style=flat-square)
 
 A Helm chart for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-IMI/quorum-node-metrics-exporter)
 
@@ -70,7 +70,7 @@ A Helm chart for [quorum-node-metrics-exporter](https://github.com/PharmaLedger-
 4. Install the helm release - **IMPORTANT** You must install the metrics into the same namespace like the Quorum node.
 
     ```shell
-    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.0 \
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.1 \
       --install \
       --namespace=quorum \
       --values ./my-values.yaml
@@ -86,7 +86,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.0 \
+    helm upgrade metrics-exporter pharmaledger-imi/quorum-node-metric-exporter --version=0.2.1 \
       --install \
       --wait --timeout=600s \
       --namespace=quorum \
@@ -133,6 +133,7 @@ helm delete metrics-exporter \
 | namespaceOverride | string | `""` | Override the deployment namespace. Very useful for multi-namespace deployments in combined charts |
 | nodeSelector | object | `{}` | Node Selectors in order to assign pods to certain nodes. See [https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) |
 | podAnnotations | object | `{}` | Annotations to add to the pod |
+| podLabels | object | `{}` | Labels to add to the pod |
 | podSecurityContext | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsUser":65534}` | Pod Security Context. See [https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | replicaCount | int | `1` | The number of replicas - should be 1 |
 | resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"5m","memory":"64Mi"}}` | Resource constraints |
