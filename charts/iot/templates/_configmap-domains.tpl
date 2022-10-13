@@ -29,7 +29,8 @@ data:
       "skipOAuth": [
         "/bricking/{{ required "config.domain must be set" .Values.config.domain }}/get-brick"
       ],
-      "enable": ["mq", "enclave"]
+      "enable": ["mq", "enclave"],
+      "mq_fsQueueLength": 20000
     }
 
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
@@ -43,7 +44,8 @@ data:
       "skipOAuth": [
         "/bricking/{{ required "config.subDomain must be set" .Values.config.subDomain }}/get-brick"
       ],
-      "enable": ["mq", "enclave"]
+      "enable": ["mq", "enclave"],
+      "mq_fsQueueLength": 20000
     }
 
   {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json: |-
@@ -58,7 +60,8 @@ data:
         "/bricking/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}",
         "/anchor/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}"
       ],
-      "enable": ["mq", "enclave"]
+      "enable": ["mq", "enclave"],
+      "mq_fsQueueLength": 20000
     }
 
   default.json: |-
@@ -76,7 +79,8 @@ data:
         "/bricking/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}",
         "/anchor/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}"
       ],
-      "enable": ["mq", "enclave"]
+      "enable": ["mq", "enclave"],
+      "mq_fsQueueLength": 20000
     }
 
 {{- end }}
