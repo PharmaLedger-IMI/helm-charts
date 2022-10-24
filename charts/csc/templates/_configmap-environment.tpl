@@ -94,6 +94,24 @@ data:
         ' vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)',
     }
 
+  demiurge-environment.js: |-
+    export default {
+        appName: "Demiurge",
+        vault: "server",
+        agent: "browser",
+        system:   "any",
+        browser:  "any",
+        mode: {{ .Values.config.demiurgeMode | quote }},
+        vaultDomain: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
+        didDomain: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
+        enclaveType:"WalletDBEnclave",
+        disabledFeatures: "add-group",
+        hiddenMenuItems: ["Governance", "Audit", "BDNS", "My Keys", "Workspaces", "Contracts", "Subdomains"],
+        sw: false,
+        pwa: false,
+        "legenda for properties": " vault:(server, browser) agent:(mobile,  browser)  system:(iOS, Android, any) browser:(Chrome, Firefox, any) mode:(autologin,dev-autologin, secure, dev-secure) sw:(true, false) pwa:(true, false)"
+    }
+
   dsu-explorer-environment.js: |-
     export default {
       "appName": "DSU Explorer",
