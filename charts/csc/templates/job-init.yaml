@@ -198,30 +198,30 @@ spec:
             mountPath: /{{ .Values.apiHubWorkingFolder }}/apihub-root/external-volume/config/domains/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             subPath: {{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}.json
             readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/demiurge-wallet/loader/environment.js
-            subPath: demiurge-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js
-            subPath: dsu-explorer-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-sponsor-wallet/loader/environment.js
-            subPath: sponsor-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-cmo-wallet/loader/environment.js
-            subPath: cmo-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-courier-wallet/loader/environment.js
-            subPath: courier-environment.js
-            readOnly: true
-          - name: csc-env-volume
-            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-site-wallet/loader/environment.js
-            subPath: site-environment.js
-            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/demiurge-wallet/loader/environment.js
+#            subPath: demiurge-environment.js
+#            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/dsu-explorer/loader/environment.js
+#            subPath: dsu-explorer-environment.js
+#            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-sponsor-wallet/loader/environment.js
+#            subPath: sponsor-environment.js
+#            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-cmo-wallet/loader/environment.js
+#            subPath: cmo-environment.js
+#            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-courier-wallet/loader/environment.js
+#            subPath: courier-environment.js
+#            readOnly: true
+#          - name: csc-env-volume
+#            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-site-wallet/loader/environment.js
+#            subPath: site-environment.js
+#            readOnly: true
             # We mount a temporary volume in order to hand over data from init to main container
           - name: container-shared-data
             mountPath: /container-shared-data

@@ -55,7 +55,8 @@ data:
          }
       },
       "skipOAuth": [
-        "/bricking/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}"
+        "/bricking/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}",
+        "/anchor/{{ required "config.vaultDomain must be set" .Values.config.vaultDomain }}"
       ],
       "enable": ["mq", "enclave"]
     }

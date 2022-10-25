@@ -139,6 +139,10 @@ spec:
             subPath: default.json
             readOnly: true
           - name: csc-env-volume
+            mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/demiurge-wallet/loader/environment.js
+            subPath: demiurge-environment.js
+            readOnly: true
+          - name: csc-env-volume
             mountPath: /{{ .Values.apiHubWorkingFolder }}/trust-loader-config/csc-cmo-wallet/loader/environment.js
             subPath: cmo-environment.js
             readOnly: true
