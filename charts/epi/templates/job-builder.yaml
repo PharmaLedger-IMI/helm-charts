@@ -171,7 +171,10 @@ spec:
             mountPath: /ePI-workspace/apihub-root/leaflet-wallet/loader/environment.js
             subPath: leaflet-environment.js
             readOnly: true
-
+          - name: epi-env-volume
+            mountPath: /ePI-workspace/apihub-root/lightweight-pwa/environment.js
+            subPath: lpwa-environment.js
+            readOnly: true
       volumes:
         - name: epi-secret-volume
         {{- if .Values.secretProviderClass.enabled }}

@@ -20,28 +20,31 @@ config:
   dsuFabricMode: "dev-secure"
   # -- Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
   buildSecretKey: ""  # "nosecretfordevelopers"
-
+  # -- The epi version
+  epiVersion: "1.6.0"
   overrides:
-    # -- Option to explictly override the environment.js file used for demiurge-wallet instead of using the predefined template.
+    # -- Option to explicitly override the environment.js file used for demiurge-wallet instead of using the predefined template.
     # Note: Usually not required
     demiurgeEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template.
+    # -- Option to explicitly override the environment.js file used for DSU Explorer Wallet instead of using the predefined template.
     # Note: Usually not required
     dsuExplorerEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template.
+    # -- Option to explicitly override the environment.js file used for DSU Fabric Wallet instead of using the predefined template.
     # Note: Usually not required
     dsuFabricEnvironmentJs: ""
-    # -- Option to explictly override the environment.js file used for Leaflet Wallet instead of using the predefined template.
+    # -- Option to explicitly override the environment.js file used for Leaflet Wallet instead of using the predefined template.
     # Note: Usually not required
     leafletEnvironmentJs: ""
-
-    # -- Option to explictly override the config.json used for the domain instead of using the predefined template.
+    # -- Option to explicitly override the environment.js file used for Lightweight PWA instead of using the predefined template.
+    # Note: Usually not required
+    lpwaEnvironmentJs: ""
+    # -- Option to explicitly override the config.json used for the domain instead of using the predefined template.
     # Note: Usually not required
     domainConfigJson: ""
-    # -- Option to explictly override the config.json used for the subDomain instead of using the predefined template.
+    # -- Option to explicitly override the config.json used for the subDomain instead of using the predefined template.
     # Note: Usually not required
     subDomainConfigJson: ""
-    # -- Option to explictly override the config.json used for the vaultDomain instead of using the predefined template.
+    # -- Option to explicitly override the config.json used for the vaultDomain instead of using the predefined template.
     # Note: Usually not required
     vaultDomainConfigJson: ""
 
