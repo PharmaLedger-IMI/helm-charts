@@ -89,9 +89,9 @@ data:
       "pwa": false,
       "allowPinLogin": false,
       "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
-      "disabledFeatures": "",
-      "lockFeatures": false,
-      "epiProtocolVersion": 1
+      "disabledFeatures": "04, 05, 06, 07, 08, 09",
+      "epiProtocolVersion": 1,
+      "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
     }
 {{- end }}
 
@@ -109,13 +109,28 @@ data:
       "mode":  "autologin",
       "vaultDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
       "didDomain":  {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
+      "epiDomain":  {{ required "config.domain must be set" .Values.config.domain | quote}},
       "enclaveType": "WalletDBEnclave",
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
       "lockFeatures": false,
-      "disabledFeatures": "",
-      "epiProtocolVersion": 1
+      "disabledFeatures": "04, 05, 06, 07, 08, 09",
+      "easterEggEnabled": true,
+      "epiProtocolVersion": 1,
+      "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
+    }
+{{- end }}
+
+  lpwa-environment.js: |-
+{{- if .Values.config.overrides.lpwaEnvironmentJs }}
+{{ .Values.config.overrides.lpwaEnvironmentJs | indent 4 }}
+{{- else }}
+    export default {
+      "epiDomain":  {{ required "config.domain must be set" .Values.config.domain | quote}},
+      "epiProtocolVersion": 1,
+      "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
+      "bdnsUrl": "https://raw.githubusercontent.com/PharmaLedger-IMI/mobile-bdns/master/bdns.json"
     }
 {{- end }}
 
