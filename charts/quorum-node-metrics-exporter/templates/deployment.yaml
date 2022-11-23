@@ -86,7 +86,7 @@ spec:
       volumes:
         - name: cm-settings
           configMap:
-            name: quorum-node-metrics-exporter
+            name: {{ include "quorum-node-metrics-exporter.fullname" . }}
             defaultMode: 0440  # mount as r
             items:
               - key: config.json
