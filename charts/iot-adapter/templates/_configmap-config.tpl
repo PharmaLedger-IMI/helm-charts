@@ -24,6 +24,7 @@ data:
       "PSK_TMP_WORKING_DIR": "tmp",
       "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
       "DEV": false,
+      "DOMAIN": {{ required "config.domain must be set" .Values.config.domain | quote}},
       "DID_DOMAIN": {{ required "config.domain must be set" .Values.config.domain | quote}},
       "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
       "BUILD_SECRET_KEY": {{ required "config.iotAdapter.BUILD_SECRET_KEY must be set" .Values.config.iotAdapter.BUILD_SECRET_KEY | quote}},
