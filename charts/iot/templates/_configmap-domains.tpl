@@ -21,9 +21,12 @@ data:
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "FS",
         "option": {
-          "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
+          "enableBricksLedger": false
+        },
+        "commands": {
+          "addAnchor": "anchor"
         }
       },
       "skipOAuth": [
@@ -36,9 +39,12 @@ data:
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "FS",
         "option": {
-          "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
+          "enableBricksLedger": false
+        },
+        "commands": {
+          "addAnchor": "anchor"
         }
       },
       "skipOAuth": [
