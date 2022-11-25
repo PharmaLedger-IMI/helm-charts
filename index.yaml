@@ -334,6 +334,20 @@ entries:
   eco-iot:
   - apiVersion: v2
     appVersion: v1.4.1
+    created: "2022-11-25T18:44:17.817142787Z"
+    description: A Helm chart for Pharma Ledger e-Consent and I0T applications
+    digest: f5725852feaae3f3af442af47b73f8800c886f0fae5fb5eced3070b118a0f831
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: eco-iot
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/eco-iot-0.1.3/eco-iot-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: v1.4.1
     created: "2022-11-25T18:09:11.898331708Z"
     description: A Helm chart for Pharma Ledger e-Consent and I0T applications
     digest: ca8d2efe194b3559c15eef2e8d2339c6f80e17a9729d7d7cf0acf14ce8a4c141
@@ -1960,4 +1974,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-11-25T18:09:11.898871107Z"
+generated: "2022-11-25T18:44:17.817870594Z"
