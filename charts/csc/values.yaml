@@ -228,6 +228,7 @@ config:
       "port": 8080,
       "preventRateLimit": true,
       "activeComponents": [
+        "metrics-middleware",
         "admin",
         "cloudWallet",
         "virtualMQ",
@@ -251,7 +252,10 @@ config:
           ]
         },
         "bricking": {},
-        "anchoring": {}
+        "anchoring": {},
+        "metrics-middleware": {
+          "module": "./../../metrics-middleware/middleware"
+        }
       },
       "responseHeaders": {
         "X-Frame-Options": "SAMEORIGIN",
@@ -268,7 +272,10 @@ config:
         "/bundles",
         "/getAuthorization",
         "/external-volume/config/oauthConfig.js"
-      ]
+      ],
+      "CORS": {
+        "Access-Control-Allow-Origin": "*"
+      }
     }
 
 ingress:
