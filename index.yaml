@@ -347,6 +347,22 @@ entries:
     version: 0.0.1
   eco-iot:
   - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2022-12-08T10:26:44.751549974Z"
+    description: A Helm chart for Pharma Ledger e-Consent and I0T applications
+    digest: 816f7c9de4784a36b29b3cede83f9b2797ce6caf07a58d45ee878d46ec000e55
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: mastaleru
+      url: https://github.com/mastaleru
+    - name: paiuscatalin
+      url: https://github.com/paiuscatalin
+    name: eco-iot
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/eco-iot-0.1.4/eco-iot-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
     appVersion: v1.4.1
     created: "2022-11-25T18:44:17.817142787Z"
     description: A Helm chart for Pharma Ledger e-Consent and I0T applications
@@ -1988,4 +2004,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-12-07T07:59:17.358465548Z"
+generated: "2022-12-08T10:26:44.752782482Z"
