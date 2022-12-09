@@ -1,0 +1,29 @@
+general:
+  name: grafana
+  httpPort: 3000
+  defaultNamespace: default
+  # The DNS of the application (e.g. csc.nvs.pharmaledger.app)
+  applicationDNS: ""
+
+deployment:
+  replicaSet: 1
+  imageName: grafana/grafana:latest
+  imagePullPolicy: IfNotPresent
+
+configMap:
+  name: grafana-configuration
+  volumeName: grafana-config-volume
+  datasources:
+    mountPath: /etc/grafana/provisioning/datasources/datasources.yml
+    subPath: datasources.yml
+  customServer:
+    mountPath: /etc/grafana/custom.ini
+    subPath: custom.ini
+
+storageVolume:
+  volumeName: grafana-storage-volume
+  mountPath: /var/lib/grafana
+
+prometheus:
+  serviceName: prometheus
+  servicePort: 9090

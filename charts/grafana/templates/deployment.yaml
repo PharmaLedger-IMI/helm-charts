@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.general.name }}
+spec:
+  replicas: {{ .Values.deployment.replicaSet }}
+  selector:
+    matchLabels:
+      app: {{ .Values.general.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.name }}
+    spec:
+      securityContext:
+        fsGroup: 472
+        runAsGroup: 472
+        runAsNonRoot: true
+        runAsUser: 472
+      containers:
+        - name: {{ .Values.general.name }}
+          image: {{ .Values.deployment.imageName }}
+          imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          env:
+            - name: GF_AUTH_DISABLE_LOGIN_FORM
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: "Admin"
+          args:
+            - "--config={{ .Values.configMap.customServer.mountPath }}"
+          ports:
+            - containerPort: {{ .Values.general.httpPort }}
+          volumeMounts:
+            - name: {{ .Values.storageVolume.volumeName }}
+              mountPath: {{ .Values.storageVolume.mountPath }}
+            - name: {{ .Values.configMap.volumeName }}
+              mountPath: {{ .Values.configMap.customServer.mountPath }}
+              subPath: {{ .Values.configMap.customServer.subPath }}
+            - name: {{ .Values.configMap.volumeName }}
+              mountPath: {{ .Values.configMap.datasources.mountPath }}
+              subPath: {{ .Values.configMap.datasources.subPath }}
+              readOnly: false
+      volumes:
+        - name: {{ .Values.configMap.volumeName }}
+          configMap:
+            name: {{ .Values.configMap.name }}
+        - name: {{ .Values.storageVolume.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.storageVolume.volumeName }}
