@@ -34,13 +34,16 @@ data:
 {{- else }}
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "ETH",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
       },
       "skipOAuth": [
-        "/bricking/{{ required "config.domain must be set" .Values.config.domain }}/get-brick"
+          "/bricking/{{ required "config.domain must be set" .Values.config.domain }}/get-brick",
+          "/gtinOwner/{{ required "config.domain must be set" .Values.config.domain }}",
+          "/leaflets/{{ required "config.domain must be set" .Values.config.domain }}",
+          "/anchor/{{ required "config.domain must be set" .Values.config.domain }}/get-last-version"
       ],
 {{- /*
      "messagesEndpoint": "http://localhost:8080/mappingEngine/{{ required "config.domain must be set" .Values.config.domain }}/{{ required "config.subDomain must be set" .Values.config.subDomain }}/saveResult",
@@ -62,13 +65,16 @@ data:
 {{- else }}
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "ETH",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
       },
       "skipOAuth": [
-        "/bricking/{{ required "config.subDomain must be set" .Values.config.subDomain }}/get-brick"
+        "/bricking/{{ required "config.domain must be set" .Values.config.subDomain }}/get-brick",
+        "/gtinOwner/{{ required "config.domain must be set" .Values.config.subDomain }}",
+        "/leaflets/{{ required "config.domain must be set" .Values.config.subDomain }}",
+        "/anchor/{{ required "config.domain must be set" .Values.config.subDomain }}/get-last-version"
       ],
       "enable": ["mq", "enclave"]
     }
