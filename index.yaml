@@ -1256,6 +1256,23 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/fgt-0.1.3/fgt-0.1.3.tgz
     version: 0.1.3
+  grafana:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2022-12-09T09:26:00.685261812Z"
+    description: A Helm chart for Grafana
+    digest: ce5c8327b50f251577043702b85caa10b625e1ad35ca4e6e73df97d486c75dff
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: mastaleru
+      url: https://github.com/mastaleru
+    - name: paiusCatalin
+      url: https://github.com/paiusCatalin
+    name: grafana
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/grafana-0.0.1/grafana-0.0.1.tgz
+    version: 0.0.1
   iot:
   - apiVersion: v2
     appVersion: v1.1.2
@@ -2036,4 +2053,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-12-09T09:17:04.035351242Z"
+generated: "2022-12-09T09:26:00.68607012Z"
