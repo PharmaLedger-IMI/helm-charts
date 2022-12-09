@@ -146,6 +146,7 @@ Configuration env.json
   "DEV": false,
   "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
   "BUILD_SECRET_KEY": {{ required "config.buildSecretKey must be set" .Values.config.buildSecretKey | quote}}
+  "BDNS_ROOT_HOSTS": "http://127.0.0.1:8080"
 }
 {{- end }}
 
