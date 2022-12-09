@@ -1,0 +1,33 @@
+general:
+  name: prometheus
+  httpPort: 9090
+  defaultNamespace: default
+  serviceType: NodePort
+
+deployment:
+  replicaSet: 1
+  imageName: prom/prometheus
+  imagePullPolicy: IfNotPresent
+
+configMap:
+  name: prometheus-configuration
+  volumeName: prometheus-config-volume
+  mountPath: /etc/prometheus/prometheus.yml
+  subPath: prometheus.yml
+
+  # The interval time when prometheus will start the request
+  scrapeInterval: 30s
+  # The amount of time prometheus will wait for the request to be completed
+  evaluationInterval: 15s
+
+  # The name of the service where the API-Hub is deployed (e.g. csc, eco-iot)
+  serviceName: service
+  # The port of the service where the API-Hub is deployed
+  servicePort: 80
+
+storageVolume:
+  volumeName: prometheus-storage-volume
+  mountPath: /prometheus/
+  # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+  storageClassName: ""
+  storageSize: 5Gi

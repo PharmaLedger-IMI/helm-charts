@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.general.name }}
+spec:
+  replicas: {{ .Values.deployment.replicaSet }}
+  selector:
+    matchLabels:
+      app: {{ .Values.general.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.name }}
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: {{ .Values.general.name }}
+          image: {{ .Values.deployment.imageName }}
+          imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            - containerPort: {{ .Values.general.httpPort }}
+          volumeMounts:
+            - name: {{ .Values.configMap.volumeName }}
+              mountPath: {{ .Values.configMap.mountPath }}
+              subPath: {{ .Values.configMap.subPath }}
+            - name: {{ .Values.storageVolume.volumeName }}
+              mountPath: {{ .Values.storageVolume.mountPath }}
+      volumes:
+        - name: {{ .Values.configMap.volumeName }}
+          configMap:
+            name: {{ .Values.configMap.name }}
+        - name: {{ .Values.storageVolume.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.storageVolume.volumeName }}
