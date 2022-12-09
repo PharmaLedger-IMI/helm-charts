@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name }}
+  labels:
+    name: {{ .Values.configMap.name }}
+  namespace: {{ .Values.general.defaultNamespace }}
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval: {{ .Values.configMap.scrapeInterval }}
+      evaluation_interval: {{ .Values.configMap.evaluationInterval }}
+      external_labels:
+        type: "governance-metrics"
+
+    scrape_configs:
+      - job_name: "live-metrics"
+        params:
+          mode: [ "live" ]
+        static_configs:
+          - targets: [ "{{ .Values.configMap.serviceName }}:{{ .Values.configMap.servicePort }}" ]
+      - job_name: "static-metrics"
+        params:
+          mode: [ "static" ]
+        static_configs:
+          - targets: [ "{{ .Values.configMap.serviceName }}:{{ .Values.configMap.servicePort }}" ]
