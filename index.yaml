@@ -1560,6 +1560,22 @@ entries:
   prometheus:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2022-12-13T07:01:30.51428743Z"
+    description: A Helm chart for Prometheus
+    digest: 5b70945c81944ff8278261cca67b4c8e42e317621dfa118e8fc3fe3b9ccde3ed
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: mastaleru
+      url: https://github.com/mastaleru
+    - name: paiusCatalin
+      url: https://github.com/paiusCatalin
+    name: prometheus
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/prometheus-0.0.2/prometheus-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2022-12-09T07:32:28.573558572Z"
     description: A Helm chart for Prometheus
     digest: 06e2aed5c2fff0c2fa8c17381c171e0b83254e11a9db986143a812e6defeb80b
@@ -2069,4 +2085,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-12-13T06:53:05.958591496Z"
+generated: "2022-12-13T07:01:30.515028025Z"
