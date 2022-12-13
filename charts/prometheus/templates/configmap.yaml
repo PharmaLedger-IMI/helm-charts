@@ -14,13 +14,6 @@ data:
         type: "governance-metrics"
 
     scrape_configs:
-      - job_name: "live-metrics"
-        params:
-          mode: [ "live" ]
-        static_configs:
-          - targets: [ "{{ .Values.configMap.serviceName }}:{{ .Values.configMap.servicePort }}" ]
-      - job_name: "static-metrics"
-        params:
-          mode: [ "static" ]
+      - job_name: "metrics"
         static_configs:
           - targets: [ "{{ .Values.configMap.serviceName }}:{{ .Values.configMap.servicePort }}" ]
