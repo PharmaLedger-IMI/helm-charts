@@ -1,6 +1,6 @@
 # grafana
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 A Helm chart for Grafana
 
@@ -20,21 +20,21 @@ A Helm chart for Grafana
 
 ### Quick install with internal service of type NodePort
 
-By default, this helm chart installs the Prometheus as NodePort.
+By default, this helm chart installs the Grafana as NodePort.
 This is to prevent exposing the service to the internet by accident!
 
 It is recommended to put non-sensitive configuration values in a configuration file and pass sensitive/secret values via commandline.
 
-1. Download the values from helm chart `prometheus` and update them accordingly
+1. Download the values from helm chart `grafana` and update them accordingly
 
     ```shell
-    helm show values pharmaledger-imi/prometheus > my-values.yaml
+    helm show values pharmaledger-imi/grafana > my-values.yaml
     ```
 
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.1 \
+    helm upgrade my-release-name pharmaledger-imi/grafana --version=0.0.2 \
         --install \
         --values my-values.yaml \
     ```
@@ -48,7 +48,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.1 \
+    helm upgrade my-release-name pharmaledger-imi/grafana --version=0.0.2 \
         --install \
         --namespace=my-namespace \
         --values my-values.yaml \
@@ -59,7 +59,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.1 \
+    helm upgrade my-release-name pharmaledger-imi/grafana --version=0.0.2 \
         --install \
         --wait --timeout=600s \
         --values my-values.yaml \
@@ -94,6 +94,8 @@ Run `helm upgrade --helm` for full list of options.
 | prometheus.serviceName | string | `"prometheus"` |  |
 | prometheus.servicePort | int | `9090` |  |
 | storageVolume.mountPath | string | `"/var/lib/grafana"` |  |
+| storageVolume.storageClassName | string | `""` |  |
+| storageVolume.storageSize | string | `"5Gi"` |  |
 | storageVolume.volumeName | string | `"grafana-storage-volume"` |  |
 
 ----------------------------------------------

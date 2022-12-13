@@ -23,6 +23,9 @@ configMap:
 storageVolume:
   volumeName: grafana-storage-volume
   mountPath: /var/lib/grafana
+  # If empty or not set then storage class will not be set - which means that the default storage class will be used.
+  storageClassName: ""
+  storageSize: 5Gi
 
 prometheus:
   serviceName: prometheus
