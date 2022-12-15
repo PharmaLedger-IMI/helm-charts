@@ -88,8 +88,9 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
-      "disabledFeatures": "04, 05, 06, 07, 08, 09",
+      "companyName": "PLA",
+      "disabledFeatures": "02, 04, 05, 06, 07, 08, 09",
+      "lockFeatures": true,
       "epiProtocolVersion": 1,
       "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
     }
@@ -114,8 +115,8 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "lockFeatures": false,
-      "disabledFeatures": "04, 05, 06, 07, 08, 09",
+      "lockFeatures": true,
+      "disabledFeatures": "02, 04, 05, 06, 07, 08, 09",
       "easterEggEnabled": true,
       "epiProtocolVersion": 1,
       "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
