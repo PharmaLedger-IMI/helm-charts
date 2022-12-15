@@ -145,7 +145,9 @@ Configuration env.json
   "PSK_CONFIG_LOCATION": "../apihub-root/external-volume/config",
   "DEV": false,
   "VAULT_DOMAIN": {{ required "config.vaultDomain must be set" .Values.config.vaultDomain | quote}},
-  "BUILD_SECRET_KEY": {{ required "config.buildSecretKey must be set" .Values.config.buildSecretKey | quote}}
+  "BUILD_SECRET_KEY": {{ required "config.buildSecretKey must be set" .Values.config.buildSecretKey | quote}},
+  "BDNS_ROOT_HOSTS": "http://127.0.0.1:8080",
+  "OPENDSU_ENABLE_DEBUG": true
 }
 {{- end }}
 
@@ -173,6 +175,7 @@ Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-
     "epi-mapping-engine",
     "epi-mapping-engine-results",
     "leaflet-web-api",
+    "get-gtin-owner",
     "acdc-reporting",
     "debugLogger",
     "mq",
@@ -191,6 +194,10 @@ Taken from https://github.com/PharmaLedger-IMI/epi-workspace/blob/v1.3.1/apihub-
     "leaflet-web-api": {
       "module": "./../../gtin-resolver",
       "function": "getWebLeaflet"
+    },
+    "get-gtin-owner": {
+      "module": "./../../gtin-resolver",
+      "function": "getGTINOwner"
     },
     "acdc-reporting": {
       "module": "./../../reporting-service/middleware",
