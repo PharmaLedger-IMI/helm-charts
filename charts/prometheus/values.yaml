@@ -29,30 +29,25 @@ data:
       evaluation_interval: 15s
       external_labels:
         type: "governance-metrics"
-
     scrape_configs:
       - job_name: "metrics"
         static_configs:
           - targets: [ "csc:80" ]
-    
       - job_name: "validator1"
         scrape_interval: 30s
         metrics_path: /debug/metrics/prometheus
         static_configs:
           - targets: [ "quorum-validator1:9545" ]
-    
       - job_name: "validator2"
         scrape_interval: 30s
         metrics_path: /debug/metrics/prometheus
         static_configs:
           - targets: [ "quorum-validator2:9545" ]
-    
       - job_name: "validator3"
         scrape_interval: 30s
         metrics_path: /debug/metrics/prometheus
         static_configs:
           - targets: [ "quorum-validator3:9545" ]
-    
       - job_name: "validator4"
         scrape_interval: 30s
         metrics_path: /debug/metrics/prometheus
