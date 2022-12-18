@@ -107,7 +107,7 @@ runner:
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
   livenessProbe:
     httpGet:
-      path: /
+      path: /installation-details
       port: http
       # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
       httpHeaders:
@@ -123,7 +123,7 @@ runner:
   # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
   readinessProbe:
     httpGet:
-      path: /
+      path: /ready-probe
       port: http
       # It is required to set the Host header to localhost. Reason: With SSO enabled, the default response at / without Header Host=localhost is HTTP 301 which results in warning.
       httpHeaders:
