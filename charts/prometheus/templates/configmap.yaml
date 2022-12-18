@@ -7,13 +7,4 @@ metadata:
   namespace: {{ .Values.general.defaultNamespace }}
 data:
   prometheus.yml: |-
-    global:
-      scrape_interval: {{ .Values.configMap.scrapeInterval }}
-      evaluation_interval: {{ .Values.configMap.evaluationInterval }}
-      external_labels:
-        type: "governance-metrics"
-
-    scrape_configs:
-      - job_name: "metrics"
-        static_configs:
-          - targets: [ "{{ .Values.configMap.serviceName }}:{{ .Values.configMap.servicePort }}" ]
+    {{ .Values.data.prometheusYml }}

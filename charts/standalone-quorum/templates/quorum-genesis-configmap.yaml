@@ -6,7 +6,7 @@ metadata:
     app: goquorum-genesis-configmap
   namespace: {{ .Release.Namespace }}
 data:
-  genesis.json: |-
+  genesis.json: |-  # pragma: allowlist secret
     {
       "config": {
         "chainId": 10,

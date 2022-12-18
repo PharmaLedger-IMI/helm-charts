@@ -15,19 +15,41 @@ configMap:
   mountPath: /etc/prometheus/prometheus.yml
   subPath: prometheus.yml
 
-  # The interval time when prometheus will start the request
-  scrapeInterval: 30s
-  # The amount of time prometheus will wait for the request to be completed
-  evaluationInterval: 15s
-
-  # The name of the service where the API-Hub is deployed (e.g. csc, eco-iot)
-  serviceName: service
-  # The port of the service where the API-Hub is deployed
-  servicePort: 80
-
 storageVolume:
   volumeName: prometheus-storage-volume
   mountPath: /prometheus/
   # If empty or not set then storage class will not be set - which means that the default storage class will be used.
   storageClassName: ""
   storageSize: 5Gi
+
+data:
+  prometheusYml: |-
+    global:
+      scrape_interval: 45s
+      evaluation_interval: 15s
+      external_labels:
+        type: "governance-metrics"
+    scrape_configs:
+      - job_name: "metrics"
+        static_configs:
+          - targets: [ "csc:80" ]
+      - job_name: "validator1"
+        scrape_interval: 30s
+        metrics_path: /debug/metrics/prometheus
+        static_configs:
+          - targets: [ "quorum-validator1:9545" ]
+      - job_name: "validator2"
+        scrape_interval: 30s
+        metrics_path: /debug/metrics/prometheus
+        static_configs:
+          - targets: [ "quorum-validator2:9545" ]
+      - job_name: "validator3"
+        scrape_interval: 30s
+        metrics_path: /debug/metrics/prometheus
+        static_configs:
+          - targets: [ "quorum-validator3:9545" ]
+      - job_name: "validator4"
+        scrape_interval: 30s
+        metrics_path: /debug/metrics/prometheus
+        static_configs:
+          - targets: [ "quorum-validator4:9545" ]
