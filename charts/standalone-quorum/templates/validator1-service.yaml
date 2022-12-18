@@ -30,3 +30,7 @@ spec:
       targetPort: 8547
       protocol: TCP
       name: graphql
+    - port: 9545
+      targetPort: 9545
+      protocol: TCP
+      name: metrics

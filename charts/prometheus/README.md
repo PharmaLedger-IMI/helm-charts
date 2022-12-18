@@ -1,6 +1,6 @@
 # prometheus
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 A Helm chart for Prometheus
 
@@ -34,7 +34,7 @@ It is recommended to put non-sensitive configuration values in a configuration f
 2. Install via helm to namespace `default`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.3 \
         --install \
         --values my-values.yaml \
     ```
@@ -48,7 +48,7 @@ Run `helm upgrade --helm` for full list of options.
     You can install into other namespace than `default` by setting the `--namespace` parameter, e.g.
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.3 \
         --install \
         --namespace=my-namespace \
         --values my-values.yaml \
@@ -59,7 +59,7 @@ Run `helm upgrade --helm` for full list of options.
     Provide the `--wait` argument and time to wait (default is 5 minutes) via `--timeout`
 
     ```bash
-    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.2 \
+    helm upgrade my-release-name pharmaledger-imi/prometheus --version=0.0.3 \
         --install \
         --wait --timeout=600s \
         --values my-values.yaml \
@@ -78,14 +78,11 @@ Run `helm upgrade --helm` for full list of options.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| configMap.evaluationInterval | string | `"15s"` |  |
 | configMap.mountPath | string | `"/etc/prometheus/prometheus.yml"` |  |
 | configMap.name | string | `"prometheus-configuration"` |  |
-| configMap.scrapeInterval | string | `"30s"` |  |
-| configMap.serviceName | string | `"service"` |  |
-| configMap.servicePort | int | `80` |  |
 | configMap.subPath | string | `"prometheus.yml"` |  |
 | configMap.volumeName | string | `"prometheus-config-volume"` |  |
+| data.prometheusYml | string | `"global:\n  scrape_interval: 45s\n  evaluation_interval: 15s\n  external_labels:\n    type: \"governance-metrics\"\n\nscrape_configs:\n  - job_name: \"metrics\"\n    static_configs:\n      - targets: [ \"csc:80\" ]\n\n  - job_name: \"validator1\"\n    scrape_interval: 30s\n    metrics_path: /debug/metrics/prometheus\n    static_configs:\n      - targets: [ \"quorum-validator1:9545\" ]\n\n  - job_name: \"validator2\"\n    scrape_interval: 30s\n    metrics_path: /debug/metrics/prometheus\n    static_configs:\n      - targets: [ \"quorum-validator2:9545\" ]\n\n  - job_name: \"validator3\"\n    scrape_interval: 30s\n    metrics_path: /debug/metrics/prometheus\n    static_configs:\n      - targets: [ \"quorum-validator3:9545\" ]\n\n  - job_name: \"validator4\"\n    scrape_interval: 30s\n    metrics_path: /debug/metrics/prometheus\n    static_configs:\n      - targets: [ \"quorum-validator4:9545\" ]"` |  |
 | deployment.imageName | string | `"prom/prometheus"` |  |
 | deployment.imagePullPolicy | string | `"IfNotPresent"` |  |
 | deployment.replicaSet | int | `1` |  |
