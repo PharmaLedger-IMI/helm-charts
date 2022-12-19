@@ -88,7 +88,7 @@ data:
       "sw": false,
       "pwa": false,
       "allowPinLogin": false,
-      "companyName": "PLA",
+      "companyName": {{ required "config.companyName must be set" .Values.config.companyName | quote }},
       "disabledFeatures": "02, 04, 05, 06, 07, 08, 09",
       "lockFeatures": true,
       "epiProtocolVersion": 1,
