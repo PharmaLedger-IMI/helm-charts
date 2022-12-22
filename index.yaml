@@ -45,6 +45,20 @@ entries:
   csc:
   - apiVersion: v2
     appVersion: csc.1.1.0
+    created: "2022-12-22T08:54:27.933474886Z"
+    description: A Helm chart for Pharma Ledger csc application
+    digest: 0c40eb9f0104439580a23324187f504b9e4d5621671e4ef8e63bb119e0ba501f
+    icon: https://avatars.githubusercontent.com/u/60230259?s=200&v=4
+    maintainers:
+    - name: tgip-work
+      url: https://github.com/tgip-work
+    name: csc
+    type: application
+    urls:
+    - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/csc-0.6.4/csc-0.6.4.tgz
+    version: 0.6.4
+  - apiVersion: v2
+    appVersion: csc.1.1.0
     created: "2022-12-07T07:59:17.357142331Z"
     description: A Helm chart for Pharma Ledger csc application
     digest: 2954884ab1ef80428dcf8d47c6cbb6e451765884ccfc4b9563e725331218df53
@@ -2156,4 +2170,4 @@ entries:
     urls:
     - https://github.com/PharmaLedger-IMI/helm-charts/releases/download/standalone-quorum-0.3.0/standalone-quorum-0.3.0.tgz
     version: 0.3.0
-generated: "2022-12-19T15:02:38.352703451Z"
+generated: "2022-12-22T08:54:27.934805446Z"
