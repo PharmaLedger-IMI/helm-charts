@@ -21,7 +21,7 @@ data:
   {{ required "config.domain must be set" .Values.config.domain }}.json: |-
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "ETH",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
@@ -35,7 +35,7 @@ data:
   {{ required "config.subDomain must be set" .Values.config.subDomain }}.json: |-
     {
       "anchoring": {
-        "type": "OBA",
+        "type": "ETH",
         "option": {
           "endpoint": {{ required "config.ethadapterUrl must be set" .Values.config.ethadapterUrl | quote }}
         }
