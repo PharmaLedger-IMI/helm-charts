@@ -351,6 +351,8 @@ Note: Ensure Volume Snapshotting has been set up appropriately.
 volumeSnapshots:
   preUpgradeEnabled: true
   finalSnapshotEnabled: true
+  # It is stongly recommended to use a class with 'deletionPolicy: Retain' for the pre-upgrade and final snapshots.
+  # Otherwise you will loose the snapshot on your storage system if the Kubernetes VolumeSnapshot will be deleted (e.g. if the namespace will be deleted).
   className: "<Name of the VolumeSnapshotClass>"
 
 ```
