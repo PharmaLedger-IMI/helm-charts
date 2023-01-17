@@ -14,12 +14,8 @@ config:
   ethadapterUrl: "http://ethadapter.ethadapter:3000"
   # -- A CompanyName which is displayed on the web page.
   companyName: "Company Inc"
-  # -- For SSO, set to "sso-pin"
-  demiurgeMode: "dev-secure"
-  # -- For SSO, set to "sso-direct"
-  dsuFabricMode: "dev-secure"
   # -- Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
-  buildSecretKey: ""  # "nosecretfordevelopers"
+  buildSecretKey: ""
   # -- The epi version
   epiVersion: "1.6.0"
   overrides:
