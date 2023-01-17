@@ -14,12 +14,8 @@ config:
   ethadapterUrl: "http://ethadapter.ethadapter:3000"
   # -- A CompanyName which is displayed on the web page.
   companyName: "Company Inc"
-  # -- For SSO, set to "sso-pin"
-  demiurgeMode: "dev-secure"
-  # -- For SSO, set to "sso-direct"
-  dsuFabricMode: "dev-secure"
   # -- Secret Pass Phrase for de/encrypting private keys for application wallets created by builder.
-  buildSecretKey: ""  # "nosecretfordevelopers"
+  buildSecretKey: ""
   # -- The epi version
   epiVersion: "1.6.0"
   overrides:
@@ -462,7 +458,9 @@ volumeSnapshots:
   # -- API Version of the "snapshot.storage.k8s.io" resource.
   # See [https://kubernetes.io/docs/concepts/storage/volume-snapshots/](https://kubernetes.io/docs/concepts/storage/volume-snapshots/)
   apiVersion: "v1"
-  # -- The Volume Snapshot class name.
+  # -- The Volume Snapshot class name to use for the pre-upgrade and the final snapshot.
+  # It is stongly recommended to use a class with 'deletionPolicy: Retain' for the pre-upgrade and final snapshots.
+  # Otherwise you will loose the snapshot on your storage system if the Kubernetes VolumeSnapshot will be deleted (e.g. if the namespace will be deleted).
   # See [https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/](https://kubernetes.io/docs/concepts/storage/volume-snapshot-classes/)
   className: ""
   # -- Whether to wait until the VolumeSnapshot is ready to use.
