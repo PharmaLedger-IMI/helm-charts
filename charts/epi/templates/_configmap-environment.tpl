@@ -130,7 +130,7 @@ data:
     export default {
       "epiDomain":  {{ required "config.domain must be set" .Values.config.domain | quote}},
       "epiProtocolVersion": 1,
-      "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}}
+      "appBuildVersion": {{ required "config.epiVersion must be set" .Values.config.epiVersion | quote}},
       "bdnsUrl": "https://raw.githubusercontent.com/PharmaLedger-IMI/mobile-bdns/master/bdns.json"
     }
 {{- end }}
