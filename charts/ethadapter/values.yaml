@@ -235,7 +235,7 @@ livenessProbe:
 # See [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 readinessProbe:
   httpGet:
-    path: /totalNumberOfAnchors/
+    path: /health
     port: http
   initialDelaySeconds: 10
   periodSeconds: 10
